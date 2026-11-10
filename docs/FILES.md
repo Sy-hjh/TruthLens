@@ -11,7 +11,7 @@
 | setup.ps1 | 换机器创建独立虚拟环境与依赖 | 仅首次 |
 | requirements.txt | 通用依赖约束 | pip读取 |
 | requirements-verified.txt | 本机实际验证过的核心版本 | 排查环境时参考 |
-| requirements-dev.txt | 额外演示语音生成依赖 | 制作新演示时 |
+| requirements-dev.txt | 演示语音和技术PDF重建依赖 | 制作新演示时 |
 | bootstrap.py | 项目缓存/临时目录、依赖路径与UTF-8配置 | 自动导入 |
 
 ## 业务代码
