@@ -1,0 +1,62 @@
+[
+  {
+    "name": "known-real",
+    "label": 0,
+    "source_path": "original_videos/CARfx453LLY_00020_00030.mp4",
+    "source_repo": "kontur-ai/rtfs-10k",
+    "revision": "83063ae33220e8da968587d4365bd986c7005835",
+    "sha256": "02cc0dc202985dcee1415d02550497bed435bde786024f49de84d1d4e70db71d",
+    "license": "CC-BY-SA-4.0",
+    "selection": "First3source pairs in the pre-existing50-clip test report, selected by order not model confidence; pair1knownfake is retained despite a miss."
+  },
+  {
+    "name": "known-fake",
+    "label": 1,
+    "source_path": "uniface/uniface_CARfx453LLY_00020_00030_1-4_woman.mp4",
+    "source_repo": "kontur-ai/rtfs-10k",
+    "revision": "83063ae33220e8da968587d4365bd986c7005835",
+    "sha256": "8165dde7f28e2da4d8acab0949bb8311ab04702008cec50428bfec91576f205f",
+    "license": "CC-BY-SA-4.0",
+    "selection": "First3source pairs in the pre-existing50-clip test report, selected by order not model confidence; pair1knownfake is retained despite a miss."
+  },
+  {
+    "name": "known-real-2",
+    "label": 0,
+    "source_path": "original_videos/gov2tTiT1tM_01270_01280.mp4",
+    "source_repo": "kontur-ai/rtfs-10k",
+    "revision": "83063ae33220e8da968587d4365bd986c7005835",
+    "sha256": "1721f2c3a256ba454a701a92e29b3c9d84ecc6db62ca2b43fc2fc189340db120",
+    "license": "CC-BY-SA-4.0",
+    "selection": "First3source pairs in the pre-existing50-clip test report, selected by order not model confidence; pair1knownfake is retained despite a miss."
+  },
+  {
+    "name": "known-fake-2",
+    "label": 1,
+    "source_path": "uniface/uniface_gov2tTiT1tM_01270_01280_3-855_man.mp4",
+    "source_repo": "kontur-ai/rtfs-10k",
+    "revision": "83063ae33220e8da968587d4365bd986c7005835",
+    "sha256": "db560c532c7b1cd88f1608f816fb313ed2dcc5bcfeaa9c16a66e61ce9d51127d",
+    "license": "CC-BY-SA-4.0",
+    "selection": "First3source pairs in the pre-existing50-clip test report, selected by order not model confidence; pair1knownfake is retained despite a miss."
+  },
+  {
+    "name": "known-real-3",
+    "label": 0,
+    "source_path": "original_videos/KNn6MLyaEPE_00002_00012.mp4",
+    "source_repo": "kontur-ai/rtfs-10k",
+    "revision": "83063ae33220e8da968587d4365bd986c7005835",
+    "sha256": "2ee1b0564bb9aad8cbed65ae7f7160a074a90f654863b68811745848c38416d6",
+    "license": "CC-BY-SA-4.0",
+    "selection": "First3source pairs in the pre-existing50-clip test report, selected by order not model confidence; pair1knownfake is retained despite a miss."
+  },
+  {
+    "name": "known-fake-3",
+    "label": 1,
+    "source_path": "uniface/uniface_KNn6MLyaEPE_00002_00012_1-527_woman.mp4",
+    "source_repo": "kontur-ai/rtfs-10k",
+    "revision": "83063ae33220e8da968587d4365bd986c7005835",
+    "sha256": "ce91941c937f84d18576ebe23c868a62c49b1eb0e7cbc828c7863e8f3f0ccc84",
+    "license": "CC-BY-SA-4.0",
+    "selection": "First3source pairs in the pre-existing50-clip test report, selected by order not model confidence; pair1knownfake is retained despite a miss."
+  }
+]

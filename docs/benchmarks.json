@@ -1,0 +1,398 @@
+{
+  "generated": "2026-11-11",
+  "note": "Exported actual aggregate metrics; private cases and raw records excluded.",
+  "reports": {
+    "balanced-test.json": {
+      "n": 634,
+      "real_count": 317,
+      "fake_count": 317,
+      "false_positives": 10,
+      "false_negatives": 2,
+      "real_false_positive_rate": 0.031545741324921134,
+      "fake_miss_rate": 0.006309148264984227,
+      "balanced_accuracy": 0.9810725552050473,
+      "accuracy": 0.9810725552050473,
+      "source_report_sha256": "2ef3d9de995795cf508ba614b0ce43f11d3f1764004964efe7f75ef09cc6833c"
+    },
+    "domain-evaluation.json": {
+      "weights_sha256": "fe69f0bb498ce0e8c2d644f67de6b4ee11dc3c237626ffd97f8d549156f965a2",
+      "threshold": 0.5,
+      "whole_image": {
+        "n": 240,
+        "real_count": 60,
+        "fake_count": 180,
+        "false_positives": 9,
+        "false_negatives": 76,
+        "real_false_positive_rate": 0.15,
+        "fake_miss_rate": 0.4222222222222222,
+        "balanced_accuracy": 0.7138888888888889,
+        "accuracy": 0.6458333333333334
+      },
+      "jpeg60": {
+        "n": 240,
+        "real_count": 60,
+        "fake_count": 180,
+        "false_positives": 0,
+        "false_negatives": 164,
+        "real_false_positive_rate": 0.0,
+        "fake_miss_rate": 0.9111111111111111,
+        "balanced_accuracy": 0.5444444444444445,
+        "accuracy": 0.31666666666666665
+      },
+      "by_kind": {
+        "published-ai-edited": {
+          "n": 180,
+          "real_count": 0,
+          "fake_count": 180,
+          "false_positives": 0,
+          "false_negatives": 76,
+          "real_false_positive_rate": null,
+          "fake_miss_rate": 0.4222222222222222,
+          "balanced_accuracy": null,
+          "accuracy": 0.5777777777777777
+        },
+        "published-real-damaged": {
+          "n": 30,
+          "real_count": 30,
+          "fake_count": 0,
+          "false_positives": 4,
+          "false_negatives": 0,
+          "real_false_positive_rate": 0.13333333333333333,
+          "fake_miss_rate": null,
+          "balanced_accuracy": null,
+          "accuracy": 0.8666666666666667
+        },
+        "published-real-undamaged": {
+          "n": 30,
+          "real_count": 30,
+          "fake_count": 0,
+          "false_positives": 5,
+          "false_negatives": 0,
+          "real_false_positive_rate": 0.16666666666666666,
+          "fake_miss_rate": null,
+          "balanced_accuracy": null,
+          "accuracy": 0.8333333333333334
+        }
+      },
+      "by_generator": {
+        "gpt-image-2": {
+          "n": 30,
+          "real_count": 0,
+          "fake_count": 30,
+          "false_positives": 0,
+          "false_negatives": 8,
+          "real_false_positive_rate": null,
+          "fake_miss_rate": 0.26666666666666666,
+          "balanced_accuracy": null,
+          "accuracy": 0.7333333333333333
+        },
+        "grok-imagine-image": {
+          "n": 30,
+          "real_count": 0,
+          "fake_count": 30,
+          "false_positives": 0,
+          "false_negatives": 17,
+          "real_false_positive_rate": null,
+          "fake_miss_rate": 0.5666666666666667,
+          "balanced_accuracy": null,
+          "accuracy": 0.43333333333333335
+        },
+        "nano-banana-2": {
+          "n": 30,
+          "real_count": 0,
+          "fake_count": 30,
+          "false_positives": 0,
+          "false_negatives": 19,
+          "real_false_positive_rate": null,
+          "fake_miss_rate": 0.6333333333333333,
+          "balanced_accuracy": null,
+          "accuracy": 0.36666666666666664
+        },
+        "qwen-image-2.0-pro": {
+          "n": 30,
+          "real_count": 0,
+          "fake_count": 30,
+          "false_positives": 0,
+          "false_negatives": 14,
+          "real_false_positive_rate": null,
+          "fake_miss_rate": 0.4666666666666667,
+          "balanced_accuracy": null,
+          "accuracy": 0.5333333333333333
+        },
+        "qwen-image-edit-max": {
+          "n": 30,
+          "real_count": 0,
+          "fake_count": 30,
+          "false_positives": 0,
+          "false_negatives": 2,
+          "real_false_positive_rate": null,
+          "fake_miss_rate": 0.06666666666666667,
+          "balanced_accuracy": null,
+          "accuracy": 0.9333333333333333
+        },
+        "wan2.7-image-pro": {
+          "n": 30,
+          "real_count": 0,
+          "fake_count": 30,
+          "false_positives": 0,
+          "false_negatives": 16,
+          "real_false_positive_rate": null,
+          "fake_miss_rate": 0.5333333333333333,
+          "balanced_accuracy": null,
+          "accuracy": 0.4666666666666667
+        }
+      },
+      "local_edit_60": {
+        "n": 60,
+        "real_count": 30,
+        "fake_count": 30,
+        "false_positives": 4,
+        "false_negatives": 26,
+        "real_false_positive_rate": 0.13333333333333333,
+        "fake_miss_rate": 0.8666666666666667,
+        "balanced_accuracy": 0.5,
+        "accuracy": 0.5
+      },
+      "source_report_sha256": "887c5906c187f42a7eb1a3a8384f90ba1aaf0c811623dece2196fa406ed8d4af"
+    },
+    "domain-candidate.json": {
+      "clean": {
+        "n": 240,
+        "real_count": 60,
+        "fake_count": 180,
+        "false_positives": 23,
+        "false_negatives": 13,
+        "real_false_positive_rate": 0.38333333333333336,
+        "fake_miss_rate": 0.07222222222222222,
+        "balanced_accuracy": 0.7722222222222221,
+        "accuracy": 0.85
+      },
+      "jpeg60": {
+        "n": 240,
+        "real_count": 60,
+        "fake_count": 180,
+        "false_positives": 16,
+        "false_negatives": 81,
+        "real_false_positive_rate": 0.26666666666666666,
+        "fake_miss_rate": 0.45,
+        "balanced_accuracy": 0.6416666666666666,
+        "accuracy": 0.5958333333333333
+      },
+      "threshold": 0.5,
+      "source_report_sha256": "f64008e685e172febdf5b52c684e99af41764a972efd5f31570a0f96c5693e57"
+    },
+    "domain-mlp-candidate.json": {
+      "clean": {
+        "n": 240,
+        "real_count": 60,
+        "fake_count": 180,
+        "false_positives": 20,
+        "false_negatives": 22,
+        "real_false_positive_rate": 0.3333333333333333,
+        "fake_miss_rate": 0.12222222222222222,
+        "balanced_accuracy": 0.7722222222222223,
+        "accuracy": 0.825
+      },
+      "jpeg60": {
+        "n": 240,
+        "real_count": 60,
+        "fake_count": 180,
+        "false_positives": 15,
+        "false_negatives": 64,
+        "real_false_positive_rate": 0.25,
+        "fake_miss_rate": 0.35555555555555557,
+        "balanced_accuracy": 0.6972222222222222,
+        "accuracy": 0.6708333333333333
+      },
+      "threshold": 0.5,
+      "source_report_sha256": "d317933c2731871dc6914321273044536abf2a0805e317b3a1d5e9e8b4deb172"
+    },
+    "video-diagnostic.json": {
+      "metrics": {
+        "n": 18,
+        "real_count": 6,
+        "fake_count": 12,
+        "false_positives": 0,
+        "false_negatives": 11,
+        "real_false_positive_rate": 0.0,
+        "fake_miss_rate": 0.9166666666666666,
+        "balanced_accuracy": 0.5416666666666667,
+        "accuracy": 0.3888888888888889
+      },
+      "source_report_sha256": "abda5f690b2e4c13ca0ee16ec5ac977f7899c2767b6524ab3e0dc455bfd0ac79"
+    },
+    "video-face-adapt-test.json": {
+      "metrics": {
+        "n": 50,
+        "real_count": 25,
+        "fake_count": 25,
+        "false_positives": 3,
+        "false_negatives": 2,
+        "real_false_positive_rate": 0.12,
+        "fake_miss_rate": 0.08,
+        "balanced_accuracy": 0.9,
+        "accuracy": 0.9
+      },
+      "source_report_sha256": "83af82a58766203d93185d328323c1e1f90fc47d345af1a1f10db9e9383c1e42"
+    },
+    "video-release-check.json": {
+      "metrics": {
+        "n": 200,
+        "real_count": 100,
+        "fake_count": 100,
+        "false_positives": 25,
+        "false_negatives": 35,
+        "real_false_positive_rate": 0.25,
+        "fake_miss_rate": 0.35,
+        "balanced_accuracy": 0.7,
+        "accuracy": 0.7
+      },
+      "baseline_metrics": {
+        "n": 200,
+        "real_count": 100,
+        "fake_count": 100,
+        "false_positives": 25,
+        "false_negatives": 61,
+        "real_false_positive_rate": 0.25,
+        "fake_miss_rate": 0.61,
+        "balanced_accuracy": 0.5700000000000001,
+        "accuracy": 0.57
+      },
+      "planned": 200,
+      "threshold": 0.5,
+      "source_report_sha256": "5cdb3c334393a143cd1b0afeec08bcf9fa2bc1db6c014d2aa3af1a919d705a07"
+    },
+    "integrity-v9-diagnostic.json": {
+      "metrics": {
+        "n": 60,
+        "real_count": 30,
+        "fake_count": 30,
+        "false_positives": 0,
+        "false_negatives": 22,
+        "real_false_positive_rate": 0.0,
+        "fake_miss_rate": 0.7333333333333333,
+        "balanced_accuracy": 0.6333333333333333,
+        "accuracy": 0.6333333333333333
+      },
+      "source_report_sha256": "92a6222bd149b4eeec9b9eb38798fbe6bcf5906cdf56d2d1da055fddc5c8e505"
+    },
+    "video-fusion-calibration.json": {
+      "threshold": 0.5,
+      "calibration_fit_metrics": {
+        "n": 50,
+        "real_count": 25,
+        "fake_count": 25,
+        "false_positives": 3,
+        "false_negatives": 5,
+        "real_false_positive_rate": 0.12,
+        "fake_miss_rate": 0.2,
+        "balanced_accuracy": 0.84,
+        "accuracy": 0.84
+      },
+      "observed_diagnostic": {
+        "n": 200,
+        "real_count": 100,
+        "fake_count": 100,
+        "false_positives": 2,
+        "false_negatives": 37,
+        "real_false_positive_rate": 0.02,
+        "fake_miss_rate": 0.37,
+        "balanced_accuracy": 0.8049999999999999,
+        "accuracy": 0.805
+      },
+      "source_report_sha256": "71c3de01bc88d44107c1987c564e78619c95df6f0ecf7fd51a7dc50834e58898"
+    },
+    "audio-mandarin-check.json": {
+      "metrics": {
+        "n": 120,
+        "real_count": 60,
+        "fake_count": 60,
+        "false_positives": 0,
+        "false_negatives": 3,
+        "real_false_positive_rate": 0.0,
+        "fake_miss_rate": 0.05,
+        "balanced_accuracy": 0.975,
+        "accuracy": 0.975
+      },
+      "baseline_metrics": {
+        "n": 120,
+        "real_count": 60,
+        "fake_count": 60,
+        "false_positives": 18,
+        "false_negatives": 0,
+        "real_false_positive_rate": 0.3,
+        "fake_miss_rate": 0.0,
+        "balanced_accuracy": 0.85,
+        "accuracy": 0.85
+      },
+      "threshold": 0.5,
+      "calibrated": {
+        "threshold": 0.3670858144760132,
+        "validation": {
+          "n": 40,
+          "real_count": 20,
+          "fake_count": 20,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.0,
+          "balanced_accuracy": 1.0,
+          "accuracy": 1.0
+        },
+        "test": {
+          "n": 80,
+          "real_count": 40,
+          "fake_count": 40,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.0,
+          "balanced_accuracy": 1.0,
+          "accuracy": 1.0
+        }
+      },
+      "source_report_sha256": "d97fa8b8c31a9d445f2f73156bc3aad2d292ef01729691e3c41556de013b6c52"
+    },
+    "video-final-evaluation.json": {
+      "metrics": {
+        "n": 300,
+        "real_count": 100,
+        "fake_count": 200,
+        "false_positives": 5,
+        "false_negatives": 55,
+        "real_false_positive_rate": 0.05,
+        "fake_miss_rate": 0.275,
+        "balanced_accuracy": 0.8375,
+        "accuracy": 0.8
+      },
+      "planned": 300,
+      "processed": 300,
+      "coverage": 1.0,
+      "by_generator": {
+        "inswapper": {
+          "n": 200,
+          "real_count": 100,
+          "fake_count": 100,
+          "false_positives": 5,
+          "false_negatives": 23,
+          "real_false_positive_rate": 0.05,
+          "fake_miss_rate": 0.23,
+          "balanced_accuracy": 0.86,
+          "accuracy": 0.86
+        },
+        "uniface": {
+          "n": 200,
+          "real_count": 100,
+          "fake_count": 100,
+          "false_positives": 5,
+          "false_negatives": 32,
+          "real_false_positive_rate": 0.05,
+          "fake_miss_rate": 0.32,
+          "balanced_accuracy": 0.815,
+          "accuracy": 0.815
+        }
+      },
+      "source_report_sha256": "613dc541ea1a4ffbf9c877f056a7b21cc8fe4fe167c3d3450fb7af0811928fb9"
+    }
+  }
+}

@@ -1,0 +1,242 @@
+{
+  "_id": "6ac8e408f5bc1e07b4ee6273",
+  "id": "zodumair/sifta-deepfake-detector",
+  "private": false,
+  "pipeline_tag": "video-classification",
+  "tags": [
+    "onnx",
+    "safetensors",
+    "deepfake-detection",
+    "video-classification",
+    "face-forensics",
+    "sifta",
+    "license:other",
+    "endpoints_compatible",
+    "region:us"
+  ],
+  "downloads": 0,
+  "likes": 0,
+  "modelId": "zodumair/sifta-deepfake-detector",
+  "author": "zodumair",
+  "sha": "d551c5bb8763c06cef8a57a5f860537e3fbf35fc",
+  "lastModified": "2026-10-14T20:14:05.000Z",
+  "gated": false,
+  "disabled": false,
+  "model-index": null,
+  "config": {},
+  "cardData": {
+    "license": "other",
+    "tags": [
+      "deepfake-detection",
+      "video-classification",
+      "face-forensics",
+      "sifta"
+    ]
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes",
+      "blobId": "2b2cde22a5210944c7c8c9f5c43cecffd69ed8e0",
+      "size": 2016
+    },
+    {
+      "rfilename": "DATA_CARD.md",
+      "blobId": "190e806639f1555247d22b1b7eb82f4a08c2f413",
+      "size": 805
+    },
+    {
+      "rfilename": "README.md",
+      "blobId": "88200d1ee936f6bd80d661cad5c317c376e2e826",
+      "size": 1497
+    },
+    {
+      "rfilename": "auc_ci.png",
+      "blobId": "73b5a31ae142937684fd96e2c675569e7d863a29",
+      "size": 45469
+    },
+    {
+      "rfilename": "auc_heatmap.png",
+      "blobId": "028ad3a59378d30c69ba84c3345607ea7d30c078",
+      "size": 67445
+    },
+    {
+      "rfilename": "cdfpp_finetune_results.json",
+      "blobId": "4a4170baa2c30d9f97a8749bd3eecd9b76be0b91",
+      "size": 15917
+    },
+    {
+      "rfilename": "comparison.csv",
+      "blobId": "c06129cb97bef6efa87f56ad8b304bf93ea95dd0",
+      "size": 4446
+    },
+    {
+      "rfilename": "confusion_matrices.png",
+      "blobId": "df16b8c36e5aa93595a665e8eb346f21b498c6bf",
+      "size": 221279,
+      "lfs": {
+        "sha256": "4d71017990faafe8000d59529b12510f581b9dd83f444cd090da66c7301d08b4",
+        "size": 221279,
+        "pointerSize": 131
+      }
+    },
+    {
+      "rfilename": "data_overview.png",
+      "blobId": "30b964536d6a64fd2ffa53d988de1620b6d78c02",
+      "size": 106974,
+      "lfs": {
+        "sha256": "d971329c5fa35eb3568ce38616e52579316c3e952fcabf5c16ee5e7b8739eedb",
+        "size": 106974,
+        "pointerSize": 131
+      }
+    },
+    {
+      "rfilename": "decision.json",
+      "blobId": "aef03dc867e129169364368f8021196c4920d22b",
+      "size": 272
+    },
+    {
+      "rfilename": "face_detection_yunet_2023mar.onnx",
+      "blobId": "2d8804a5986e229f1fde3a1994feacc66c91b58b",
+      "size": 232589,
+      "lfs": {
+        "sha256": "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4",
+        "size": 232589,
+        "pointerSize": 131
+      }
+    },
+    {
+      "rfilename": "finetune_comparison.png",
+      "blobId": "adce1b51fea501aa41155856c57a84e5fce03e48",
+      "size": 164250,
+      "lfs": {
+        "sha256": "50fc641cc0e937bde75754f0424f36fcf5dd5d26dbfba05563b810a80f79f4d4",
+        "size": 164250,
+        "pointerSize": 131
+      }
+    },
+    {
+      "rfilename": "handler.py",
+      "blobId": "dd70eaf4af94bb8dc4d1e3f3316582c36e95d70f",
+      "size": 11006
+    },
+    {
+      "rfilename": "learning_curves.png",
+      "blobId": "338573be890cedd04140515d81a9268d1c59b356",
+      "size": 506039,
+      "lfs": {
+        "sha256": "6eeecfb0f8a53517a2a42ff9949553b21f7b3a81d1c991a39989cdecb44d2369",
+        "size": 506039,
+        "pointerSize": 131
+      }
+    },
+    {
+      "rfilename": "metric_comparison.png",
+      "blobId": "c92f5500c5443e6f57428167e66f3b5549cdbce9",
+      "size": 110981,
+      "lfs": {
+        "sha256": "1ca346375ac5feb623cb48abd8fd784274665465e0f3e9e81dc5d929fe873e7e",
+        "size": 110981,
+        "pointerSize": 131
+      }
+    },
+    {
+      "rfilename": "model.safetensors",
+      "blobId": "0b8db894c977f045234d0c367275e01a02eabd59",
+      "size": 499258032,
+      "lfs": {
+        "sha256": "18eb940f8588414d64cb162b96d0925dfdf4c10123ce6b82d79687d64eb7f412",
+        "size": 499258032,
+        "pointerSize": 134
+      }
+    },
+    {
+      "rfilename": "paired_bootstrap.csv",
+      "blobId": "4331e27e84cda18dd45da963cf49b594f910c263",
+      "size": 1145
+    },
+    {
+      "rfilename": "per_generator_auc.csv",
+      "blobId": "2c0e51eb958fa7d3a81c4de90d4cc924e66c9cec",
+      "size": 536
+    },
+    {
+      "rfilename": "per_method_auc.png",
+      "blobId": "ad9487e54a597d136534fd0f98f5c348a5a8e5e0",
+      "size": 60180
+    },
+    {
+      "rfilename": "pr_curves.png",
+      "blobId": "485716129cd4946e0662fc8d2d408b48a787e086",
+      "size": 141164,
+      "lfs": {
+        "sha256": "0041d242967fd2b6e1022357b01f22dc52a63474878f13ff38554319935beaf7",
+        "size": 141164,
+        "pointerSize": 131
+      }
+    },
+    {
+      "rfilename": "reliability.png",
+      "blobId": "d34d8fd90d58809145ff459846fad31bd1f8cfec",
+      "size": 166820,
+      "lfs": {
+        "sha256": "40621819635459f1b6fb742fc1c22afb178258e0592ef1feda90f8b1fd8ba885",
+        "size": 166820,
+        "pointerSize": 131
+      }
+    },
+    {
+      "rfilename": "requirements.txt",
+      "blobId": "43f4026ee6f7a58a5014aee4ee956d797514e6b5",
+      "size": 64
+    },
+    {
+      "rfilename": "risk_tier_matrix.png",
+      "blobId": "40a1518c86595da119fc3cb17cabae6435265cf9",
+      "size": 219177,
+      "lfs": {
+        "sha256": "a185f557766b0e6855620c0d517496cad091f6b7ffe14034d3a878fb296a6024",
+        "size": 219177,
+        "pointerSize": 131
+      }
+    },
+    {
+      "rfilename": "risk_tiers.csv",
+      "blobId": "9e365f7cdefff4dc1bbadde56f881b682d95793e",
+      "size": 1004
+    },
+    {
+      "rfilename": "roc_curves.png",
+      "blobId": "995915a9aecbc67f94cca5189faa49d443e9fc7f",
+      "size": 100548,
+      "lfs": {
+        "sha256": "49677722bb71e485510073e3f8c61e9ef619e607de95d5235fee92454c4dca8e",
+        "size": 100548,
+        "pointerSize": 131
+      }
+    },
+    {
+      "rfilename": "selection.json",
+      "blobId": "cb89034f465414e3cb0c2f6ff0c8fc987d0c4a17",
+      "size": 360
+    },
+    {
+      "rfilename": "sifta_config.json",
+      "blobId": "6c00f79003c8b743ded187ac69a1b8942875be9e",
+      "size": 1106
+    },
+    {
+      "rfilename": "xclip_config.json",
+      "blobId": "c8a8f2209c2e0c73679e351a2dc5e0417f9d9559",
+      "size": 2543
+    }
+  ],
+  "spaces": [],
+  "createdAt": "2026-10-09T12:54:32.000Z",
+  "safetensors": {
+    "parameters": {
+      "F32": 124804098
+    },
+    "total": 124804098
+  },
+  "usedStorage": 1000485885
+}

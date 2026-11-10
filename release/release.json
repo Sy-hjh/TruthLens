@@ -1,0 +1,128 @@
+{
+  "video": {
+    "coefficients": [
+      0.48049571961304477,
+      0.5909810322728507,
+      0.00033062550929282934
+    ],
+    "threshold": 0.5,
+    "head": "models/releases/017aa77f4e2a61c9285f795b28e567e6ed6ec6d3b297fdad5a96daab4bc811b2/video-head.pt",
+    "head_sha256": "017aa77f4e2a61c9285f795b28e567e6ed6ec6d3b297fdad5a96daab4bc811b2",
+    "engine": "video-fusion",
+    "approved": true,
+    "version": "qinan-video-fusion-r1-20261111",
+    "scope": "Research auxiliary, not identity/fraud determination. Final300source-group clips: FPR5%, miss27.5%, balanced83.75%; not all-generated-video accuracy.",
+    "evidence": "reports/video-final-evaluation.json",
+    "base_video_sha256": "293c668a5d3289d3162902d8cac6687cd11551cf2358768bad126de32b6d7f29"
+  },
+  "audio": {
+    "approved": true,
+    "engine": "xlsr-aasist",
+    "version": "xlsr-wild-2026-cn-diagnostic-v1",
+    "weights": "models/audio-forensics/checkpoint_epoch_4.safetensors",
+    "weights_sha256": "39e37fa5a958c2b46ebb6a5937874c36c39003906dcdd5d0aba6154bc6b2dc21",
+    "threshold": 0.5,
+    "evidence": "reports/audio-mandarin-check.json",
+    "scope": "Research auxiliary only. 60 matched Mandarin real/standard TTS pairs; not modern voice-cloning or elderly-domain accuracy. Unknown pretraining overlap."
+  },
+  "sources": {
+    "face-detector": {
+      "repo": "opencv/opencv_zoo",
+      "revision": "48b10fa505aeb51fbd127fc60a5c660040e823b7",
+      "sha256": "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4",
+      "license": "MIT",
+      "purpose": "face location only, not identity or synthesis detection"
+    },
+    "advisor": {
+      "repo": "Qwen/Qwen3-0.6B",
+      "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+      "license": "Apache-2.0",
+      "sha256": {
+        "config.json": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+        "generation_config.json": "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2",
+        "tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+        "tokenizer_config.json": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+        "model.safetensors": "f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+        "README.md": "1ab64a26fcb3b461423b89a433a8c858f1bf8d4086f979cbb3ff878d47cf20e9",
+        "LICENSE": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+      },
+      "purpose": "local sourced explanation only; never judges identity or authorizes payments"
+    },
+    "sifta": {
+      "repo": "zodumair/sifta-deepfake-detector",
+      "revision": "d551c5bb8763c06cef8a57a5f860537e3fbf35fc",
+      "sha256": "18eb940f8588414d64cb162b96d0925dfdf4c10123ce6b82d79687d64eb7f412",
+      "license": "research only; upstream dataset restrictions",
+      "purpose": "XCLIP face video diagnostic; no identity verification"
+    },
+    "audio-forensics": {
+      "repo": "eliya/forensics_0.3B_xlsr_wild_deepfake_classifier",
+      "revision": "0cbc87b3fbd683ff8c8c961bcf244a8d5f1bcf02",
+      "sha256": "39e37fa5a958c2b46ebb6a5937874c36c39003906dcdd5d0aba6154bc6b2dc21",
+      "license": "cc-by-nc-4.0",
+      "purpose": "research speech synthesis diagnostic; verify Mandarin performance locally"
+    }
+  },
+  "demo_videos": [
+    {
+      "name": "known-real",
+      "label": 0,
+      "source_path": "original_videos/CARfx453LLY_00020_00030.mp4",
+      "source_repo": "kontur-ai/rtfs-10k",
+      "revision": "83063ae33220e8da968587d4365bd986c7005835",
+      "sha256": "02cc0dc202985dcee1415d02550497bed435bde786024f49de84d1d4e70db71d",
+      "license": "CC-BY-SA-4.0",
+      "selection": "First3source pairs in the pre-existing50-clip test report, selected by order not model confidence; pair1knownfake is retained despite a miss."
+    },
+    {
+      "name": "known-fake",
+      "label": 1,
+      "source_path": "uniface/uniface_CARfx453LLY_00020_00030_1-4_woman.mp4",
+      "source_repo": "kontur-ai/rtfs-10k",
+      "revision": "83063ae33220e8da968587d4365bd986c7005835",
+      "sha256": "8165dde7f28e2da4d8acab0949bb8311ab04702008cec50428bfec91576f205f",
+      "license": "CC-BY-SA-4.0",
+      "selection": "First3source pairs in the pre-existing50-clip test report, selected by order not model confidence; pair1knownfake is retained despite a miss."
+    },
+    {
+      "name": "known-real-2",
+      "label": 0,
+      "source_path": "original_videos/gov2tTiT1tM_01270_01280.mp4",
+      "source_repo": "kontur-ai/rtfs-10k",
+      "revision": "83063ae33220e8da968587d4365bd986c7005835",
+      "sha256": "1721f2c3a256ba454a701a92e29b3c9d84ecc6db62ca2b43fc2fc189340db120",
+      "license": "CC-BY-SA-4.0",
+      "selection": "First3source pairs in the pre-existing50-clip test report, selected by order not model confidence; pair1knownfake is retained despite a miss."
+    },
+    {
+      "name": "known-fake-2",
+      "label": 1,
+      "source_path": "uniface/uniface_gov2tTiT1tM_01270_01280_3-855_man.mp4",
+      "source_repo": "kontur-ai/rtfs-10k",
+      "revision": "83063ae33220e8da968587d4365bd986c7005835",
+      "sha256": "db560c532c7b1cd88f1608f816fb313ed2dcc5bcfeaa9c16a66e61ce9d51127d",
+      "license": "CC-BY-SA-4.0",
+      "selection": "First3source pairs in the pre-existing50-clip test report, selected by order not model confidence; pair1knownfake is retained despite a miss."
+    },
+    {
+      "name": "known-real-3",
+      "label": 0,
+      "source_path": "original_videos/KNn6MLyaEPE_00002_00012.mp4",
+      "source_repo": "kontur-ai/rtfs-10k",
+      "revision": "83063ae33220e8da968587d4365bd986c7005835",
+      "sha256": "2ee1b0564bb9aad8cbed65ae7f7160a074a90f654863b68811745848c38416d6",
+      "license": "CC-BY-SA-4.0",
+      "selection": "First3source pairs in the pre-existing50-clip test report, selected by order not model confidence; pair1knownfake is retained despite a miss."
+    },
+    {
+      "name": "known-fake-3",
+      "label": 1,
+      "source_path": "uniface/uniface_KNn6MLyaEPE_00002_00012_1-527_woman.mp4",
+      "source_repo": "kontur-ai/rtfs-10k",
+      "revision": "83063ae33220e8da968587d4365bd986c7005835",
+      "sha256": "ce91941c937f84d18576ebe23c868a62c49b1eb0e7cbc828c7863e8f3f0ccc84",
+      "license": "CC-BY-SA-4.0",
+      "selection": "First3source pairs in the pre-existing50-clip test report, selected by order not model confidence; pair1knownfake is retained despite a miss."
+    }
+  ]
+}

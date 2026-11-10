@@ -1,0 +1,169 @@
+:root {
+  font-size: 18px;
+}
+h1 {
+  font-size: 36px;
+}
+.caption,
+.nav {
+  font-size: 17px;
+}
+.field {
+  font-size: 18px;
+}
+.field textarea,
+.field input {
+  font-size: 18px;
+}
+.drop {
+  margin-top: 24px;
+}
+.drop strong {
+  font-size: 20px;
+}
+.drop span {
+  font-size: 15px;
+}
+.primary {
+  font-size: 20px;
+  min-height: 58px;
+}
+.notice p,
+.report-section p {
+  font-size: 18px;
+}
+.muted {
+  font-size: 14px;
+}
+.guide p {
+  font-size: 17px;
+}
+.guide {
+  margin-top: 22px;
+}
+.record {
+  align-items: center;
+  flex-wrap: wrap;
+}
+.record a {
+  background: #205945;
+  color: white;
+  padding: 14px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+#contacts,
+#practice,
+#history,
+#result {
+  padding-top: 25px;
+}
+.toolbar button,
+.record button {
+  font-size: 17px;
+}
+.module {
+  padding: 20px;
+  border: 1px solid #dce5da;
+  border-radius: 8px;
+  margin: 18px 0;
+}
+.module p {
+  overflow-wrap: anywhere;
+}
+.module small {
+  font-size: 14px;
+}
+.quiz-option {
+  display: block;
+  background: #eff4ea;
+  border: 1px solid #cbdac8;
+  border-radius: 7px;
+  padding: 18px;
+  width: 100%;
+  margin: 15px 0;
+  text-align: left;
+  font-size: 20px;
+}
+#progress {
+  color: #205945;
+}
+#error {
+  font-size: 18px;
+}
+header {
+  font-size: 14px;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #d5a637;
+  outline-offset: 3px;
+}
+@media (max-width: 650px) {
+  aside {
+    flex-wrap: wrap;
+  }
+  .nav {
+    font-size: 15px;
+  }
+  .brand {
+    width: 100%;
+  }
+  h1 {
+    font-size: 28px;
+  }
+  .intro {
+    padding-top: 20px;
+  }
+  header {
+    font-size: 12px;
+  }
+  .field textarea {
+    height: 140px;
+  }
+  footer {
+    font-size: 13px;
+  }
+}
+@media print {
+  .primary {
+    display: none;
+  }
+}
+:root .anomaly img {
+  max-width: 100%;
+  max-height: 360px;
+  border: 1px solid #b8c9bc;
+}
+.anomaly figcaption {
+  font-size: 16px;
+  line-height: 1.7;
+}
+.examples {
+  margin: 20px 0;
+}
+.examples button {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  margin: 10px 0;
+  background: #eaf1e5;
+  border: 1px solid #bacdb8;
+  border-radius: 6px;
+  font-size: 18px;
+}
+.module small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.anomaly {
+  margin: 18px 0;
+}
+.transcript-editor {
+  margin-top: 20px;
+}
+#report-voice {
+  display: block;
+  width: 100%;
+  margin: 20px 0;
+}

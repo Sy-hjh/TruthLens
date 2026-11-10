@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>亲安 · 先核实，再放心</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/senior.css" />
+  </head>
+  <body>
+    <aside>
+      <a class="brand" href="/"
+        >♡ <span>亲安<small>QINAN</small></span></a
+      >
+      <p class="caption">先核实，再放心</p>
+      <button class="nav active" data-page="check">检查可疑材料</button
+      ><button class="nav" data-page="contacts">联系我的家人</button
+      ><button class="nav" data-page="practice">练习识别骗局</button
+      ><button class="nav" data-page="history">查看核验记录</button>
+      <div class="aside-bottom">
+        原始上传文件处理后删除<br />仅作辅助核验，不确认身份
+        <br /><a href="/model-lab.html">查看实测与模型版本</a>
+      </div>
+    </aside>
+    <main>
+      <header>
+        <span>老人自己的反诈帮手</span><span id="status">正在检查服务</span>
+      </header>
+      <section id="check">
+        <div class="intro">
+          <div>
+            <p class="eyebrow">先停一下，和家人核实</p>
+            <h1>像亲人的声音和面孔，<br />也值得再确认一次。</h1>
+            <p>收到催促转账、求助或宣传材料？把它交给亲安一起看看。</p>
+          </div>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <h2>上传收到的视频、语音或照片</h2>
+            <form id="form">
+              <label class="drop"
+                ><input
+                  id="file"
+                  type="file"
+                  name="file"
+                  accept=".mp4,.mov,.avi,.webm,.wav,.mp3,.m4a,.flac,.ogg,.jpg,.jpeg,.png,.webp"
+                  required
+                /><b>＋</b><strong>点击选择材料</strong
+                ><span id="filename">单个文件≤100MB；视频≤3分钟</span></label
+              >
+              <div id="preview"></div>
+              <label class="field" id="scene-field" hidden>图片场景
+                <select name="scene" id="scene">
+                  <option value="general">通用照片核验</option>
+                  <option value="product" id="product-option" disabled>商品改图核验（暂未开放）</option>
+                </select>
+              </label>
+              <details class="examples">
+                <summary>没有材料？体验模拟语音</summary>
+                <p>以下全部为合成语音，明确用于反诈模拟。</p>
+                <button type="button" data-example="family-simulation">
+                  模拟亲人求助</button
+                ><button type="button" data-example="expert-simulation">
+                  模拟专家宣传</button
+                ><button type="button" data-example="normal-synthetic-control">
+                  普通内容合成对照
+                </button>
+              </details>
+              <label class="field"
+                >对方让您做什么？（可不填）<textarea
+                  name="context"
+                  maxlength="4000"
+                  placeholder="例如：说是我的孙子，需要马上转账，不让我告诉其他人"
+                ></textarea></label
+              ><button class="primary" id="submit">帮我检查</button>
+              <p id="progress" role="status" aria-live="polite"></p>
+              <p id="error" role="alert"></p>
+            </form>
+          </article>
+          <div>
+            <article class="notice">
+              <h2>涉及钱和验证码，先停一下</h2>
+              <p>无论检测结果如何，都可以先打给您提前保存的家人号码。</p>
+              <button class="primary" data-page="contacts">联系我的家人</button>
+            </article>
+            <article class="card guide">
+              <h2>亲安会检查什么？</h2>
+              <p>视频：分析16帧组成的画面片段。</p>
+              <p>声音：分段检查，最多分析前3分钟。</p>
+              <p>描述：标记值得核实的表达。</p>
+              <p class="muted">
+                照片：分别检查整图生成和局部编辑。不同检测项可能有冲突，不能合成一个诈骗概率。中文老人声音和新生成器仍需持续验证。
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section id="contacts" hidden>
+        <h1>联系我的家人</h1>
+        <p>请与家人当面确认号码后保存。不要填写可疑消息提供的号码。</p>
+        <form id="contact-form" class="card">
+          <label class="field"
+            >家人称呼<input
+              id="person"
+              maxlength="30"
+              placeholder="例如：女儿小林"
+              required /></label
+          ><label class="field"
+            >常用电话号码<input
+              id="phone"
+              type="tel"
+              maxlength="25"
+              required /></label
+          ><button class="primary">保存到这台设备</button>
+        </form>
+        <div id="contact-list"></div>
+        <p>
+          号码仅存于当前浏览器，不同步到服务器。清理浏览器数据后会丢失。手机点击后交给系统拨号，可能需要再次确认。
+        </p>
+      </section>
+      <section id="practice" hidden>
+        <h1>一起练习，不着急</h1>
+        <article class="card" id="quiz"></article>
+      </section>
+      <section id="history" hidden>
+        <h1>我的核验记录</h1>
+        <div id="records"></div>
+      </section>
+      <section id="result" hidden></section>
+      <footer>
+        亲安 · 多模态反诈核验 <span>研究辅助工具 · 原始分数不是真实性保证</span>
+      </footer>
+    </main>
+    <script src="/app.js"></script>
+    <script src="/examples.js"></script>
+  </body>
+</html>

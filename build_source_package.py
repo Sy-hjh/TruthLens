@@ -1,0 +1,29 @@
+"""Create a reviewable source bundle, excluding private/runtime/large model data."""
+import bootstrap,json,zipfile,hashlib
+from pathlib import Path
+ROOT=bootstrap.ROOT
+
+def main():
+ target=ROOT/'submission/亲安_参赛源码包.zip';items=[]
+ for path in ROOT.iterdir():
+  if path.is_file() and (path.suffix in ('.py','.ps1','.cmd','.md','.txt') or path.name in ('.gitignore','.env.example','team.json')):items.append(path)
+ for folder in ('backend','web','frontend','frontend-next','vendor','docs','release'):
+  for path in (ROOT/folder).rglob('*'):
+   if not path.is_file() or any(x in path.parts for x in ('node_modules','__pycache__','.git')) or path.suffix in ('.pyc','.tsbuildinfo'):continue
+   if path.suffix.lower() in ('.safetensors','.onnx','.pth') or (path.suffix=='.pt' and folder!='release'):continue
+   items.append(path)
+ for path in (ROOT/'data/demo').iterdir():
+  if path.suffix in ('.mp3','.json'):items.append(path)
+ # Public benchmark summaries only; no original images, videos or per-user rows.
+ public=json.loads((ROOT/'docs/benchmarks.json').read_text(encoding='utf-8'))['reports']
+ with zipfile.ZipFile(target,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as archive:
+  for path in sorted(set(items)):archive.write(path,'qinan/'+path.relative_to(ROOT).as_posix())
+  for name,value in public.items():archive.writestr('qinan/reports/'+name,json.dumps(value,ensure_ascii=False,indent=2))
+  for name in ('delivery-verification.json','deployment-http.json','advisor-smoke.json','demo-video-check.json'):
+   archive.write(ROOT/'reports'/name,'qinan/reports/'+name)
+ with zipfile.ZipFile(target) as archive:
+  names=archive.namelist();assert not any('/runtime/' in n or '/node_modules/' in n or 'user-regression' in n or 'cases.sqlite' in n or n.endswith('.mp4') for n in names)
+  assert archive.testzip() is None
+ manifest=dict(file=target.name,bytes=target.stat().st_size,sha256=hashlib.sha256(target.read_bytes()).hexdigest(),files=len(names),excluded='Private images, contacts, history DB, raw training/test media, node_modules, large pretrained weights; no public publishing performed.')
+ (ROOT/'submission/源码包校验.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8');print(manifest)
+if __name__=='__main__':main()

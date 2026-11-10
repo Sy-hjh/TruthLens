@@ -1,0 +1,13 @@
+{
+  "checks": {
+    "held-out generators gain >= 0.03 with CI above 0": true,
+    "FF++ test drop <= 0.01": true,
+    "DFDC drop <= 0.02": true
+  },
+  "deploy": true,
+  "rule": {
+    "min_gain_heldout": 0.03,
+    "max_drop_ffpp_test": 0.01,
+    "max_drop_dfdc": 0.02
+  }
+}

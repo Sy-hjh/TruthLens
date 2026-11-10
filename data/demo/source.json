@@ -1,0 +1,44 @@
+{
+  "provider": "Microsoft Edge TTS via edge-tts",
+  "voice": "zh-CN-XiaoxiaoNeural",
+  "label": "all synthetic; fictional anti-fraud simulations; not real impersonation",
+  "scripts": {
+    "family-simulation": "这是反诈模拟演示。有人在视频里声称是您的孙子，说出了事故，需要马上转账交手术费，还要求不要告诉其他家人。请暂停转账，通过提前保存的常用号码核实。",
+    "expert-simulation": "这是反诈模拟演示。有人在视频里冒充专家，声称一种产品保证治好疾病，投资还能保本翻倍，并催您立即付款。请先核实身份和宣传依据。",
+    "normal-synthetic-control": "这是普通内容的合成语音对照。奶奶您好，今天下午我们一起去公园散步，晚上回来吃饭，不涉及转账和验证码。",
+    "guidance-contact-family": "核验已经完成。请注意，这份报告不能确认对方身份。请先不要转账，也不要提供验证码，再拨打提前保存的家人常用号码，独立核实。",
+    "guidance-edited-image": "这张照片发现了需要核实的局部编辑线索。这不是已经证实的修改事实。请核实原始来源，不要仅凭照片决定转账。",
+    "guidance-ai-image": "这张照片发现了需要核实的整图生成线索。请核实原始来源，不要仅凭照片决定转账。",
+    "guidance-inconclusive": "目前没有取得明确的核验线索。这不代表内容真实，也不能确认对方身份。请通过提前保存的家人常用号码继续核实。"
+  },
+  "artifacts": {
+    "expert-simulation.mp3": {
+      "sha256": "782a05a40102caf911d67a484c78984c2b833b4b4a76be9577e2350ca630389d",
+      "bytes": 96192
+    },
+    "family-simulation.mp3": {
+      "sha256": "096feacd7d3b9bfef960cf10392e520917eacb11187beebf13065bcc1b611d5a",
+      "bytes": 103824
+    },
+    "guidance-ai-image.mp3": {
+      "sha256": "3ee677ad55009df3fbd17d17751515c22bcf2e5fb2776911f575fac6c9832e92",
+      "bytes": 58032
+    },
+    "guidance-contact-family.mp3": {
+      "sha256": "9e20ca1a6cd257300584ed443d697d95f5fe82f4beb03f37c1920aec74934104",
+      "bytes": 89424
+    },
+    "guidance-edited-image.mp3": {
+      "sha256": "63de0b299db0fcff9a1ec3167b740899ce7ead6790f93395b1cdaf0b63894b7b",
+      "bytes": 75744
+    },
+    "guidance-inconclusive.mp3": {
+      "sha256": "cf6646e3aa13493f31ed6c60ca950f405f4311e179162ef2b11dd2b4a5221190",
+      "bytes": 76176
+    },
+    "normal-synthetic-control.mp3": {
+      "sha256": "dfee19a550530f5be8850d52f431f139171dbd3305311d99e18de46d2bf12f42",
+      "bytes": 70992
+    }
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "summary": "8份材料链路检查通过（含预期失败）；23项自动规则/恢复检查通过。",
+  "checks": [
+    {
+      "name": "family-simulation.mp3",
+      "status": "completed",
+      "seconds": 10.74,
+      "modules": {
+        "audio": {
+          "status": "completed",
+          "score": null,
+          "source": {
+            "repo": "eliya/forensics_0.3B_xlsr_wild_deepfake_classifier",
+            "version": "xlsr-wild-2026-cn-diagnostic-v1"
+          }
+        }
+      },
+      "phrases": 3
+    },
+    {
+      "name": "normal-synthetic-control.mp3",
+      "status": "completed",
+      "seconds": 2.88,
+      "modules": {
+        "audio": {
+          "status": "completed",
+          "score": null,
+          "source": {
+            "repo": "eliya/forensics_0.3B_xlsr_wild_deepfake_classifier",
+            "version": "xlsr-wild-2026-cn-diagnostic-v1"
+          }
+        }
+      },
+      "phrases": 0
+    },
+    {
+      "name": "0.wav",
+      "status": "completed",
+      "seconds": 2.26,
+      "modules": {
+        "audio": {
+          "status": "completed",
+          "score": null,
+          "source": {
+            "repo": "eliya/forensics_0.3B_xlsr_wild_deepfake_classifier",
+            "version": "xlsr-wild-2026-cn-diagnostic-v1"
+          }
+        }
+      },
+      "phrases": 0
+    },
+    {
+      "name": "known-real.mp4",
+      "status": "completed",
+      "seconds": 7.02,
+      "modules": {
+        "video": {
+          "status": "completed",
+          "score": 0.13931089811193625,
+          "source": {
+            "repo": "亲安双时序人脸核验 / X-CLIP + VideoMAE",
+            "version": "qinan-video-fusion-r1-20261111"
+          }
+        },
+        "audio": {
+          "status": "failed",
+          "score": null,
+          "source": null
+        }
+      },
+      "phrases": 0
+    },
+    {
+      "name": "known-fake.mp4",
+      "status": "completed",
+      "seconds": 8.04,
+      "modules": {
+        "video": {
+          "status": "completed",
+          "score": 0.336175412489226,
+          "source": {
+            "repo": "亲安双时序人脸核验 / X-CLIP + VideoMAE",
+            "version": "qinan-video-fusion-r1-20261111"
+          }
+        },
+        "audio": {
+          "status": "failed",
+          "score": null,
+          "source": null
+        }
+      },
+      "phrases": 0
+    },
+    {
+      "name": "engineering-image.png",
+      "status": "completed",
+      "seconds": 2.31,
+      "modules": {
+        "image": {
+          "status": "completed",
+          "score": 0.9977499842643738,
+          "source": {
+            "repo": "Ateeqq/ai-vs-human-image-detector",
+            "revision": "60e82406916921b823616bee33397baab38af3f0",
+            "license": "apache-2.0",
+            "files": [
+              "README.md",
+              "config.json",
+              "model.safetensors",
+              "preprocessor_config.json"
+            ],
+            "verified_sha256": {
+              "model.safetensors": "ab0b8cad7462a047ff4e2888cb4f11b1abe568d73ce07a2649a3f1541f73675f"
+            }
+          }
+        },
+        "tamper": {
+          "status": "completed",
+          "score": 0.5035507678985596,
+          "source": {
+            "repo": "grip-unina/TruFor",
+            "revision": "ae54475df6f41a491d7615100feb19263dec13f7",
+            "license": "author nonprofit research license; see vendor/TruFor/TruFor_train_test/LICENSE.txt",
+            "archive_md5": "7bee48f3476c75616c3c5721ab256ff8"
+          }
+        }
+      },
+      "phrases": 0
+    },
+    {
+      "name": "broken.png",
+      "status": "failed",
+      "seconds": 0.21,
+      "modules": {},
+      "phrases": 0
+    },
+    {
+      "name": "silent.wav",
+      "status": "completed",
+      "seconds": 0.23,
+      "modules": {
+        "audio": {
+          "status": "failed",
+          "score": null,
+          "source": null
+        }
+      },
+      "phrases": 0
+    }
+  ],
+  "raw_upload_cleanup": true,
+  "storage_isolated": true,
+  "scope": "Engineering acceptance, not an accuracy benchmark. Browser native automation stopped because URL could not be reliably confirmed; desktop appearance, printing and actual mobile dialing remain user review items.",
+  "source_report_sha256": "199543d620c5371c032ef764d3b9339d5c280891a6a63adbbe894b5f45eb9d2e"
+}

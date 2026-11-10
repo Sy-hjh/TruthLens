@@ -1,0 +1,62 @@
+{
+  "model_name": "Car Damage Photo Integrity Detector v9 (localization-first)",
+  "architecture": {
+    "class": "LocNet (model_v9.py)",
+    "encoder": "ConvNeXt-Tiny, timm 'convnext_tiny.fb_in22k', features_only (strides 4/8/16/32; channels 96/192/384/768); ImageNet-22k init",
+    "noise_stream": "fixed SRM high-pass filters (9 ch, input*255, clamp +-3, /3) + learnable 5x5 conv (6 ch); conv stages at strides 2/4/8/16 (48/64/96/128 ch)",
+    "decoder": "FPN/U-Net: 1x1 laterals to 128 ch, fused with noise features at strides 16/8/4/2",
+    "head": "1x1 conv -> 1-channel edit logit map at stride 2",
+    "num_parameters": 29427715
+  },
+  "input": {
+    "format": "RGB, float in [0,1] (uint8/255); ImageNet mean/std normalisation is applied inside the model for the encoder only",
+    "resolution": "full resolution, single pass (no tiling, no resizing); reflect-pad right/bottom to a multiple of 32, then crop the logit map back to ceil(H/2) x ceil(W/2)"
+  },
+  "scoring": {
+    "top_k": 256,
+    "rule": "image score = mean of the 256 largest stride-2 logits of the edit map (about 1,024 full-res pixels); flagged iff score >= threshold",
+    "heatmap": "sigmoid(logits) upsampled bilinearly to the input size"
+  },
+  "thresholds": {
+    "protocol": "true 2% false-alarm rate on the 600 real eval photos (CarDD val/test), set separately for each condition: threshold = 12th-highest real score",
+    "jpeg_q90": {
+      "condition": "every photo re-saved as JPEG quality 90 before scoring",
+      "fpr_2pct": 4.19133186340332,
+      "fpr_1pct": 5.055537223815918,
+      "fpr_5pct": 3.0631675720214844,
+      "catch_rate_at_2pct": 0.853,
+      "auroc": 0.948
+    },
+    "upload": {
+      "condition": "resized to max side 1600 px, then JPEG quality 85",
+      "fpr_2pct": 4.193077087402344,
+      "fpr_1pct": 5.969278335571289,
+      "fpr_5pct": 2.9893715381622314,
+      "catch_rate_at_2pct": 0.816,
+      "auroc": 0.933
+    },
+    "native": {
+      "condition": "files scored as-is; NOT a fair comparison (edited and real eval photos had different file formats), use jpeg_q90 or upload",
+      "fpr_2pct": 0.34003257751464844,
+      "fpr_1pct": 1.3551121950149536,
+      "fpr_5pct": -1.3735458850860596
+    }
+  },
+  "training": {
+    "checkpoint": "best.pt",
+    "step": 16000,
+    "total_steps": 20000,
+    "batch_size": 8,
+    "crop": 512,
+    "optimizer": "AdamW (encoder lr 1e-4, rest 4e-4, weight_decay 0.02), 600-step warmup + cosine",
+    "loss": "pixel BCE (pos_weight 3) + Dice on the stride-2 map + 0.5 * image BCE on the top-256 score",
+    "data": "CarDD train-split photos with SD1.5 / SDXL / Kandinsky 2.2 / LaMa inpaints (exact pixel masks), synthetic tiny paste-back edits, and genuine photos; JPEG/blur/resize augmentation applied to reals and fakes alike",
+    "selection": "best of (TPR@2%FPR + 0.01*AUROC) on a held-out CarDD-train validation split"
+  },
+  "limitations": [
+    "Not yet at 90% catch at 2% false alarms.",
+    "Small edits (0.5-3% of the photo) are the weakest case: 67.8% (JPEG q90) / 61.3% (upload).",
+    "Fully AI-generated (text-to-image) scenes: 45% (JPEG q90) / 41% (upload); v7 is much better there (98-99%).",
+    "Triage signal for human review, not proof of editing or fraud."
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "_id": "6a96cf22b4fba9ea5624b783",
+  "id": "eliya/forensics_0.3B_xlsr_wild_deepfake_classifier",
+  "private": false,
+  "pipeline_tag": "audio-classification",
+  "library_name": "pytorch",
+  "tags": [
+    "pytorch",
+    "xlsr-aasist-deepfake-detector",
+    "audio-classification",
+    "deepfake-detection",
+    "anti-spoofing",
+    "speech",
+    "aasist",
+    "wav2vec2",
+    "xls-r",
+    "generalization",
+    "multilingual",
+    "arxiv:2111.09296",
+    "arxiv:2110.01200",
+    "arxiv:2111.04433",
+    "arxiv:2408.06922",
+    "arxiv:2507.21463",
+    "base_model:facebook/wav2vec2-xls-r-300m",
+    "base_model:finetune:facebook/wav2vec2-xls-r-300m",
+    "license:cc-by-nc-4.0",
+    "region:us"
+  ],
+  "downloads": 93,
+  "likes": 1,
+  "modelId": "eliya/forensics_0.3B_xlsr_wild_deepfake_classifier",
+  "author": "eliya",
+  "sha": "0cbc87b3fbd683ff8c8c961bcf244a8d5f1bcf02",
+  "lastModified": "2026-09-25T11:27:12.000Z",
+  "gated": false,
+  "disabled": false,
+  "model-index": null,
+  "config": {
+    "architectures": [
+      "DeepfakeDetector"
+    ],
+    "model_type": "xlsr-aasist-deepfake-detector"
+  },
+  "cardData": {
+    "license": "cc-by-nc-4.0",
+    "pipeline_tag": "audio-classification",
+    "library_name": "pytorch",
+    "language": [
+      "multilingual"
+    ],
+    "base_model": "facebook/wav2vec2-xls-r-300m",
+    "tags": [
+      "audio-classification",
+      "deepfake-detection",
+      "anti-spoofing",
+      "speech",
+      "aasist",
+      "wav2vec2",
+      "xls-r",
+      "generalization"
+    ]
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes"
+    },
+    {
+      "rfilename": "README.md"
+    },
+    {
+      "rfilename": "checkpoint_epoch_4.pt"
+    },
+    {
+      "rfilename": "checkpoint_epoch_4.safetensors"
+    },
+    {
+      "rfilename": "config.json"
+    },
+    {
+      "rfilename": "inference.py"
+    },
+    {
+      "rfilename": "model.py"
+    },
+    {
+      "rfilename": "requirements.txt"
+    }
+  ],
+  "spaces": [],
+  "createdAt": "2026-09-01T13:12:02.000Z",
+  "usedStorage": 5056038814
+}
