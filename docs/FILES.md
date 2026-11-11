@@ -189,3 +189,6 @@ TruFor定位和问答组件已从老人主页面撤下。旧代码保留供研�
 | test_audio_isolation.py | 语音不进入文字分析、截图引文不编造等回归测试 |
 
 vendor/verispoof/runtime_code保留作者算法和本地离线适配；vendor/verispoof根目录保留原始源码/卡/NOTICE；vendor/chat-ocr保留许可证。vendor/pella3为调研候选资料，未作为当前模型启用。
+
+
+新增web/src/views/DetectionEvidence.tsx：实际图片视图、视频帧、声学窗口图表与可展开数值表；不提供伪造定位图。install_chat_language.py：固定版本更大文本模型下载、断点续传、SHA验证。当前行为以根目录使用说明与release/release.json为准。

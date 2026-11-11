@@ -8,6 +8,18 @@ from backend import storage
 from backend.app import app
 from backend.chat_analysis import validate
 class IsolationTests(unittest.TestCase):
+ def test_source_ids_cannot_invent_original_text(self):
+  from backend.chat_analysis import validate_selection,clauses
+  text='我是公安局民警，案情保密，不能告诉\n任何人。';units=clauses(text)
+  result=validate_selection('{"signals":[{"category":"identity","clause_ids":[0]},{"category":"secrecy","clause_ids":[2]}]}',units,text)
+  self.assertEqual(len(result),2);self.assertTrue(all(s['quote'] in text for s in result))
+  self.assertEqual(validate_selection('{"signals":[{"category":"identity","clause_ids":[1]}]}',units,text),[])
+  with self.assertRaises(ValueError):validate_selection('{"signals":[{"category":"identity","clause_ids":[99]}]}',units,text)
+ def test_ocr_line_wrapping_does_not_destroy_exact_evidence(self):
+  result=validate('{"signals":[{"category":"identity","quote":"我是XX市公安局民警"},{"category":"secrecy","quote":"案情保密，不能告诉任何人"}]}','我是XX市公安局民警\n配合调查，案情保密，不能告诉\n任何人')
+  self.assertEqual(len(result),2);self.assertIn('\n',result[1]['quote'])
+ def test_quote_alignment_never_permits_paraphrased_accusation(self):
+  with self.assertRaises(ValueError):validate('{"signals":[{"category":"identity","quote":"我是警察"}]}','我是公安局民警')
  def test_cascade_keeps_independent_thresholds_and_skips_positive_primary(self):
   from backend.modern_voice import predict
   from types import SimpleNamespace

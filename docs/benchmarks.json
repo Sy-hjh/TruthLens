@@ -2836,6 +2836,46 @@
         "basis": "Supplementary threshold has 0/38 real false positives in each validation channel; counteracts observed generic TTS misses; evaluated separately as observed-set follow-up, no fresh-test claim."
       },
       "source_report_sha256": "123939028160156d859eeebd65c3da0e88f8b808727021e144cfed7a39ed9d66"
+    },
+    "image-review-policy.json": {
+      "protocol": "Observed-set policy recheck, not new accuracy test. No weight or score changes. Retain sensitivity boundary .007; require .5 for strong alert; intermediate outputs abstain. .5 is a conservative review policy, not a newly calibrated probability.",
+      "binary_at_alert_threshold": {
+        "n": 634,
+        "real_count": 317,
+        "fake_count": 317,
+        "false_positives": 0,
+        "false_negatives": 16,
+        "real_false_positive_rate": 0.0,
+        "fake_miss_rate": 0.050473186119873815,
+        "balanced_accuracy": 0.9747634069400631,
+        "accuracy": 0.9747634069400631
+      },
+      "triage": {
+        "n": 634,
+        "low": 310,
+        "uncertain": 23,
+        "high": 301
+      },
+      "previous_threshold": 0.007,
+      "alert_threshold": 0.5,
+      "source_report_sha256": "2cb2a8d210a68155cacaca5c5a5149ff549c049e23c4eafeee675a1f1e749582"
+    },
+    "chat-semantic-review.json": {
+      "scope": "Observed scenario category coverage, final identity/source guards reapplied; not general accuracy or independent quote-semantic precision.",
+      "passed": 10,
+      "completed": 10,
+      "planned": 10,
+      "post_validation_rechecked": true,
+      "source_report_sha256": "a3b6da4ac98f57b559e0cfe143a35c62ac0c9facc3705858ec1c398cf46bf204"
+    },
+    "report-trace-check.json": {
+      "scope": "Trace consistency, not detection accuracy; no private filenames or media exported.",
+      "image_reports_checked": 2,
+      "image_mean_logits_match": true,
+      "video_points": 8,
+      "video_mean_matches": true,
+      "audio_time_ranges_valid": true,
+      "source_report_sha256": "ea3bef64856c2746cccd96c74e56328020a5759c12ccba426c0c5e8e93486dc9"
     }
   }
 }

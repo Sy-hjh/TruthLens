@@ -30,3 +30,14 @@
 - tmp/pdfs/voice-doc-contact.png：更新后的8页PDF渲染检查。
 
 旧audio-mandarin-check为通用TTS历史诊断，不再作为当前克隆声能力依据。没有重新取得用户原始私有录音，不宣称已重测它。小样本、未知上游重叠和局部P图漏检仍明确保留。
+
+
+## 本轮用户误报、原文对齐与图表验收
+
+- reports/backend-checks-final.json：32项后端/恢复检查；web/test-signals.mjs：9项边界检查。
+- reports/report-trace-check.json：实际2份图像的三视图汇总与logit严格一致，视频8点均值一致，音频窗口时长有效。
+- reports/image-review-policy.json：在已观察634图上复核强提醒边界和23图不确定区；不冒充新独立测试。
+- reports/chat-semantic-review.json：10类已观察场景类别覆盖检查，不测通用准确率，也不能证明每条短引文语义充分。报告提供原始上下文并增加身份片段约束。
+- 用户原失败记录保留OCR并在浏览器重新提交；实拍图新报告不再强提醒，但仅为不确定，不宣称已识别真实。合成图仍为较强输出。
+
+以上是功能及策略修正，没有证明整套图片模型已达到真实业务可靠性。旧低阈值和文字小模型失败记录保留。

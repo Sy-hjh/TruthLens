@@ -6,7 +6,7 @@
 | [VeriSpoof-Plus](https://huggingface.co/AustinXiao/VeriSpoof-Plus) | models/verispoof约5.94GiB | 当前纯声学主模型，作者卡2026-11-04；固定似然比阈值0 |
 | [XLS-R/AASIST](https://huggingface.co/eliya/forensics_0.3B_xlsr_wild_deepfake_classifier) | models/audio-forensics约1.18GiB | 主模型未检出时中间5秒复查，阈值0.70；也作为冻结编码器训练头 |
 | [RapidOCR](https://github.com/RapidAI/RapidOCR) | runtime/ocr-packages，3.10.0包自带PP-OCRv6 | 聊天截图本机提字，不是语音转写 |
-| [Qwen3-0.6B](https://huggingface.co/Qwen/Qwen3-0.6B) | models/advisor，沿用已下载权重 | 仅分析截图文字中的要求、引用原文 |
+| [Qwen3-1.7B](https://huggingface.co/Qwen/Qwen3-1.7B) | models/chat-language，约4.08GB | 仅分析截图文字中的要求，选择原文片段编号；旧0.6B保留为历史实验 |
 | [GenD_CLIP_L_14](https://huggingface.co/yermandy/GenD_CLIP_L_14) | models/gend-clip，约1.22GB权重 | 当前人脸换脸画面检测 |
 | [Smaug](https://huggingface.co/abacusai/Smaug-AI-Image-Detector) | models/smaug，约878MB权重 | 当前整图生成检测，不代表局部P图 |
 | [MINDS14](https://huggingface.co/datasets/PolyAI/minds14)＋明确标注的通用TTS | 中文同文本60真/60假旧诊断 | 补充功能与领域检查，不代替现代参考声音克隆测试 |

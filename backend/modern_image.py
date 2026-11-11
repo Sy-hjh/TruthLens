@@ -19,6 +19,6 @@ def predict(image):
    import logging
    logging.error('Image worker failed: %s',result.stderr[-5000:])
    raise RuntimeError('图片模型未能完成检查，请稍后重试。')
-  value=json.loads(result.stdout.strip().splitlines()[-1])['score']
+  output=json.loads(result.stdout.strip().splitlines()[-1]);value=output['score']
   if not isinstance(value,(int,float)) or not math.isfinite(value) or not 0<=value<=1:raise RuntimeError('Invalid image score')
- return dict(status='completed',score=value,threshold=info['threshold'],source=dict(repo='abacusai/Smaug-AI-Image-Detector',version=info['version']),note='检查整张图片的生成信号，不可靠判断局部P图、人物身份或诈骗意图。')
+ return dict(status='completed',score=value,threshold=info['threshold'],sensitivity_threshold=info.get('sensitivity_threshold'),views=output.get('views',[]),aggregation=output.get('aggregation'),source=dict(repo='abacusai/Smaug-AI-Image-Detector',version=info['version']),note='三视图平均logit。图表只是模型输出，不是已证实的伪造位置或真实性概率；局部P图可能漏检。')

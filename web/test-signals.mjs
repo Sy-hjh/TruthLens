@@ -7,4 +7,6 @@ assert.equal(moduleSignal({status:'failed',score:.99}).level,'unavailable');
 assert.equal(moduleSignal({status:'completed',score:.6,threshold:.7}).level,'uncertain');
 assert.equal(moduleSignal({status:'completed',segments:[{start:0,score:.1},{start:5,score:.8}]}).flagged,1);
 assert.equal(moduleSignal({status:'completed',segments:[]}).level,'unavailable');
-console.log('7 signal threshold checks passed');
+assert.equal(moduleSignal({status:'completed',score:.018737,threshold:.5,sensitivity_threshold:.007}).level,'uncertain');
+assert.equal(moduleSignal({status:'completed',score:.99784,threshold:.5,sensitivity_threshold:.007}).level,'alert');
+console.log('9 signal threshold checks passed');

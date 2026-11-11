@@ -24,8 +24,14 @@ def main():
  device='cuda' if torch.cuda.is_available() else 'cpu'
  st=SentenceTransformer(str(ROOT/'models/smaug'),local_files_only=True,device=device,config_kwargs={'audio_config':None},model_kwargs={'torch_dtype':torch.bfloat16 if device=='cuda' else torch.float32})
  model=module.SmaugImageDetect(st)
- with Image.open(sys.argv[1]) as image:value=model(image.convert('RGB'),batch_size=3)
- print(json.dumps({'score':value}),flush=True)
+ with Image.open(sys.argv[1]) as image:
+  crops=module.views(image.convert('RGB'),3)
+  with torch.inference_mode():
+   logits=st.encode([{'image':crop} for crop in crops],batch_size=3,convert_to_tensor=True).float().view(-1)
+   value=torch.sigmoid(logits.mean()).item();scores=logits.sigmoid().tolist()
+  axis='横向' if image.width>=image.height else '纵向'
+  trace=[dict(label=axis+label,score=float(score),logit=float(logit)) for label,score,logit in zip(['起始视图','中央视图','末端视图'],scores,logits.tolist())]
+ print(json.dumps({'score':value,'views':trace,'aggregation':'sigmoid(mean(view_logits))'}),flush=True)
 if __name__=='__main__':
  try:main()
  except Exception:

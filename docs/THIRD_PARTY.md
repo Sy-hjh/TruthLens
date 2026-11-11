@@ -69,3 +69,5 @@ TruFor引用：Guillaro等，TruFor: Leveraging all-round clues for trustworthy 
 - [RapidOCR](https://github.com/RapidAI/RapidOCR)：3.10.0固定PyPI包，自带PP-OCRv6模型；Apache-2.0与MODEL_LICENSES.md保留vendor/chat-ocr。检测时纯本机。
 - [Qwen3-0.6B](https://huggingface.co/Qwen/Qwen3-0.6B)：沿用固定版本Apache-2.0本地权重，仅用于聊天截图文字要求解读；不识别声音、不确认身份。
 - XLS-R/AASIST作者权重及原许可证继续保留，当前只对声学主模型阴性复查，阈值0.70；版本与SHA见release/release.json。基础数据/权重不冒称团队原创。
+
+- 当前截图理解：[Qwen3-1.7B](https://huggingface.co/Qwen/Qwen3-1.7B)，固定70d244cc86ccca08cf5af4e1e306ecf908b1ad5e，Apache-2.0，本地两片safetensors严格校验。旧0.6B为历史实验；新版只选择原文编号，不把文字分析包装成AI作者识别。

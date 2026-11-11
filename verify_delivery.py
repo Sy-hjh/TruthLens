@@ -14,6 +14,7 @@ def main():
  with tempfile.TemporaryDirectory(dir=ROOT/'runtime') as tmp,patch.object(storage,'ROOT',Path(tmp)):
   client=TestClient(app)
   def submit(path,expected=(),failed=False):
+   print('Checking upload:',Path(path).name,flush=True)
    with Path(path).open('rb') as f:r=client.post('/api/analyze',files={'file':(Path(path).name,f)})
    assert r.status_code==202,r.text;key=r.json()['job_id'];start=time.monotonic()
    for _ in range(1600):

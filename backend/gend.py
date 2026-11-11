@@ -22,14 +22,15 @@ def load():
  model=GenD();model.load_state_dict(load_file(str(path)),strict=True);device='cuda' if torch.cuda.is_available() else 'cpu';processor=CLIPImageProcessor(**json.loads((ROOT/'vendor/gend/clip-preprocessor_config.json').read_text()))
  return model.to(device).eval(),processor,device
 
-def score(model,processor,device,path):
+def score(model,processor,device,path,details=False):
  from .media import sample_video
  from .faces import face_views
  _,frames=sample_video(path,8);images,_=face_views([im for _,im in frames],margin=1.3);out=[]
  for i in range(0,len(images),2):
   x=processor(images=images[i:i+2],return_tensors='pt')['pixel_values'].to(device)
   with torch.inference_mode():out.extend(model(x).softmax(-1)[:,1].cpu().tolist())
- return sum(out)/len(out)
+ value=sum(out)/len(out)
+ return (value,[dict(start=float(t),score=float(s),threshold=.5) for (t,_),s in zip(frames,out)]) if details else value
 
 def configured():
  p=ROOT/'models/active-video.json'
@@ -41,8 +42,8 @@ def predict(path):
  if info.get('approved') is not True:raise RuntimeError('Video release is not approved')
  with lock:
   model,processor,device=load()
-  try:value=score(model,processor,device,path)
+  try:value,moments=score(model,processor,device,path,details=True)
   finally:
    del model
    if torch.cuda.is_available():torch.cuda.empty_cache()
- return dict(status='completed',score=value,threshold=info['threshold'],source=dict(repo='yermandy/GenD_CLIP_L_14',version=info['version']),note='固定8帧、人脸裁剪1.3倍；帧分数取均值。只核验人脸操纵线索，不确认人物身份，不覆盖所有生成视频。')
+ return dict(status='completed',score=value,moments=moments,threshold=info['threshold'],source=dict(repo='yermandy/GenD_CLIP_L_14',version=info['version']),note='固定8帧、人脸优先裁剪1.3倍，个别未检出帧回退整帧；帧分数取均值。这是抽帧分类，不是连续时序或口型同步检测，不覆盖所有生成视频。')
