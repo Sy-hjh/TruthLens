@@ -14,6 +14,10 @@ def main():
    items.append(path)
  for path in (ROOT/'data/demo').iterdir():
   if path.suffix in ('.mp3','.json'):items.append(path)
+ # Small locally trained experimental classifier, not large upstream encoders.
+ for name in ('config.json','weights.npz'):
+  path=ROOT/'models/text-patterns'/name
+  if path.exists():items.append(path)
  # Public benchmark summaries only; no original images, videos or per-user rows.
  public=json.loads((ROOT/'docs/benchmarks.json').read_text(encoding='utf-8'))['reports']
  # Never package a partial evaluation after an interrupted experiment.
@@ -27,6 +31,9 @@ def main():
   for name in ('delivery-verification.json','deployment-http.json','voice-browser-acceptance.json','chat-pipeline-check.json','demo-video-check.json','backend-checks-final.json','report-trace-check.json','chat-user-fixed-acceptance.json'):
    if name in public:continue
    archive.write(ROOT/'reports'/name,'qinan/reports/'+name)
+  for name in ('text-pattern-training.json','text-semantic-comparison.json','audio-nuisance-check.json','text-upgrade-acceptance.json'):
+   path=ROOT/'reports'/name
+   if path.exists():archive.write(path,'qinan/reports/'+name)
  with zipfile.ZipFile(target) as archive:
   names=archive.namelist();assert not any('/runtime/' in n or '/node_modules/' in n or 'user-regression' in n or 'cases.sqlite' in n or n.endswith('.mp4') for n in names)
   assert len(names)==len(set(names)),'Duplicate archive paths'

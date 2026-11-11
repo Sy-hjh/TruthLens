@@ -71,3 +71,9 @@ TruFor引用：Guillaro等，TruFor: Leveraging all-round clues for trustworthy 
 - XLS-R/AASIST作者权重及原许可证继续保留，当前只对声学主模型阴性复查，阈值0.70；版本与SHA见release/release.json。基础数据/权重不冒称团队原创。
 
 - 当前截图理解：[Qwen3-1.7B](https://huggingface.co/Qwen/Qwen3-1.7B)，固定70d244cc86ccca08cf5af4e1e306ecf908b1ad5e，Apache-2.0，本地两片safetensors严格校验。旧0.6B为历史实验；新版只选择原文编号，不把文字分析包装成AI作者识别。
+
+## 本轮文字训练与论文
+- ScamGen：作者Mendeley公开文本，https://data.mendeley.com/datasets/dkypjhkmgb/1 ，CC-BY-4.0。只取指定文本成员，按作者Hard划分，模型与报告保留来源署名。
+- google-bert/bert-base-chinese：官方固定8f23c25b06e129b6c986331a13d8d025a92cf0ea，Apache-2.0，仅冻结语义对比，未上线。
+- quanshiyun/anti_fraud_dataset：固定6a53ae5d5af88b4f01408396d9a954dbeebb92c4，作者卡GPL-3.0，仅下载待审计，未参与本轮训练。
+- 用户提供的两篇CAJ仅本地研究阅读，转换副本在runtime/papers，不加入比赛源码包。

@@ -54,7 +54,7 @@ def validate(raw,text):
   if category=='secrecy' and not re.search(r'家人|父母|儿女|孩子|爸|妈|老伴|亲友|亲人|警察|报警|核实|确认|联系|打电话|回拨|客服|银行|官方',quote) and not (re.search(r'案情|案件|调查',text) and re.search(r'保密|告诉任何人|告诉别人',''.join(quote.split()))):continue
   if (category,quote) not in {(x['category'],x['quote']) for x in result}:result.append(dict(category=category,title=CATEGORIES[category],quote=quote))
  return result
-def analyze(text):
+def _analyze(text):
  from .detector import lock
  import torch
  from transformers import AutoTokenizer,AutoModelForCausalLM
@@ -98,3 +98,24 @@ def analyze(text):
  for item in signals:
   start=text.find(item['quote']);item['context']=text[max(0,start-70):min(len(text),start+len(item['quote'])+70)]
  return dict(status='completed',signals=signals,grounding='model selects source clause IDs; program copies original text',note='结合上下文查看模型提取的要求，可能遗漏或分类不当；文字线索不能证明诈骗、身份或图片真伪。',source=dict(repo=source['repo'],revision=source['revision']))
+
+def analyze(text):
+ from .text_patterns import predict
+ pattern=predict(text)
+ try:
+  result=_analyze(text)
+  result['extraction_status']='completed'
+ except Exception:
+  import logging
+  logging.exception('Grounded quote extraction unavailable; retaining independent trained pattern result')
+  result=dict(status='completed' if pattern['status']=='completed' else 'unavailable',signals=[],extraction_status='unavailable',note='原话分析暂不可用，请核对截图。')
+ result['pattern']=pattern
+ categories={s['category'] for s in result['signals']}
+ if {'identity','secrecy'}<=categories:
+  result['summary']='对方声称某种身份，还要求保密或不联系别人，请独立核实。'
+ elif {'money','secrecy'}<=categories:
+  result['summary']='对方要求用钱，还阻止您联系核实，请先暂停操作。'
+ elif result['signals']:
+  result['summary']='对方提出了这些要求，请逐条核实。'
+ else:result['summary']='暂未提取到明确要求，请核对截图文字。'
+ return result
