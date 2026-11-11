@@ -1,7 +1,7 @@
 import DetectionEvidence from './DetectionEvidence';
 import ChatReport from './ChatReport';
 import {useEffect,useState} from 'react';import {downloadReport} from '../api';import type {Report as ReportData} from '../api';import {moduleSignal} from '../signals';
-const names:Record<string,string>={video:'视频画面',audio:'声学合成检测',image:'图片'};
+const names:Record<string,string>={video:'视频抽帧换脸检查',audio:'声学合成检测',image:'图片'};
 type Props={report:ReportData;onContacts:()=>void;onUpdate:(r:ReportData)=>void};
 export default function Report(props:Props){return props.report.scene==='chat'?<ChatReport {...props}/>:<MediaReport {...props}/>};
 function MediaReport({report,onContacts,onUpdate}:{report:ReportData;onContacts:()=>void;onUpdate:(r:ReportData)=>void}){

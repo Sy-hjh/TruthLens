@@ -194,3 +194,5 @@ vendor/verispoof/runtime_code保留作者算法和本地离线适配；vendor/ve
 新增web/src/views/DetectionEvidence.tsx：实际图片视图、视频帧、声学窗口图表与可展开数值表；不提供伪造定位图。install_chat_language.py：固定版本更大文本模型下载、断点续传、SHA验证。当前行为以根目录使用说明与release/release.json为准。
 
 本轮新增文件说明见 [四种分析与本轮使用说明](四种分析与本轮使用说明.md)，论文方法、采纳范围和限制见 [论文阅读与改进说明](论文阅读与改进说明.md)。
+
+图片区域对照、32连续帧实验与采样坐标入口详见 [图片区域与视频时序实测说明](图片区域与视频时序实测说明.md)。`prepare_ftcn_candidate.py`供本地复现实验准备依赖和官方权重，`evaluate_ftcn_candidate.py`只作比较，不会自动上线。

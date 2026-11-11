@@ -77,3 +77,7 @@ TruFor引用：Guillaro等，TruFor: Leveraging all-round clues for trustworthy 
 - google-bert/bert-base-chinese：官方固定8f23c25b06e129b6c986331a13d8d025a92cf0ea，Apache-2.0，仅冻结语义对比，未上线。
 - quanshiyun/anti_fraud_dataset：固定6a53ae5d5af88b4f01408396d9a954dbeebb92c4，作者卡GPL-3.0，仅下载待审计，未参与本轮训练。
 - 用户提供的两篇CAJ仅本地研究阅读，转换副本在runtime/papers，不加入比赛源码包。
+
+## 仅本机研究的时序基线
+[FTCN官方实现](https://github.com/yinglinzheng/FTCN)，ICCV2021，固定853256a888bd5c4879955c06a4c5a666740f91a4。纯张量weights_only加载且严格匹配，安全适配PyTorch构造参数；源代码留runtime，不将缺少明确项目许可的整个仓库重分发。本轮未激活FTCN。其SlowFast部分保留源文件Facebook版权标记。
+[FakeSTormer](https://github.com/10Ring/FakeSTormer)，ICCV2025，源码SnT学术许可；仅阅读与部分权重下载，未运行完整模型。[STALL](https://github.com/OmerBenHayun/STALL)，CVPR2026，仅研究官方资料，未冒称实现。

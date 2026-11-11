@@ -31,7 +31,7 @@ def main():
   for name in ('delivery-verification.json','deployment-http.json','voice-browser-acceptance.json','chat-pipeline-check.json','demo-video-check.json','backend-checks-final.json','report-trace-check.json','chat-user-fixed-acceptance.json'):
    if name in public:continue
    archive.write(ROOT/'reports'/name,'qinan/reports/'+name)
-  for name in ('text-pattern-training.json','text-semantic-comparison.json','audio-nuisance-check.json','text-upgrade-acceptance.json'):
+  for name in ('text-pattern-training.json','text-semantic-comparison.json','audio-nuisance-check.json','text-upgrade-acceptance.json','image-regions-comparison.json','ftcn-contiguous-comparison.json'):
    path=ROOT/'reports'/name
    if path.exists():archive.write(path,'qinan/reports/'+name)
  with zipfile.ZipFile(target) as archive:
