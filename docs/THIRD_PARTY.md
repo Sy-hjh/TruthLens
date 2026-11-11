@@ -1,5 +1,7 @@
 # 复用来源与选择
 
+前半保留历史选型；当前声学与聊天截图见本文最后一节及release/release.json。旧ASR不在当前业务流程启用。
+
 本项目业务页面、任务编排、联系人和报告由当前工程实现；复用已有FastAPI、Transformers、OpenCV、FFmpeg和开源权重，不将整站开源项目直接包装参赛。
 
 | 来源 | 用途 | 许可/限制 |
@@ -57,3 +59,13 @@ TruFor引用：Guillaro等，TruFor: Leveraging all-round clues for trustworthy 
 - [B-Free](https://github.com/grip-unina/B-Free)官方非营利许可、[Detectra](https://huggingface.co/TensorFold/detectra-v1) MIT：局部改图诊断未通过，没有启用。保留作者源码和许可证。
 - [Smaug](https://huggingface.co/abacusai/Smaug-AI-Image-Detector) Apache-2.0模型卡；三视图整图生成候选，使用独立依赖，不执行远程代码；局部修改能力不作保证。
 - 新闻标题、日期与来源链接来自[12321举报中心](https://12321.cn/warn)、中央网信办和民政部公开提示；防范提醒是项目维护的主题提示，不假称自动获得案件全文。
+
+
+## 声学与截图后续版本
+
+- [VeriSpoof-Plus](https://huggingface.co/AustinXiao/VeriSpoof-Plus)：固定revision ef5b12112da17e0949b5e19fe0f9f198c9570fd9，模型卡发布日期2026-11-04；CC-BY-NC-4.0权重，Apache-2.0源码，NOTICE保留。直接声学原生检测，不转写。源码在vendor/verispoof；运行时只允许本地safetensors，禁远程代码。
+- [RVCBench-Cloned-Speech](https://huggingface.co/datasets/Nanboy/RVCBench-Cloned-Speech)：revision 365897b08925e241672731f25bcb5edc5857417f，CC-BY-NC-4.0及各生成器附加条款。数据README与NOTICE在data/clone-bench。本次3910段中文含200真人、3710参考声音克隆，不是自行虚构的合成标签。
+- [Qwen3-ASR-1.7B-hf](https://huggingface.co/Qwen/Qwen3-ASR-1.7B-hf)：revision bcd2b5b7f32b480ab5790554cfa8347f246a14f3，仅用于VeriSpoof匹配的本地架构配置、梅尔声学预处理配置，不下载其转写权重，不做语音转写。
+- [RapidOCR](https://github.com/RapidAI/RapidOCR)：3.10.0固定PyPI包，自带PP-OCRv6模型；Apache-2.0与MODEL_LICENSES.md保留vendor/chat-ocr。检测时纯本机。
+- [Qwen3-0.6B](https://huggingface.co/Qwen/Qwen3-0.6B)：沿用固定版本Apache-2.0本地权重，仅用于聊天截图文字要求解读；不识别声音、不确认身份。
+- XLS-R/AASIST作者权重及原许可证继续保留，当前只对声学主模型阴性复查，阈值0.70；版本与SHA见release/release.json。基础数据/权重不冒称团队原创。

@@ -1,0 +1,15 @@
+{
+  "tokenizer": {
+    "layer_mix": {
+      "n_layers": 25,
+      "n_mix": 2
+    },
+    "d_global": 2048,
+    "d_local": 2048,
+    "frame_stack": 2,
+    "n_frames": 104
+  },
+  "time_marks": 0.8,
+  "window": 128000,
+  "llm_dtype": "bfloat16"
+}

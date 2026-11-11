@@ -116,10 +116,12 @@ def health():
     from .product import available as product_available
 
     models = {
-        k: detector.available(k) for k in ("video", "audio", "image", "asr", "asr_zh")
+        k: detector.available(k) for k in ("video", "audio", "image")
     }
     models["tamper"] = False
     models["product"] = product_available()
+    from .chat_ocr import available as ocr_available
+    models['chat_ocr'] = ocr_available()
     from .advisor import available as advisor_available
     models['advisor'] = advisor_available()
     return {
@@ -128,6 +130,24 @@ def health():
         "scope": "研究辅助核验，不确认身份，不保证真实性",
         "demo_video": all((ROOT/'data/demo'/f'{n}.mp4').exists() for n in ('known-real','known-fake')),
     }
+
+
+@app.post('/api/cases/{key}/chat-text')
+def correct_chat_text(key:str,text:str=Form(...)):
+    if not text.strip() or len(text)>4000:raise HTTPException(422,'请填写1到4000字的截图文字')
+    result=storage.get(key)
+    if not result:raise HTTPException(404,'记录不存在')
+    if result.get('scene')!='chat':raise HTTPException(409,'这个入口只用于聊天截图，不能修改声音检测')
+    from .chat_analysis import analyze as analyze_chat
+    result['ocr']['text']=text
+    try:result['chat_analysis']=analyze_chat(text)
+    except Exception:
+        logging.exception('Corrected chat interpretation')
+        result['chat_analysis']={'status':'unavailable','signals':[],'note':'自动分析暂不可用，请人工核对。'}
+    if not storage.update(result):raise HTTPException(404,'记录已删除')
+    with joblock:
+        if key in jobs:jobs[key]['result']=result
+    return result
 
 
 @app.get("/api/cases")
@@ -183,34 +203,7 @@ def delete_case(key: str):
 
 @app.post("/api/cases/{key}/transcript")
 def correct_transcript(key: str, text: str = Form(...)):
-    if not text.strip() or len(text) > 4000:
-        raise HTTPException(422, "请填写1到4000字的转写内容")
-    result = storage.get(key)
-    if not result:
-        raise HTTPException(404, "记录不存在")
-    transcript = result.setdefault("transcript", {"status": "manual", "raw_text": ""})
-    transcript.setdefault("corrections", []).append(
-        {
-            "from": transcript.get("text", ""),
-            "to": text,
-            "at": datetime.now(timezone.utc).isoformat(),
-        }
-    )
-    transcript["corrections"] = transcript["corrections"][-20:]
-    transcript.update(
-        text=text,
-        status="corrected",
-        note="此文字已由使用者校正；原始转写和修改记录保留，检测模型分数未改变。",
-    )
-    result["phrases"] = phrase_evidence(result.get("context", "")) + [
-        dict(item, source="用户校正转写") for item in phrase_evidence(text)
-    ]
-    if not storage.update(result):
-        raise HTTPException(404, "记录已删除")
-    with joblock:
-        if key in jobs:
-            jobs[key]["result"] = result
-    return result
+    raise HTTPException(410, "语音转写分析入口已关闭；文字分析请上传聊天截图。")
 
 
 @app.get("/api/jobs/{key}")
@@ -238,7 +231,7 @@ def process(key, path, name, context, sha, folder, scene="general"):
         "context": context,
         "sha256": sha,
         "modules": {},
-        "phrases": phrase_evidence(context),
+        "phrases": [],
         "limitations": [
             "未确认视频中的人物身份；即使没有发现异常，也应通过预留号码核实。",
             "画面与声音分别检测，尚未实现音画同步鉴定。",
@@ -290,52 +283,58 @@ def process(key, path, name, context, sha, folder, scene="general"):
                 jobs[key]["message"] = "正在提取并分析声音"
             try:
                 samples = detector.audio_samples(path, folder)
-                try:
-                    result["transcript"] = detector.transcribe(samples)
-                    result["phrases"].extend(
-                        dict(item, source="自动转写")
-                        for item in phrase_evidence(result["transcript"]["text"])
-                    )
-                except Exception as e:
-                    result["transcript"] = {
-                        "status": "failed",
-                        "text": "",
-                        "note": str(e),
+                result["transcript"] = {"status":"disabled","text":"","note":"语音仅做声学合成检测；文字分析请使用聊天截图入口。"}
+                from .modern_voice import configured as acoustic_configured,predict as acoustic_predict
+                if acoustic_configured():
+                    result["modules"]["audio"] = acoustic_predict(samples)
+                else:
+                    segments = []
+                    from .voice_forensics import available as modern_voice_available
+                    window=80000 if modern_voice_available() else 160000
+                    for start in range(0, len(samples), window):
+                        chunk = samples[start : start + window]
+                        if len(chunk) >= 16000:
+                            item = detector.classify("audio", chunk)
+                            item.update(
+                                start=start / 16000,
+                                end=(start+len(chunk))/16000,
+                                signal=(
+                                    "较强合成线索，仍需核实"
+                                    if item["score"] >= item.get('threshold',0.5)
+                                    else (
+                                        "未检出明显合成线索，不代表身份真实"
+                                        if item["score"] <= 0.2
+                                        else "结果不明确，暂不作判断"
+                                    )
+                                ),
+                            )
+                            segments.append(item)
+                    result["modules"]["audio"] = {
+                        "status": "completed",
+                        "analysis_basis":"acoustic_waveform_only",
+                        "sample_rate":16000,
+                        "analyzed_seconds":len(samples)/16000,
+                        "segments": segments,
+                        "source": segments[0].get('source') if segments else None,
+                        "note": f"直接分析16kHz声音波形，按{window//16000}秒切片；不调用语音转写，不依据说话内容判断AI声音。",
                     }
-                segments = []
-                from .voice_forensics import available as modern_voice_available
-                window=80000 if modern_voice_available() else 160000
-                for start in range(0, len(samples), window):
-                    chunk = samples[start : start + window]
-                    if len(chunk) >= 16000:
-                        item = detector.classify("audio", chunk)
-                        item.update(
-                            start=start / 16000,
-                            end=(start+len(chunk))/16000,
-                            signal=(
-                                "较强合成线索，仍需核实"
-                                if item["score"] >= item.get('threshold',0.5)
-                                else (
-                                    "未检出明显合成线索，不代表身份真实"
-                                    if item["score"] <= 0.2
-                                    else "结果不明确，暂不作判断"
-                                )
-                            ),
-                        )
-                        segments.append(item)
-                result["modules"]["audio"] = {
-                    "status": "completed",
-                    "segments": segments,
-                    "source": segments[0].get('source') if segments else None,
-                    "note": f"最多分析前3分钟，按{window//16000}秒切片。下方只是模型分数，不是诈骗概率，也不能确认说话者身份。",
-                }
                 result["limitations"].append(
-                    ("当前声音版本已做60组中文真人/通用TTS同文本对照，尚不代表最新声音克隆或老人实际使用场景的准确率。" if modern_voice_available() else "声音模型在中文真人电话语音小样本中存在误报；展示保留区间不表示检测准确率。")
+                    ("当前声音版本以真实/参考克隆语音及压缩条件评测，不确认人物身份，不保证覆盖所有新型克隆方法。" if acoustic_configured() else "旧声音版本只做过通用TTS对照，不能代表真人克隆检测能力。")
                 )
             except Exception as e:
                 logging.exception("audio")
                 result["modules"]["audio"] = {"status": "failed", "note": str(e)}
-        if suffix in {".png", ".jpg", ".jpeg", ".webp"}:
+        if scene == "chat":
+            from .chat_ocr import read as read_chat
+            from .chat_analysis import analyze as analyze_chat
+            with Image.open(path) as im:
+                if im.width*im.height>25_000_000:raise ValueError('截图过大，请裁剪聊天内容后重试')
+                result["ocr"] = read_chat(im)
+            try:result["chat_analysis"] = analyze_chat(result["ocr"]["text"])
+            except Exception:
+                logging.exception("screenshot interpretation")
+                result["chat_analysis"] = {"status":"unavailable","signals":[],"note":"文字已提取，自动分析暂不可用，请先核对文字。"}
+        if scene != "chat" and suffix in {".png", ".jpg", ".jpeg", ".webp"}:
             with Image.open(path) as im:
                 if im.width * im.height > 25_000_000:
                     raise ValueError("图片过大")
@@ -372,6 +371,7 @@ def process(key, path, name, context, sha, folder, scene="general"):
             result["limitations"].append(
                 "图像提示依据该模型已登记的阈值；不是诈骗或真实性概率，局部改图仍可能漏检。"
             )
+        if scene == "chat":result["summary"] = "聊天截图已提取，请核对内容并独立核实"
         finished = True
     except Exception:
         logging.exception("job")
@@ -404,13 +404,13 @@ def process(key, path, name, context, sha, folder, scene="general"):
 
 @app.post("/api/analyze", status_code=202)
 def analyze(file: UploadFile = File(...), context: str = Form(""), scene: str = Form("general")):
-    if scene not in {"general","product"}:raise HTTPException(422,"未知的检测场景")
+    if scene not in {"general","product","chat"}:raise HTTPException(422,"未知的检测场景")
     if scene == "product":
         from .product import available as product_available
         if not product_available():raise HTTPException(503,"商品场景模型尚未通过发布检查，请使用通用核验")
     suffix = Path(file.filename or "").suffix.lower()
-    if scene == 'product' and suffix not in {'.png','.jpg','.jpeg','.webp'}:
-        raise HTTPException(422,'商品场景只支持图片')
+    if scene in {'product','chat'} and suffix not in {'.png','.jpg','.jpeg','.webp'}:
+        raise HTTPException(422,'该入口只支持图片')
     if suffix not in {
         ".mp4",
         ".mov",

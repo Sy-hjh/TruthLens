@@ -624,6 +624,2218 @@
       },
       "rule": "Max validation balanced accuracy subject to real FPR <= 5%; no test scores used.",
       "source_report_sha256": "6cfa841e236075156eeafe53393923fa8ce90d704591561e8de20e74eb641a25"
+    },
+    "verispoof-val-channels.json": {
+      "clean": {
+        "metrics": {
+          "n": 742,
+          "real_count": 38,
+          "fake_count": 704,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.0,
+          "balanced_accuracy": 1.0,
+          "accuracy": 1.0
+        },
+        "by_generator": {
+          "CosyVoice 2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "F5-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Fish Audio S2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "GLM-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Higgs Audio v2": {
+            "n": 73,
+            "real_count": 38,
+            "fake_count": 35,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MGM-Omni": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MOSS-TTS v1.5": {
+            "n": 75,
+            "real_count": 38,
+            "fake_count": 37,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MOSS-TTSD": {
+            "n": 62,
+            "real_count": 38,
+            "fake_count": 24,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MaskGCT": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "OpenAudio S1-mini": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "OpenVoice V2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "PlayDiffusion": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Qwen3-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Spark-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "StyleTTS 2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "VibeVoice": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "XTTS-v2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "ZipVoice": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "dots.tts": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          }
+        }
+      },
+      "aac32": {
+        "metrics": {
+          "n": 742,
+          "real_count": 38,
+          "fake_count": 704,
+          "false_positives": 2,
+          "false_negatives": 5,
+          "real_false_positive_rate": 0.05263157894736842,
+          "fake_miss_rate": 0.007102272727272727,
+          "balanced_accuracy": 0.9701330741626795,
+          "accuracy": 0.9905660377358491
+        },
+        "by_generator": {
+          "CosyVoice 2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          },
+          "F5-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 2,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.05263157894736842,
+            "balanced_accuracy": 0.9473684210526316,
+            "accuracy": 0.9473684210526315
+          },
+          "Fish Audio S2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          },
+          "GLM-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          },
+          "Higgs Audio v2": {
+            "n": 73,
+            "real_count": 38,
+            "fake_count": 35,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9726027397260274
+          },
+          "MGM-Omni": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          },
+          "MOSS-TTS v1.5": {
+            "n": 75,
+            "real_count": 38,
+            "fake_count": 37,
+            "false_positives": 2,
+            "false_negatives": 3,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.08108108108108109,
+            "balanced_accuracy": 0.9331436699857752,
+            "accuracy": 0.9333333333333333
+          },
+          "MOSS-TTSD": {
+            "n": 62,
+            "real_count": 38,
+            "fake_count": 24,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.967741935483871
+          },
+          "MaskGCT": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          },
+          "OpenAudio S1-mini": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          },
+          "OpenVoice V2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          },
+          "PlayDiffusion": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          },
+          "Qwen3-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          },
+          "Spark-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          },
+          "StyleTTS 2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          },
+          "VibeVoice": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          },
+          "XTTS-v2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          },
+          "ZipVoice": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          },
+          "dots.tts": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 2,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.05263157894736842,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.9736842105263158,
+            "accuracy": 0.9736842105263158
+          }
+        }
+      },
+      "phone8": {
+        "metrics": {
+          "n": 742,
+          "real_count": 38,
+          "fake_count": 704,
+          "false_positives": 0,
+          "false_negatives": 8,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.011363636363636364,
+          "balanced_accuracy": 0.9943181818181818,
+          "accuracy": 0.9892183288409704
+        },
+        "by_generator": {
+          "CosyVoice 2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "F5-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Fish Audio S2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "GLM-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Higgs Audio v2": {
+            "n": 73,
+            "real_count": 38,
+            "fake_count": 35,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MGM-Omni": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MOSS-TTS v1.5": {
+            "n": 75,
+            "real_count": 38,
+            "fake_count": 37,
+            "false_positives": 0,
+            "false_negatives": 2,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.05405405405405406,
+            "balanced_accuracy": 0.972972972972973,
+            "accuracy": 0.9733333333333334
+          },
+          "MOSS-TTSD": {
+            "n": 62,
+            "real_count": 38,
+            "fake_count": 24,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MaskGCT": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "OpenAudio S1-mini": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "OpenVoice V2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "PlayDiffusion": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Qwen3-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 1,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.02631578947368421,
+            "balanced_accuracy": 0.9868421052631579,
+            "accuracy": 0.9868421052631579
+          },
+          "Spark-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 1,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.02631578947368421,
+            "balanced_accuracy": 0.9868421052631579,
+            "accuracy": 0.9868421052631579
+          },
+          "StyleTTS 2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 3,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.07894736842105263,
+            "balanced_accuracy": 0.9605263157894737,
+            "accuracy": 0.9605263157894737
+          },
+          "VibeVoice": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "XTTS-v2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "ZipVoice": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "dots.tts": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 1,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.02631578947368421,
+            "balanced_accuracy": 0.9868421052631579,
+            "accuracy": 0.9868421052631579
+          }
+        }
+      },
+      "protocol": {
+        "window_seconds": 8,
+        "step_seconds": 4,
+        "clip_score": "maximum window signal",
+        "native_threshold": 0,
+        "input": "waveform only, no speech transcript",
+        "upstream_overlap": "unknown",
+        "split": "val"
+      },
+      "source_report_sha256": "da132d7477db8e6e32f274fa1e57701c4c9e63bfda861b856de93c5f7ddf8e5f"
+    },
+    "verispoof-test-channels.json": {
+      "clean": {
+        "metrics": {
+          "n": 624,
+          "real_count": 32,
+          "fake_count": 592,
+          "false_positives": 0,
+          "false_negatives": 1,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.0016891891891891893,
+          "balanced_accuracy": 0.9991554054054054,
+          "accuracy": 0.9983974358974359
+        },
+        "by_generator": {
+          "CosyVoice 2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "F5-TTS": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Fish Audio S2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "GLM-TTS": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Higgs Audio v2": {
+            "n": 56,
+            "real_count": 32,
+            "fake_count": 24,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MGM-Omni": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MOSS-TTS v1.5": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MOSS-TTSD": {
+            "n": 56,
+            "real_count": 32,
+            "fake_count": 24,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MaskGCT": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "OpenAudio S1-mini": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "OpenVoice V2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "PlayDiffusion": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Qwen3-TTS": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Spark-TTS": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "StyleTTS 2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 1,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.03125,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "VibeVoice": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "XTTS-v2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "ZipVoice": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "dots.tts": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          }
+        }
+      },
+      "aac32": {
+        "metrics": {
+          "n": 624,
+          "real_count": 32,
+          "fake_count": 592,
+          "false_positives": 1,
+          "false_negatives": 1,
+          "real_false_positive_rate": 0.03125,
+          "fake_miss_rate": 0.0016891891891891893,
+          "balanced_accuracy": 0.9835304054054054,
+          "accuracy": 0.9967948717948718
+        },
+        "by_generator": {
+          "CosyVoice 2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "F5-TTS": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "Fish Audio S2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "GLM-TTS": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "Higgs Audio v2": {
+            "n": 56,
+            "real_count": 32,
+            "fake_count": 24,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.9821428571428571
+          },
+          "MGM-Omni": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "MOSS-TTS v1.5": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "MOSS-TTSD": {
+            "n": 56,
+            "real_count": 32,
+            "fake_count": 24,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.9821428571428571
+          },
+          "MaskGCT": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "OpenAudio S1-mini": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "OpenVoice V2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "PlayDiffusion": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "Qwen3-TTS": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "Spark-TTS": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "StyleTTS 2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 1,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.03125,
+            "balanced_accuracy": 0.96875,
+            "accuracy": 0.96875
+          },
+          "VibeVoice": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "XTTS-v2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "ZipVoice": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "dots.tts": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 1,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.03125,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          }
+        }
+      },
+      "phone8": {
+        "metrics": {
+          "n": 624,
+          "real_count": 32,
+          "fake_count": 592,
+          "false_positives": 0,
+          "false_negatives": 8,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.013513513513513514,
+          "balanced_accuracy": 0.9932432432432432,
+          "accuracy": 0.9871794871794872
+        },
+        "by_generator": {
+          "CosyVoice 2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "F5-TTS": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Fish Audio S2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "GLM-TTS": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Higgs Audio v2": {
+            "n": 56,
+            "real_count": 32,
+            "fake_count": 24,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MGM-Omni": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MOSS-TTS v1.5": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 1,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.03125,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "MOSS-TTSD": {
+            "n": 56,
+            "real_count": 32,
+            "fake_count": 24,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MaskGCT": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "OpenAudio S1-mini": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "OpenVoice V2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "PlayDiffusion": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Qwen3-TTS": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 1,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.03125,
+            "balanced_accuracy": 0.984375,
+            "accuracy": 0.984375
+          },
+          "Spark-TTS": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "StyleTTS 2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 4,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.125,
+            "balanced_accuracy": 0.9375,
+            "accuracy": 0.9375
+          },
+          "VibeVoice": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "XTTS-v2": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "ZipVoice": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "dots.tts": {
+            "n": 64,
+            "real_count": 32,
+            "fake_count": 32,
+            "false_positives": 0,
+            "false_negatives": 2,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0625,
+            "balanced_accuracy": 0.96875,
+            "accuracy": 0.96875
+          }
+        }
+      },
+      "protocol": {
+        "window_seconds": 8,
+        "step_seconds": 4,
+        "clip_score": "maximum window signal",
+        "native_threshold": 0,
+        "input": "waveform only, no speech transcript",
+        "upstream_overlap": "unknown",
+        "split": "test"
+      },
+      "source_report_sha256": "a7e5afdf289238e496e915d3f8062943997b04c6c25a5dc028c701451f436118"
+    },
+    "verispoof-phone-controls.json": {
+      "metrics": {
+        "n": 120,
+        "real_count": 60,
+        "fake_count": 60,
+        "false_positives": 2,
+        "false_negatives": 10,
+        "real_false_positive_rate": 0.03333333333333333,
+        "fake_miss_rate": 0.16666666666666666,
+        "balanced_accuracy": 0.9,
+        "accuracy": 0.9
+      },
+      "note": "Additional previously observed telephone/TTS diagnostic, not new cloned-voice test.",
+      "source_report_sha256": "66091233b3b291fb9383404f0f5ebbcef037c4602109e162a7f30a92d33ff289"
+    },
+    "voice-cascade-check.json": {
+      "val_clean": {
+        "metrics": {
+          "n": 742,
+          "real_count": 38,
+          "fake_count": 704,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.0,
+          "balanced_accuracy": 1.0,
+          "accuracy": 1.0
+        }
+      },
+      "val_aac32": {
+        "metrics": {
+          "n": 742,
+          "real_count": 38,
+          "fake_count": 704,
+          "false_positives": 2,
+          "false_negatives": 3,
+          "real_false_positive_rate": 0.05263157894736842,
+          "fake_miss_rate": 0.004261363636363636,
+          "balanced_accuracy": 0.9715535287081339,
+          "accuracy": 0.9932614555256065
+        }
+      },
+      "val_phone8": {
+        "metrics": {
+          "n": 742,
+          "real_count": 38,
+          "fake_count": 704,
+          "false_positives": 0,
+          "false_negatives": 5,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.007102272727272727,
+          "balanced_accuracy": 0.9964488636363636,
+          "accuracy": 0.9932614555256065
+        }
+      },
+      "test_clean": {
+        "metrics": {
+          "n": 624,
+          "real_count": 32,
+          "fake_count": 592,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.0,
+          "balanced_accuracy": 1.0,
+          "accuracy": 1.0
+        }
+      },
+      "test_aac32": {
+        "metrics": {
+          "n": 624,
+          "real_count": 32,
+          "fake_count": 592,
+          "false_positives": 1,
+          "false_negatives": 0,
+          "real_false_positive_rate": 0.03125,
+          "fake_miss_rate": 0.0,
+          "balanced_accuracy": 0.984375,
+          "accuracy": 0.9983974358974359
+        }
+      },
+      "test_phone8": {
+        "metrics": {
+          "n": 624,
+          "real_count": 32,
+          "fake_count": 592,
+          "false_positives": 0,
+          "false_negatives": 4,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.006756756756756757,
+          "balanced_accuracy": 0.9966216216216216,
+          "accuracy": 0.9935897435897436
+        }
+      },
+      "phone_clean": {
+        "metrics": {
+          "n": 120,
+          "real_count": 60,
+          "fake_count": 60,
+          "false_positives": 2,
+          "false_negatives": 3,
+          "real_false_positive_rate": 0.03333333333333333,
+          "fake_miss_rate": 0.05,
+          "balanced_accuracy": 0.9583333333333334,
+          "accuracy": 0.9583333333333334
+        }
+      },
+      "protocol": {
+        "primary_threshold": "author log-likelihood ratio >= 0",
+        "secondary_threshold": 0.7,
+        "rule": "Only when primary has no positive window, run frozen XLS-R/AASIST on center5s; supplementary positive requires >= .70.",
+        "scope": "Follow-up on already observed sets; not a new independent accuracy benchmark. No local fitting on test speaker recordings."
+      },
+      "source_report_sha256": "f8067ad7b8d17f1a88849c6472684c8450a62041747a41905d1af698e3278c98"
+    },
+    "voice-head-validation.json": {
+      "clean": {
+        "metrics": {
+          "n": 742,
+          "real_count": 38,
+          "fake_count": 704,
+          "false_positives": 0,
+          "false_negatives": 28,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.03977272727272727,
+          "balanced_accuracy": 0.9801136363636364,
+          "accuracy": 0.9622641509433962
+        },
+        "by_generator": {
+          "CosyVoice 2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "F5-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Fish Audio S2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "GLM-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Higgs Audio v2": {
+            "n": 73,
+            "real_count": 38,
+            "fake_count": 35,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MGM-Omni": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MOSS-TTS v1.5": {
+            "n": 75,
+            "real_count": 38,
+            "fake_count": 37,
+            "false_positives": 0,
+            "false_negatives": 16,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.43243243243243246,
+            "balanced_accuracy": 0.7837837837837838,
+            "accuracy": 0.7866666666666666
+          },
+          "MOSS-TTSD": {
+            "n": 62,
+            "real_count": 38,
+            "fake_count": 24,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MaskGCT": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "OpenAudio S1-mini": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "OpenVoice V2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "PlayDiffusion": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Qwen3-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 3,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.07894736842105263,
+            "balanced_accuracy": 0.9605263157894737,
+            "accuracy": 0.9605263157894737
+          },
+          "Spark-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 6,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.15789473684210525,
+            "balanced_accuracy": 0.9210526315789473,
+            "accuracy": 0.9210526315789473
+          },
+          "StyleTTS 2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "VibeVoice": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "XTTS-v2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "ZipVoice": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "dots.tts": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 3,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.07894736842105263,
+            "balanced_accuracy": 0.9605263157894737,
+            "accuracy": 0.9605263157894737
+          }
+        }
+      },
+      "aac32": {
+        "metrics": {
+          "n": 742,
+          "real_count": 38,
+          "fake_count": 704,
+          "false_positives": 0,
+          "false_negatives": 46,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.06534090909090909,
+          "balanced_accuracy": 0.9673295454545454,
+          "accuracy": 0.9380053908355795
+        },
+        "by_generator": {
+          "CosyVoice 2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "F5-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Fish Audio S2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "GLM-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Higgs Audio v2": {
+            "n": 73,
+            "real_count": 38,
+            "fake_count": 35,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MGM-Omni": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MOSS-TTS v1.5": {
+            "n": 75,
+            "real_count": 38,
+            "fake_count": 37,
+            "false_positives": 0,
+            "false_negatives": 24,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.6486486486486487,
+            "balanced_accuracy": 0.6756756756756757,
+            "accuracy": 0.68
+          },
+          "MOSS-TTSD": {
+            "n": 62,
+            "real_count": 38,
+            "fake_count": 24,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MaskGCT": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "OpenAudio S1-mini": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "OpenVoice V2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "PlayDiffusion": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Qwen3-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 4,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.10526315789473684,
+            "balanced_accuracy": 0.9473684210526316,
+            "accuracy": 0.9473684210526315
+          },
+          "Spark-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 15,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.39473684210526316,
+            "balanced_accuracy": 0.8026315789473684,
+            "accuracy": 0.8026315789473685
+          },
+          "StyleTTS 2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "VibeVoice": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "XTTS-v2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "ZipVoice": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "dots.tts": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 3,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.07894736842105263,
+            "balanced_accuracy": 0.9605263157894737,
+            "accuracy": 0.9605263157894737
+          }
+        }
+      },
+      "phone8": {
+        "metrics": {
+          "n": 742,
+          "real_count": 38,
+          "fake_count": 704,
+          "false_positives": 0,
+          "false_negatives": 54,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.07670454545454546,
+          "balanced_accuracy": 0.9616477272727273,
+          "accuracy": 0.9272237196765498
+        },
+        "by_generator": {
+          "CosyVoice 2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "F5-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Fish Audio S2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "GLM-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Higgs Audio v2": {
+            "n": 73,
+            "real_count": 38,
+            "fake_count": 35,
+            "false_positives": 0,
+            "false_negatives": 1,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.02857142857142857,
+            "balanced_accuracy": 0.9857142857142858,
+            "accuracy": 0.9863013698630136
+          },
+          "MGM-Omni": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MOSS-TTS v1.5": {
+            "n": 75,
+            "real_count": 38,
+            "fake_count": 37,
+            "false_positives": 0,
+            "false_negatives": 25,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.6756756756756757,
+            "balanced_accuracy": 0.6621621621621622,
+            "accuracy": 0.6666666666666666
+          },
+          "MOSS-TTSD": {
+            "n": 62,
+            "real_count": 38,
+            "fake_count": 24,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "MaskGCT": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "OpenAudio S1-mini": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "OpenVoice V2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "PlayDiffusion": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "Qwen3-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 5,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.13157894736842105,
+            "balanced_accuracy": 0.9342105263157895,
+            "accuracy": 0.9342105263157895
+          },
+          "Spark-TTS": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 17,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.4473684210526316,
+            "balanced_accuracy": 0.7763157894736842,
+            "accuracy": 0.7763157894736842
+          },
+          "StyleTTS 2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "VibeVoice": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 1,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.02631578947368421,
+            "balanced_accuracy": 0.9868421052631579,
+            "accuracy": 0.9868421052631579
+          },
+          "XTTS-v2": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "ZipVoice": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 0,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.0,
+            "balanced_accuracy": 1.0,
+            "accuracy": 1.0
+          },
+          "dots.tts": {
+            "n": 76,
+            "real_count": 38,
+            "fake_count": 38,
+            "false_positives": 0,
+            "false_negatives": 5,
+            "real_false_positive_rate": 0.0,
+            "fake_miss_rate": 0.13157894736842105,
+            "balanced_accuracy": 0.9342105263157895,
+            "accuracy": 0.9342105263157895
+          }
+        }
+      },
+      "source_report_sha256": "72bab4deef4a71027fdc1787f0371d157e8241b2ca980e9a7bceeca5514c1134"
+    },
+    "voice-data-audit.json": {
+      "raw_count": 3910,
+      "retained_count": 3910,
+      "excluded_pairs": [],
+      "conflicting_or_cross_split_hashes": 0,
+      "raw_manifest_sha256": "ac58ae6f4ef85b4996834cbc0d2eddca0ca8436a7444aab296c6b86142986665",
+      "pending_test_downloads": 0,
+      "speaker_counts": {
+        "train": 28,
+        "val": 6,
+        "test": 6
+      },
+      "counts": {
+        "train": {
+          "0": 130,
+          "1": 2414
+        },
+        "val": {
+          "0": 38,
+          "1": 704
+        },
+        "test": {
+          "0": 32,
+          "1": 592
+        }
+      },
+      "source_report_sha256": "b87e45fd635c49868a823080231e39b21328bc24bec41010c78a7d250b3b10a8"
+    },
+    "voice-resume-check.json": {
+      "resumed_steps": 4,
+      "reference_steps": 4,
+      "weights_exactly_equal": true,
+      "optimizer_restored": true,
+      "schema": "checkpoint_io full schema",
+      "source_report_sha256": "5f4c378317ac044f8ac264dbb22741c0fbe3695d7abf62a47e80df52ca2b1be9"
+    },
+    "voice-selection.json": {
+      "selected": "VeriSpoof-Plus",
+      "revision": "ef5b12112da17e0949b5e19fe0f9f198c9570fd9",
+      "threshold_log_likelihood": 0,
+      "window_seconds": 8,
+      "step_seconds": 4,
+      "website_score": "sigmoid(log_likelihood_ratio), not a fraud probability",
+      "reason": "Higher worst-channel validation balanced accuracy than locally trained head; author threshold unchanged.",
+      "test_used_for_selection": false,
+      "validation_report": "reports/verispoof-val-channels.json",
+      "head_validation": "reports/voice-head-validation.json",
+      "upstream_training_overlap": "unknown",
+      "cascade_followup": {
+        "secondary_threshold": 0.7,
+        "basis": "Supplementary threshold has 0/38 real false positives in each validation channel; counteracts observed generic TTS misses; evaluated separately as observed-set follow-up, no fresh-test claim."
+      },
+      "source_report_sha256": "123939028160156d859eeebd65c3da0e88f8b808727021e144cfed7a39ed9d66"
     }
   }
 }

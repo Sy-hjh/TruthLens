@@ -18,9 +18,9 @@
 
 | 文件 | 用途 |
 |---|---|
-| backend/app.py | 上传校验、后台任务、API、话术规则、报告编排、转写校正、启动清理 |
-| backend/detector.py | 独立图像/视频/声音分类、FFmpeg解码、分段声音、ASR回退 |
-| backend/mandarin.py | 中文Paraformer本地转写，繁体转简体 |
+| backend/app.py | 上传校验、任务、报告、截图校正、启动清理；旧语音转写接口已关闭 |
+| backend/detector.py | 独立媒体分类与音轨解码；旧ASR函数不在当前业务流程调用 |
+| backend/mandarin.py | 历史Paraformer适配，当前声音流程不调用 |
 | backend/tamper.py | 已撤下的TruFor研究适配，非当前主流程 |
 | backend/media.py | 视频时长校验与16帧采样 |
 | backend/storage.py | SQLite报告增删查改 |
@@ -165,3 +165,27 @@ TruFor定位和问答组件已从老人主页面撤下。旧代码保留供研�
 - runtime/python-path.txt：本机选用的CUDA Python路径，不随源码包分发。
 
 - calibrate_smaug.py：只使用验证集分数复现0.007阈值选择，不自动发布模型。
+
+
+## 当前纯声学与聊天截图模块
+
+当前可操作命令、数据大小和续训方式统一见根目录《现在只看这份.md》。下列为新模块索引：
+
+| 文件 | 职责 |
+|---|---|
+| backend/modern_voice.py | 主声学模型隔离进程、阴性声学复查；无文字输入 |
+| backend/verispoof_worker.py / verispoof_local.py | 新依赖隔离、固定权重哈希校验、本机原生推理 |
+| backend/acoustic_protocol.py | 评估和网站共同使用的8秒/4秒声音协议 |
+| backend/chat_ocr.py / chat_analysis.py | 本机截图提取文字、原文约束语义分析 |
+| web/src/views/ChatReport.tsx | 独立截图报告、校正文字及原话线索 |
+| collect_clone_bench.py / audit_voice_data.py | 固定版数据下载、发布者SHA和说话人隔离审计 |
+| voice_features.py / extract_voice_features.py | 冻结特征、三种传播通道、逐文件缓存复用 |
+| voice_head.py / train_voice_head.py | 分类头实验及每批可恢复训练，未自动启用 |
+| evaluate_clone_baseline.py | 旧声学模型克隆基线；保留失败 |
+| evaluate_verispoof.py / evaluate_acoustic_cascade.py | 固定主模型留出测试、已观察数据双重检查复核 |
+| binary_metrics.py | 不导入大模型依赖的二分类统计 |
+| install_verispoof.py / install_chat_ocr.py / requirements-chat.txt | 固定版本恢复及本机OCR安装 |
+| activate_voice_release.py | 已审核声学版本配置；备份旧配置，不因训练自动执行 |
+| test_audio_isolation.py | 语音不进入文字分析、截图引文不编造等回归测试 |
+
+vendor/verispoof/runtime_code保留作者算法和本地离线适配；vendor/verispoof根目录保留原始源码/卡/NOTICE；vendor/chat-ocr保留许可证。vendor/pella3为调研候选资料，未作为当前模型启用。

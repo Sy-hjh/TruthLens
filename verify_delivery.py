@@ -9,7 +9,7 @@ from PIL import Image
 ROOT=bootstrap.ROOT
 
 def main():
- suite=unittest.defaultTestLoader.loadTestsFromNames(['tests','test_domain','test_advisor','test_checkpoint_io']);test_count=suite.countTestCases();outcome=unittest.TextTestRunner(verbosity=0).run(suite);assert outcome.wasSuccessful(),'Quick checks failed'
+ suite=unittest.defaultTestLoader.loadTestsFromNames(['tests','test_domain','test_advisor','test_checkpoint_io','test_audio_isolation']);test_count=suite.countTestCases();outcome=unittest.TextTestRunner(verbosity=0).run(suite);assert outcome.wasSuccessful(),'Quick checks failed'
  checks=[]
  with tempfile.TemporaryDirectory(dir=ROOT/'runtime') as tmp,patch.object(storage,'ROOT',Path(tmp)):
   client=TestClient(app)
@@ -29,9 +29,7 @@ def main():
    checks.append(dict(name=Path(path).name,status=result['status'],seconds=round(time.monotonic()-start,2),modules={k:dict(status=v['status'],score=v.get('score'),source=v.get('source')) for k,v in result.get('result',{}).get('modules',{}).items()},phrases=len(result.get('result',{}).get('phrases',[]))))
    return result
   for name in ('family-simulation','normal-synthetic-control'):
-   item=submit(ROOT/'data/demo'/(name+'.mp3'),['audio']);assert item['result']['transcript']['status']=='completed'
-   if name=='family-simulation':assert item['result']['phrases']
-   else:assert not item['result']['phrases']
+   item=submit(ROOT/'data/demo'/(name+'.mp3'),['audio']);assert item['result']['transcript']['status']=='disabled';assert not item['result']['phrases']
   real=submit(ROOT/'data/chinese-human/0.wav',['audio']);assert max(s['score'] for s in real['result']['modules']['audio']['segments'])<.5,'Known real Mandarin unexpectedly flagged'
   for name in ('known-real','known-fake'):
    item=submit(ROOT/'data/demo'/(name+'.mp4'),['video']);assert item['result']['modules']['video']['source'].get('version'),'Website did not use versioned video release'
@@ -45,6 +43,6 @@ def main():
   assert client.post('/api/analyze',files={'file':('x.exe',b'no')}).status_code==415
   assert client.post('/api/analyze',files={'file':('x.wav',b'')}).status_code==422
   assert client.get('/#check').status_code==200
- report=dict(summary=f'{len(checks)}份材料链路检查通过（含预期失败）；{test_count}项自动规则/恢复检查通过。',checks=checks,raw_upload_cleanup=True,storage_isolated=True,scope='Engineering acceptance, not an accuracy benchmark. Browser native automation stopped because URL could not be reliably confirmed; desktop appearance, printing and actual mobile dialing remain user review items.')
+ report=dict(summary=f'{len(checks)}份材料链路检查通过（含预期失败）；{test_count}项自动规则/恢复检查通过。',checks=checks,raw_upload_cleanup=True,storage_isolated=True,scope='Engineering acceptance, not an accuracy benchmark. Real browser uploads of public human/clone audio and fictional chat screenshot verified separately in voice-browser-acceptance.json. Printing and actual mobile dialing remain user review items.')
  (ROOT/'reports/delivery-verification.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8');print(report['summary'])
 if __name__=='__main__':main()

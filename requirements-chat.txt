@@ -1,0 +1,8 @@
+rapidocr==3.10.0
+pyclipper==1.4.0
+omegaconf==2.3.0
+antlr4-python3-runtime==4.9.3
+onnxruntime==1.26.0
+shapely==2.1.2
+colorlog==6.10.1
+six==1.17.0

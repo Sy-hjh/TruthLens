@@ -70,28 +70,12 @@ class Tests(unittest.TestCase):
         self.assertEqual(self.client.delete('/api/cases/delete-cache').status_code,200)
         self.assertEqual(self.client.get('/api/jobs/delete-cache').status_code,404)
 
-    def test_transcript_correction_preserves_model_results(self):
-        storage.save(
-            {
-                "id": "edit",
-                "context": "",
-                "modules": {"audio": {"score": 0.9}},
-                "transcript": {"text": "原始文字", "raw_text": "原始文字"},
-            }
-        )
-        r = self.client.post(
-            "/api/cases/edit/transcript", data={"text": "马上转账，不要告诉家人"}
-        )
-        self.assertEqual(r.status_code, 200)
-        self.assertEqual(r.json()["modules"]["audio"]["score"], 0.9)
-        self.assertEqual(r.json()["transcript"]["raw_text"], "原始文字")
-        self.assertTrue(r.json()["phrases"])
-        self.assertEqual(
-            self.client.post(
-                "/api/cases/edit/transcript", data={"text": " "}
-            ).status_code,
-            422,
-        )
+    def test_retired_transcript_endpoint_cannot_add_word_detection(self):
+        storage.save({'id':'edit','modules':{'audio':{'score':.9}},'phrases':[]})
+        r=self.client.post('/api/cases/edit/transcript',data={'text':'马上转账，不要告诉家人'})
+        self.assertEqual(r.status_code,410)
+        self.assertEqual(storage.get('edit')['phrases'],[])
+        self.assertEqual(storage.get('edit')['modules']['audio']['score'],.9)
 
     def test_interrupted_upload_cleanup_is_scoped(self):
         stale = storage.ROOT / "upload-abcdefgh"

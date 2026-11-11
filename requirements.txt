@@ -14,3 +14,4 @@ yacs==0.1.8
 einops>=0.8,<1
 opencc-python-reimplemented==0.1.7
 sherpa-onnx==2.0.1
+soundfile==0.13.1

@@ -1,6 +1,6 @@
 # 亲安 · 先核实，再放心
 
-面向老人本人收到的录制视频、语音和图片，分别检查人脸画面、声音合成、整图生成及转写表达，再通过事先保存的号码独立核实。研究辅助版3.0，不确认身份，不作诈骗或付款决定。
+面向老人本人收到的录制视频、语音和图片，分别检查人脸画面、声音合成、整图生成；独立聊天截图入口提取文字并分析要求，再通过事先保存的号码独立核实。研究辅助版3.0，不确认身份，不作诈骗或付款决定。
 
 **本机使用只看：[现在只看这份.md](现在只看这份.md)。**
 
@@ -12,14 +12,14 @@
 
 ## 技术结构
 
-React + TypeScript + Vite前端，按需加载视图；FastAPI本机任务编排；GenD CLIP人脸帧检测（已替代旧时序融合）；XLS-R/AASIST声音检测；Paraformer中文转写；独立图像分类；来源可查的反诈预警与24道情景练习。各模态不拼成一个诈骗概率。
+React + TypeScript + Vite前端，按需加载视图；FastAPI本机任务编排；GenD CLIP人脸帧检测（已替代旧时序融合）；VeriSpoof-Plus与XLS-R/AASIST声学双重检查；RapidOCR与本地Qwen聊天截图分析；独立图像分类；来源可查的反诈预警与24道情景练习。各模态不拼成一个诈骗概率。
 
 ## 真实测试
 
 - 新来源180段视频计划：179段可用，平衡准确率92.9%，真实误报5/60，换脸漏检7/119；另1段未取得人脸。不是所有生成视频准确率。
-- 60组中文真人/通用TTS同文本对照：平衡准确率97.5%，真实误报0/60、合成漏检3/60。不是最新声音克隆或老人业务基准。
+- 声音主模型624段留出（32真人/592克隆）：原音误报0、漏检1；AAC误报1、漏检1；电话带宽漏检8。双模型补充复核分别漏检0/0/4，属于已观察集复核。上游重叠未知，变体不是新增样本。
 - 整图生成634张留出测试：准确率97.3%，真实误报12/317、合成漏检5/317；阈值仅用另632张验证图选定，上游重叠未知，不代表局部P图。
-- 23项后端检查、7项阈值边界、8份材料真实推理链路、运行服务HTTP上传与版本检查通过。
+- 29项后端检查、7项阈值边界、8份材料真实推理链路、运行服务HTTP上传与版本检查通过。
 - 局部P图/AI改图仍有明显漏检；热力图与重复问答已撤下。实测页保留历史失败实验，案例1保留旧模型漏检的回归素材。
 
 ## 复现与换机
@@ -28,7 +28,7 @@ React + TypeScript + Vite前端，按需加载视图；FastAPI本机任务编排
 
 前端开发：`cd web` 后 `npm ci`、`npm run build`；或根目录 `npm run build --prefix web`。生产结果在 `frontend-next`，后端同源提供页面与API。
 
-测试：`python -m unittest tests test_domain test_advisor test_checkpoint_io -q`；真实权重验收 `python verify_delivery.py`，运行网站的真实HTTP验收 `python verify_deployment.py`。它们使用隔离数据库或仅删除自己创建的测试报告。
+测试：`python -m unittest tests test_domain test_advisor test_checkpoint_io test_audio_isolation -q`；真实权重验收 `python verify_delivery.py`，运行网站的真实HTTP验收 `python verify_deployment.py`。它们使用隔离数据库或仅删除自己创建的测试报告。
 
 文件、训练与截图清单统一见当前使用说明。本轮过程记录见 `docs/本轮修改记录.md`，早期记录见 `docs/CONTINUATION.md`，来源见 `docs/THIRD_PARTY.md`，固定版本见 `release/release.json`。代码中的本地路径、版本与数据用途明确记录，不把旧诊断集当新测试。
 

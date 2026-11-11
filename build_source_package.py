@@ -19,10 +19,12 @@ def main():
  # Never package a partial evaluation after an interrupted experiment.
  for filename,cohort in [('gend-final.json','fresh180'),('smaug-whole-final.json','whole_image_test')]:
   assert public[filename][cohort]['metrics']['n']>0,'Final evaluation is incomplete: '+filename
+ assert all(public['verispoof-test-channels.json'][channel]['metrics']['n']==624 for channel in ('clean','aac32','phone8')),'Acoustic final test is incomplete'
+ assert public['voice-data-audit.json']['pending_test_downloads']==0,'Acoustic audit is incomplete'
  with zipfile.ZipFile(target,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as archive:
   for path in sorted(set(items)):archive.write(path,'qinan/'+path.relative_to(ROOT).as_posix())
   for name,value in public.items():archive.writestr('qinan/reports/'+name,json.dumps(value,ensure_ascii=False,indent=2))
-  for name in ('delivery-verification.json','deployment-http.json','advisor-smoke.json','advisor-http.json','demo-video-check.json'):
+  for name in ('delivery-verification.json','deployment-http.json','voice-browser-acceptance.json','chat-pipeline-check.json','demo-video-check.json'):
    archive.write(ROOT/'reports'/name,'qinan/reports/'+name)
  with zipfile.ZipFile(target) as archive:
   names=archive.namelist();assert not any('/runtime/' in n or '/node_modules/' in n or 'user-regression' in n or 'cases.sqlite' in n or n.endswith('.mp4') for n in names)

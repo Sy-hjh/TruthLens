@@ -11,6 +11,9 @@ lock = threading.Lock()
 
 
 def available(kind):
+    if kind == 'audio':
+        from .modern_voice import configured as current_configured,available as current_available
+        if current_configured():return current_available()
     if kind == 'image':
         from .modern_image import configured,available as modern_available
         if configured():return modern_available()
@@ -34,6 +37,11 @@ def available(kind):
 
 
 def classify(kind, data):
+    if kind == 'audio':
+        from .modern_voice import configured as current_configured,predict as current_predict
+        if current_configured():
+            module=current_predict(data)
+            return dict(module,score=max(s['score'] for s in module['segments']),threshold=.5)
     if kind == 'image':
         from .modern_image import configured,predict as modern_predict
         if configured():return modern_predict(data[0])
@@ -116,40 +124,17 @@ def classify(kind, data):
 
 
 def audio_samples(path, temp):
-    import imageio_ffmpeg
+    # Use the same lossless waveform reader/resampler as the acoustic benchmark.
+    # Container formats that libsndfile cannot decode fall back to FFmpeg float PCM.
+    try:
+        from voice_features import audio
+        values=audio(path)[:2880000]
+    except (OSError,RuntimeError,ValueError):
+        import imageio_ffmpeg
+        proc=subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(),'-nostdin','-v','error','-i',str(path),'-t','180','-vn','-ac','1','-ar','16000','-f','f32le','pipe:1'],capture_output=True,timeout=90)
+        if proc.returncode:raise ValueError('无法提取音轨或音频格式不可解码')
+        values=np.frombuffer(proc.stdout,dtype=np.float32).copy()
 
-    target = Path(temp) / "audio.wav"
-    proc = subprocess.run(
-        [
-            imageio_ffmpeg.get_ffmpeg_exe(),
-            "-nostdin",
-            "-v",
-            "error",
-            "-i",
-            str(path),
-            "-t",
-            "180",
-            "-vn",
-            "-ac",
-            "1",
-            "-ar",
-            "16000",
-            "-c:a",
-            "pcm_s16le",
-            str(target),
-        ],
-        capture_output=True,
-        timeout=90,
-    )
-    if proc.returncode:
-        raise ValueError("无法提取音轨或音频格式不可解码")
-    with wave.open(str(target), "rb") as f:
-        values = (
-            np.frombuffer(f.readframes(f.getnframes()), dtype=np.int16).astype(
-                np.float32
-            )
-            / 32768
-        )
     if len(values) < 16000:
         raise ValueError("音频不足1秒")
     if np.sqrt(np.mean(values**2)) < 0.0001:

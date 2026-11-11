@@ -37,11 +37,11 @@ def waveform(samples):
   start=(len(x)-n)//2;x=x[start:start+n]
  return x.unsqueeze(0)
 
-def predict(samples):
+def predict(samples,release=None):
  global _cached_model,_cached_signature
  import torch
  from .detector import lock
- info=json.loads((ROOT/'models/active-audio.json').read_text(encoding='utf-8'))
+ info=release if release is not None else json.loads((ROOT/'models/active-audio.json').read_text(encoding='utf-8'))
  with lock:
   path=ROOT/info['weights'];stat=path.stat();signature=(info['weights_sha256'],stat.st_size,stat.st_mtime_ns)
   if _cached_model is None or signature!=_cached_signature:
