@@ -1,9 +1,9 @@
 export interface Source { repo?: string; version?: string }
-export interface Segment { start: number; score: number; signal?: string; source?: Source }
+export interface Segment { start: number; end?:number; threshold?:number; score: number; signal?: string; source?: Source }
 export interface ModuleResult { status: string; note?: string; score?: number; threshold?: number; source?: Source; segments?: Segment[]; map_png?: string; moments?: {start:number;score:number}[]; detector_scores?:Record<string,number> }
 export interface Report { id:string; filename:string; created_at:string; summary:string; context?:string; sha256:string; modules:Record<string,ModuleResult>; transcript?:{text:string;note?:string;raw_text?:string}; phrases:{source?:string;context?:string;excerpt:string;category:string;note:string}[]; limitations:string[]; next_steps:string[] }
 export interface Metric {n:number;real_count:number;fake_count:number;balanced_accuracy:number|null;real_false_positive_rate:number|null;fake_miss_rate:number|null}
-export interface Evidence {experiments:{title:string;note:string;metrics:Metric;rejected:number}[];releases:Record<string,string>;warning:string}
+export interface Evidence {experiments:{title:string;report:string;note:string;metrics:Metric;rejected:number}[];releases:Record<string,string>;warning:string}
 export interface Advice {engine:string;summary:string;actions:string[];sources:{id:string;title:string;url:string;snippet?:string}[];trace:{tool:string;status:string}[];note?:string}
 export async function api<T>(url:string,options:RequestInit={},timeout=20000):Promise<T>{
  const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),timeout);

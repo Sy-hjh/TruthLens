@@ -393,6 +393,237 @@
         }
       },
       "source_report_sha256": "613dc541ea1a4ffbf9c877f056a7b21cc8fe4fe167c3d3450fb7af0811928fb9"
+    },
+    "gend-check.json": {
+      "validation": {
+        "metrics": {
+          "n": 50,
+          "real_count": 25,
+          "fake_count": 25,
+          "false_positives": 2,
+          "false_negatives": 0,
+          "real_false_positive_rate": 0.08,
+          "fake_miss_rate": 0.0,
+          "balanced_accuracy": 0.96,
+          "accuracy": 0.96
+        },
+        "rejected": 0
+      },
+      "observed300": {
+        "metrics": {
+          "n": 300,
+          "real_count": 100,
+          "fake_count": 200,
+          "false_positives": 4,
+          "false_negatives": 15,
+          "real_false_positive_rate": 0.04,
+          "fake_miss_rate": 0.075,
+          "balanced_accuracy": 0.9425,
+          "accuracy": 0.9366666666666666
+        },
+        "rejected": 0
+      },
+      "source_report_sha256": "0c1d1dea32e5768bde2ac2089050afd5068f9820ba427d7d8b2d2153cfdd6f62"
+    },
+    "gend-final.json": {
+      "fresh180": {
+        "metrics": {
+          "n": 179,
+          "real_count": 60,
+          "fake_count": 119,
+          "false_positives": 5,
+          "false_negatives": 7,
+          "real_false_positive_rate": 0.08333333333333333,
+          "fake_miss_rate": 0.058823529411764705,
+          "balanced_accuracy": 0.928921568627451,
+          "accuracy": 0.9329608938547486
+        },
+        "rejected": 1,
+        "planned": 180,
+        "coverage": 0.9944444444444445,
+        "all_planned_correct_rate": 0.9277777777777778,
+        "limitations": [
+          "Locally unseen source IDs, not identity isolation",
+          "Two face swap generators; not all AI videos",
+          "Pretraining overlap unknown",
+          "One no-face rejection not counted as a correct result"
+        ]
+      },
+      "source_report_sha256": "4e81eb3d3785f6abbfb9b7e8b3f866d5c3bb2494ca512ec744179a5c15d9889a"
+    },
+    "bfree-check.json": {
+      "original": {
+        "metrics": {
+          "n": 240,
+          "real_count": 60,
+          "fake_count": 180,
+          "false_positives": 7,
+          "false_negatives": 98,
+          "real_false_positive_rate": 0.11666666666666667,
+          "fake_miss_rate": 0.5444444444444444,
+          "balanced_accuracy": 0.6694444444444445,
+          "accuracy": 0.5625
+        }
+      },
+      "jpeg60": {
+        "metrics": {
+          "n": 240,
+          "real_count": 60,
+          "fake_count": 180,
+          "false_positives": 11,
+          "false_negatives": 117,
+          "real_false_positive_rate": 0.18333333333333332,
+          "fake_miss_rate": 0.65,
+          "balanced_accuracy": 0.5833333333333333,
+          "accuracy": 0.4666666666666667
+        }
+      },
+      "source_report_sha256": "6f096eb7612e1244ef8121d4ebf23eae34d9d994e17672cef7b8e91be0863051"
+    },
+    "detectra-check.json": {
+      "original": {
+        "metrics": {
+          "n": 240,
+          "real_count": 60,
+          "fake_count": 180,
+          "false_positives": 0,
+          "false_negatives": 176,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.9777777777777777,
+          "balanced_accuracy": 0.5111111111111111,
+          "accuracy": 0.26666666666666666
+        }
+      },
+      "controls": {
+        "metrics": {
+          "n": 5,
+          "real_count": 2,
+          "fake_count": 3,
+          "false_positives": 0,
+          "false_negatives": 3,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 1.0,
+          "balanced_accuracy": 0.5,
+          "accuracy": 0.4
+        }
+      },
+      "source_report_sha256": "5ad7c0dd01c800cf84c22a73a1aef234f8dc43da70ebccd977ea4aaa4f227efb"
+    },
+    "smaug-check.json": {
+      "controls": {
+        "metrics": {
+          "n": 5,
+          "real_count": 2,
+          "fake_count": 3,
+          "false_positives": 0,
+          "false_negatives": 2,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.6666666666666666,
+          "balanced_accuracy": 0.6666666666666667,
+          "accuracy": 0.6
+        }
+      },
+      "original": {
+        "metrics": {
+          "n": 240,
+          "real_count": 60,
+          "fake_count": 180,
+          "false_positives": 0,
+          "false_negatives": 161,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.8944444444444445,
+          "balanced_accuracy": 0.5527777777777778,
+          "accuracy": 0.32916666666666666
+        }
+      },
+      "source_report_sha256": "bfccc364c0df3fd0e20d8f3523dc2a8b201d9cdc31b34c9b54e289038b51dbf0"
+    },
+    "smaug-whole-check.json": {
+      "controls": {
+        "metrics": {
+          "n": 5,
+          "real_count": 2,
+          "fake_count": 3,
+          "false_positives": 0,
+          "false_negatives": 2,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.6666666666666666,
+          "balanced_accuracy": 0.6666666666666667,
+          "accuracy": 0.6
+        }
+      },
+      "whole_image_val": {
+        "metrics": {
+          "n": 632,
+          "real_count": 316,
+          "fake_count": 316,
+          "false_positives": 2,
+          "false_negatives": 69,
+          "real_false_positive_rate": 0.006329113924050633,
+          "fake_miss_rate": 0.21835443037974683,
+          "balanced_accuracy": 0.8876582278481012,
+          "accuracy": 0.8876582278481012
+        }
+      },
+      "source_report_sha256": "64a2449d37d0d9ebb2d7af4ea80043116b205373092b74224319d3e0bd0a9c23"
+    },
+    "smaug-whole-final.json": {
+      "controls": {
+        "metrics": {
+          "n": 5,
+          "real_count": 2,
+          "fake_count": 3,
+          "false_positives": 0,
+          "false_negatives": 2,
+          "real_false_positive_rate": 0.0,
+          "fake_miss_rate": 0.6666666666666666,
+          "balanced_accuracy": 0.6666666666666667,
+          "accuracy": 0.6
+        }
+      },
+      "whole_image_test": {
+        "metrics": {
+          "n": 634,
+          "real_count": 317,
+          "fake_count": 317,
+          "false_positives": 12,
+          "false_negatives": 5,
+          "real_false_positive_rate": 0.03785488958990536,
+          "fake_miss_rate": 0.015772870662460567,
+          "balanced_accuracy": 0.973186119873817,
+          "accuracy": 0.973186119873817
+        }
+      },
+      "protocol": {
+        "threshold": 0.007,
+        "calibration_n": 632,
+        "test_n": 634,
+        "manifest_sha256": "eb793868f9963185950ea850c73008eb4ffc3f60a583d2c85384dc746333529d",
+        "val_test_byte_overlap": 0,
+        "unknown_pretraining_overlap": true,
+        "local_edits_not_supported": true,
+        "python": "D:/software/Python/Python313/python.exe",
+        "torch": "2.6.0+cu124",
+        "cuda": true,
+        "device": "NVIDIA GeForce RTX 4070 Laptop GPU"
+      },
+      "source_report_sha256": "a3afcc7c435920461e6dcbf7b11e6634701d40e288236dee3613c2e9dc800047"
+    },
+    "smaug-calibration.json": {
+      "threshold": 0.007,
+      "validation": {
+        "n": 632,
+        "real_count": 316,
+        "fake_count": 316,
+        "false_positives": 12,
+        "false_negatives": 26,
+        "real_false_positive_rate": 0.0379746835443038,
+        "fake_miss_rate": 0.08227848101265822,
+        "balanced_accuracy": 0.939873417721519,
+        "accuracy": 0.939873417721519
+      },
+      "rule": "Max validation balanced accuracy subject to real FPR <= 5%; no test scores used.",
+      "source_report_sha256": "6cfa841e236075156eeafe53393923fa8ce90d704591561e8de20e74eb641a25"
     }
   }
 }

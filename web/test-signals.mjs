@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {moduleSignal} from './src/signals.ts';
+assert.equal(moduleSignal({status:'completed',score:1}).level,'alert');
+assert.equal(moduleSignal({status:'completed',segments:[{start:0,score:.739}]}).level,'alert');
+assert.equal(moduleSignal({status:'completed',score:.2}).level,'uncertain');
+assert.equal(moduleSignal({status:'failed',score:.99}).level,'unavailable');
+assert.equal(moduleSignal({status:'completed',score:.6,threshold:.7}).level,'uncertain');
+assert.equal(moduleSignal({status:'completed',segments:[{start:0,score:.1},{start:5,score:.8}]}).flagged,1);
+assert.equal(moduleSignal({status:'completed',segments:[]}).level,'unavailable');
+console.log('7 signal threshold checks passed');

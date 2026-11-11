@@ -1,0 +1,93 @@
+{
+  "_id": "6915e06d99addd6995eb7be6",
+  "id": "yermandy/GenD_DINOv3_L",
+  "private": false,
+  "pipeline_tag": "image-classification",
+  "library_name": "transformers",
+  "tags": [
+    "transformers",
+    "safetensors",
+    "GenD",
+    "pytorch",
+    "image-classification",
+    "arxiv:2508.06248",
+    "license:mit",
+    "endpoints_compatible",
+    "region:us"
+  ],
+  "downloads": 544,
+  "likes": 0,
+  "modelId": "yermandy/GenD_DINOv3_L",
+  "author": "yermandy",
+  "sha": "7c6ce541b303c0a10d9a509fffc0eb772bfad9cb",
+  "lastModified": "2025-11-13T14:42:13.000Z",
+  "gated": false,
+  "disabled": false,
+  "model-index": null,
+  "config": {
+    "architectures": [
+      "GenD"
+    ],
+    "model_type": "GenD"
+  },
+  "cardData": {
+    "license": "mit",
+    "library_name": "transformers",
+    "tags": [
+      "pytorch",
+      "image-classification"
+    ]
+  },
+  "transformersInfo": {
+    "auto_model": "GenD"
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes",
+      "blobId": "a6344aac8c09253b3b630fb776ae94478aa0275b",
+      "size": 1519
+    },
+    {
+      "rfilename": "README.md",
+      "blobId": "ec4ec9874e700d3976553098425d3a7aad95e2aa",
+      "size": 1204
+    },
+    {
+      "rfilename": "config.json",
+      "blobId": "e3267fc1b7f9f3a7eb071a53227399e338b43f79",
+      "size": 204
+    },
+    {
+      "rfilename": "model.safetensors",
+      "blobId": "80f37d808d4178aa5940c59e1102da6c1ad5efbd",
+      "size": 1212579400,
+      "lfs": {
+        "sha256": "76d45aa5528a9f82520b8c251578248ea4569e32ea2bf5b4e7cd850bbe51f1aa",
+        "size": 1212579400,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "modeling_gend.py",
+      "blobId": "d08d5d0217d92d3d592c563f70ae1cb5b9f8ccdc",
+      "size": 5148
+    },
+    {
+      "rfilename": "requirements.txt",
+      "blobId": "737cbe36c22d2930595b432514862e7c40bfafc2",
+      "size": 71
+    }
+  ],
+  "spaces": [
+    "danielzest/GenD-Sentinel",
+    "SameerLiaquat/deepfake-face-check"
+  ],
+  "createdAt": "2025-11-13T13:43:09.000Z",
+  "safetensors": {
+    "parameters": {
+      "F32": 303131650
+    },
+    "total": 303131650
+  },
+  "usedStorage": 1212579400
+}

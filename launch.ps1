@@ -7,7 +7,12 @@ if ($existing) {
     throw '8010端口已有其他或旧版本服务，请先关闭该服务。'
 }
 New-Item -ItemType Directory -Force runtime | Out-Null
-$pythonPath = if (Test-Path .venv/Scripts/python.exe) { (Resolve-Path .venv/Scripts/python.exe).Path } else { (Get-Command python).Source }
+$configuredPython = Join-Path $PSScriptRoot 'runtime/python-path.txt'
+$pythonPath = if (Test-Path -LiteralPath $configuredPython) {
+    $selectedPython = (Get-Content -LiteralPath $configuredPython -Raw).Trim()
+    if (-not (Test-Path -LiteralPath $selectedPython -PathType Leaf)) { throw 'Configured project Python was not found.' }
+    $selectedPython
+} elseif (Test-Path .venv/Scripts/python.exe) { (Resolve-Path .venv/Scripts/python.exe).Path } else { (Get-Command python).Source }
 $scriptPath = Join-Path $PSScriptRoot 'run.py'
 $process = Start-Process -FilePath $pythonPath -ArgumentList @('-u', ('"' + $scriptPath + '"')) -WorkingDirectory $PSScriptRoot -WindowStyle Hidden -RedirectStandardOutput (Join-Path $PSScriptRoot 'runtime/server.log') -RedirectStandardError (Join-Path $PSScriptRoot 'runtime/server-error.log') -PassThru
 $process.Id | Set-Content -LiteralPath (Join-Path $PSScriptRoot 'runtime/server.pid')

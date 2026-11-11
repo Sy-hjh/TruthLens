@@ -51,3 +51,9 @@ TruFor引用：Guillaro等，TruFor: Leveraging all-round clues for trustworthy 
 | https://react.dev/ / https://vite.dev/ | React + TypeScript + Vite自建前端；源码没有直接包装第三方整站 |
 
 基础权重、数据许可和作者算法与本项目自建网页、编排、校准层、复核流程分别署名。保留固定revision、哈希和原始README。源码包不分发私人素材、联系人、数据库或整套训练数据；没有代替团队公开仓库或接受数据集人工审核协议。
+
+## 2026-11-11调整
+- 当前视频采用[yermandy/GenD_CLIP_L_14](https://huggingface.co/yermandy/GenD_CLIP_L_14)，MIT模型卡，固定revision与哈希见release/release.json；上游数据限制独立。参考[GenD WACV2026](https://github.com/yermandy/GenD)配对来源与归一化特征方法，8帧人脸均值；不执行远程模型代码。
+- [B-Free](https://github.com/grip-unina/B-Free)官方非营利许可、[Detectra](https://huggingface.co/TensorFold/detectra-v1) MIT：局部改图诊断未通过，没有启用。保留作者源码和许可证。
+- [Smaug](https://huggingface.co/abacusai/Smaug-AI-Image-Detector) Apache-2.0模型卡；三视图整图生成候选，使用独立依赖，不执行远程代码；局部修改能力不作保证。
+- 新闻标题、日期与来源链接来自[12321举报中心](https://12321.cn/warn)、中央网信办和民政部公开提示；防范提醒是项目维护的主题提示，不假称自动获得案件全文。

@@ -21,13 +21,13 @@
 | backend/app.py | 上传校验、后台任务、API、话术规则、报告编排、转写校正、启动清理 |
 | backend/detector.py | 独立图像/视频/声音分类、FFmpeg解码、分段声音、ASR回退 |
 | backend/mandarin.py | 中文Paraformer本地转写，繁体转简体 |
-| backend/tamper.py | TruFor局部编辑推理、真实异常矩阵PNG、权重安全加载 |
+| backend/tamper.py | 已撤下的TruFor研究适配，非当前主流程 |
 | backend/media.py | 视频时长校验与16帧采样 |
 | backend/storage.py | SQLite报告增删查改 |
 | backend/__init__.py | Python包标记 |
-| frontend/index.html | 页面结构、上传、联系家人、练习、历史入口 |
-| frontend/app.js | 上传轮询、报告、联系人、打印/导出、摘要音频与练习交互 |
-| frontend/examples.js | 中文模拟材料入口与可纠正转写表单 |
+| frontend/index.html | 旧版页面留档，当前默认使用frontend-next构建 |
+| frontend/app.js | 旧版交互留档，非当前默认 |
+| frontend/examples.js | 旧版模拟入口留档 |
 | frontend/style.css / senior.css | 整体样式、大字触控与窄屏适配 |
 
 ## 下载、素材与验证
@@ -144,3 +144,24 @@
 - export_public_evidence.py：导出不含私人素材与转写的真实指标摘要，便于源码包实测页复查。
 - build_source_package.py：打包源码、构建、固定分类头与公开摘要，自动检查不包含私人媒体和数据库。
 - docs/history：以前的训练阶段说明，按当时事实保留；当前以根目录《现在只看这份.md》为准。
+
+## 本轮新增入口
+| 文件 | 用途 |
+|---|---|
+| backend/gend.py | 新视频候选和正式推理，严格载入固定权重 |
+| collect_gend_final.py / evaluate_gend_final.py | 获取60个新来源ID、固定阈值验证；不训练 |
+| backend/news.py | 固定来源预警抓取、日期核验、缓存及6小时更新 |
+| web/src/quiz-data.ts | 24道教学情景 |
+| web/src/signals.ts / web/test-signals.mjs | 按模型阈值判定红/黄/不可用；7项边界核验 |
+| backend/modern_image.py / smaug_worker.py | 图片模型独立进程，防止升级破坏声音与视频环境 |
+| evaluate_bfree.py / evaluate_detectra.py / evaluate_smaug*.py | 候选模型对照、验证集校准与留出测试 |
+| install_gend.py / install_bfree.py / install_detectra.py / install_smaug.py | 固定版本、可续下载、权重哈希检查 |
+| install_modern_image_runtime.py | 安装隔离图片运行环境 |
+| prepare_manual_acceptance.py / verify_manual_acceptance.py | 有标签素材与真实HTTP上传，错误保留 |
+
+TruFor定位和问答组件已从老人主页面撤下。旧代码保留供研究追溯，不代表当前功能。
+
+- export_benchmarks.py：只导出聚合指标，剔除逐文件记录，供源码包与评审复核。
+- runtime/python-path.txt：本机选用的CUDA Python路径，不随源码包分发。
+
+- calibrate_smaug.py：只使用验证集分数复现0.007阈值选择，不自动发布模型。

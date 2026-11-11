@@ -35,7 +35,7 @@ def main():
   real=submit(ROOT/'data/chinese-human/0.wav',['audio']);assert max(s['score'] for s in real['result']['modules']['audio']['segments'])<.5,'Known real Mandarin unexpectedly flagged'
   for name in ('known-real','known-fake'):
    item=submit(ROOT/'data/demo'/(name+'.mp4'),['video']);assert item['result']['modules']['video']['source'].get('version'),'Website did not use versioned video release'
-  image=Path(tmp)/'engineering-image.png';Image.new('RGB',(256,256),(70,120,140)).save(image);submit(image,['image','tamper'])
+  image=Path(tmp)/'engineering-image.png';Image.new('RGB',(256,256),(70,120,140)).save(image);submit(image,['image'])
   broken=Path(tmp)/'broken.png';broken.write_bytes(b'not-an-image');submit(broken,failed=True)
   silent=Path(tmp)/'silent.wav'
   with wave.open(str(silent),'wb') as f:f.setnchannels(1);f.setsampwidth(2);f.setframerate(16000);f.writeframes(b'\0'*64000)

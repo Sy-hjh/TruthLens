@@ -16,6 +16,9 @@ def main():
   if path.suffix in ('.mp3','.json'):items.append(path)
  # Public benchmark summaries only; no original images, videos or per-user rows.
  public=json.loads((ROOT/'docs/benchmarks.json').read_text(encoding='utf-8'))['reports']
+ # Never package a partial evaluation after an interrupted experiment.
+ for filename,cohort in [('gend-final.json','fresh180'),('smaug-whole-final.json','whole_image_test')]:
+  assert public[filename][cohort]['metrics']['n']>0,'Final evaluation is incomplete: '+filename
  with zipfile.ZipFile(target,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as archive:
   for path in sorted(set(items)):archive.write(path,'qinan/'+path.relative_to(ROOT).as_posix())
   for name,value in public.items():archive.writestr('qinan/reports/'+name,json.dumps(value,ensure_ascii=False,indent=2))

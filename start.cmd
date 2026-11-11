@@ -1,8 +1,7 @@
 @echo off
 cd /d "%~dp0"
-if exist .venv\Scripts\python.exe (
-  .venv\Scripts\python.exe run.py
-) else (
-  python run.py
-)
+set "QINAN_PYTHON=python"
+if exist .venv\Scripts\python.exe set "QINAN_PYTHON=.venv\Scripts\python.exe"
+if exist runtime\python-path.txt set /p QINAN_PYTHON=<runtime\python-path.txt
+"%QINAN_PYTHON%" run.py
 pause

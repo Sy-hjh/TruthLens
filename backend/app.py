@@ -34,7 +34,11 @@ def cleanup_interrupted():
 async def lifespan(_app):
     count = cleanup_interrupted()
     logging.info("Cleaned %s interrupted upload directories", count)
+    from .news import start_updates
+    news_stop=threading.Event()
+    start_updates(news_stop)
     yield
+    news_stop.set()
 
 
 app = FastAPI(title="亲安 · 多模态反诈核验", version="3.0.0", lifespan=lifespan)
@@ -110,12 +114,11 @@ def phrase_evidence(text):
 @app.get("/api/health")
 def health():
     from .product import available as product_available
-    from .tamper import available as tamper_available
 
     models = {
         k: detector.available(k) for k in ("video", "audio", "image", "asr", "asr_zh")
     }
-    models["tamper"] = tamper_available()
+    models["tamper"] = False
     models["product"] = product_available()
     from .advisor import available as advisor_available
     models['advisor'] = advisor_available()
@@ -136,6 +139,12 @@ def cases():
 def evidence():
     from .evidence import summary
     return summary()
+
+
+@app.get('/api/news')
+def recent_news(refresh: bool=False):
+    from .news import get_news
+    return get_news(refresh)
 
 
 class AdviceRequest(BaseModel):
@@ -253,8 +262,9 @@ def process(key, path, name, context, sha, folder, scene="general"):
                 images.append(images[-1])
             try:
                 from .video_fusion import configured as fusion_configured,predict as fusion_predict
+                from .gend import configured as gend_configured,predict as gend_predict
                 from .sifta import configured as sifta_configured,predict as sifta_predict
-                result["modules"]["video"] = fusion_predict(path) if fusion_configured() else sifta_predict(path) if sifta_configured() else detector.classify("video", images)
+                result["modules"]["video"] = gend_predict(path) if gend_configured() else fusion_predict(path) if fusion_configured() else sifta_predict(path) if sifta_configured() else detector.classify("video", images)
             except Exception as e:
                 logging.exception("video")
                 result["modules"]["video"] = {"status": "failed", "note": str(e)}
@@ -301,9 +311,10 @@ def process(key, path, name, context, sha, folder, scene="general"):
                         item = detector.classify("audio", chunk)
                         item.update(
                             start=start / 16000,
+                            end=(start+len(chunk))/16000,
                             signal=(
                                 "较强合成线索，仍需核实"
-                                if item["score"] >= item.get('threshold',0.8)
+                                if item["score"] >= item.get('threshold',0.5)
                                 else (
                                     "未检出明显合成线索，不代表身份真实"
                                     if item["score"] <= 0.2
@@ -339,45 +350,27 @@ def process(key, path, name, context, sha, folder, scene="general"):
                         "status": "unavailable",
                         "note": str(e),
                     }
-            try:
-                from .tamper import predict
-
-                with Image.open(path) as original:
-                    result["modules"]["tamper"] = predict(original.convert("RGB"))
-            except Exception as e:
-                logging.exception("tamper")
-                result["modules"]["tamper"] = {"status": "failed", "note": str(e)}
+            result["modules"]["tamper"] = {"status":"disabled","note":"局部修图定位未通过本地有效性复核，暂不提供。"}
         successes = [
             m for m in result["modules"].values() if m["status"] == "completed"
         ]
         tendencies = []
         for module in successes:
             if "score" in module:
-                tendencies.append(module["score"] >= 0.5)
-            tendencies.extend(s["score"] >= 0.5 for s in module.get("segments", []))
+                tendencies.append(module["score"] >= module.get('threshold',0.5))
+            tendencies.extend(s["score"] >= s.get('threshold',0.5) for s in module.get("segments", []))
         if len(set(tendencies)) > 1:
             result["limitations"].append(
                 "不同检测项的倾向有差异：整图生成与局部编辑是不同任务，画面和声音也可能只有一项被伪造；不计算统一真伪分数。"
             )
         result["summary"] = (
-            "核验完成，请结合各项证据联系家人"
+            ("发现合成线索，请先核实" if any(tendencies) else "这次检查，还不能确认真假")
             if successes
             else "检测未成功，当前无法判断；仍可使用可信回拨"
         )
         if suffix in {".png", ".jpg", ".jpeg", ".webp"} and successes:
-            tamper_score = result["modules"].get("tamper", {}).get("score", 0)
-            image_score = result["modules"].get("image", {}).get("score", 0)
-            result["summary"] = (
-                "发现局部编辑核验线索，请核实原始来源"
-                if tamper_score >= 0.5
-                else (
-                    ("发现商品生成或编辑核验线索，请核实原始来源" if scene == "product" else "发现整图生成核验线索，请核实原始来源")
-                    if image_score >= 0.5
-                    else "暂未取得明确图像线索，仍需核实原始来源"
-                )
-            )
             result["limitations"].append(
-                "图像提示采用模型默认0.5判类阈值，尚未校准为诈骗或真实性概率；模型可能误报、漏报。"
+                "图像提示依据该模型已登记的阈值；不是诈骗或真实性概率，局部改图仍可能漏检。"
             )
         finished = True
     except Exception:

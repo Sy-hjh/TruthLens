@@ -11,12 +11,16 @@ lock = threading.Lock()
 
 
 def available(kind):
+    if kind == 'image':
+        from .modern_image import configured,available as modern_available
+        if configured():return modern_available()
     if kind == 'audio':
         from .voice_forensics import configured,available as modern_available
         if configured():return modern_available()
     if kind == 'video' and (ROOT/'models/active-video.json').exists():
         try:
             info=json.loads((ROOT/'models/active-video.json').read_text())
+            if info.get('engine')=='gend-clip':return info.get('approved') is True and (ROOT/'models/gend-clip/model.safetensors').is_file()
             if info.get('engine')=='video-fusion':return info.get('approved') is True and all((ROOT/p).is_file() for p in ('models/video/model.safetensors','models/sifta/model.safetensors',info['head']))
         except (ValueError,OSError,KeyError):return False
     root = ROOT / "models" / kind
@@ -30,6 +34,9 @@ def available(kind):
 
 
 def classify(kind, data):
+    if kind == 'image':
+        from .modern_image import configured,predict as modern_predict
+        if configured():return modern_predict(data[0])
     if kind == 'audio':
         from .voice_forensics import configured as modern_configured, predict as modern_predict
         if modern_configured():return modern_predict(data)

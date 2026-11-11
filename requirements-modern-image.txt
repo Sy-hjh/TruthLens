@@ -1,0 +1,12 @@
+# Isolated image worker only; do not install over the main audio/video environment.
+transformers==5.22.2
+sentence-transformers==6.2.0
+huggingface-hub==2.4.0
+tokenizers==0.23.3
+httpx2==2.13.1
+httpcore2==2.13.1
+anyio==4.16.0
+h11==0.16.0
+idna==3.20
+truststore==0.10.5
+typing-extensions==4.16.0

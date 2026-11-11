@@ -1,0 +1,101 @@
+{
+  "_id": "69149c5e00a807e08f5824c4",
+  "id": "yermandy/GenD_CLIP_L_14",
+  "private": false,
+  "pipeline_tag": "image-classification",
+  "library_name": "transformers",
+  "tags": [
+    "transformers",
+    "safetensors",
+    "GenD",
+    "pytorch",
+    "image-classification",
+    "arxiv:2508.06248",
+    "license:mit",
+    "endpoints_compatible",
+    "region:us"
+  ],
+  "downloads": 2257,
+  "likes": 1,
+  "modelId": "yermandy/GenD_CLIP_L_14",
+  "author": "yermandy",
+  "sha": "891ce014a0308386c4d7d25b3dcf436a22db5504",
+  "lastModified": "2025-11-13T14:42:40.000Z",
+  "gated": false,
+  "disabled": false,
+  "model-index": null,
+  "config": {
+    "architectures": [
+      "GenD"
+    ],
+    "model_type": "GenD"
+  },
+  "cardData": {
+    "license": "mit",
+    "library_name": "transformers",
+    "tags": [
+      "pytorch",
+      "image-classification"
+    ]
+  },
+  "transformersInfo": {
+    "auto_model": "GenD"
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes",
+      "blobId": "a6344aac8c09253b3b630fb776ae94478aa0275b",
+      "size": 1519
+    },
+    {
+      "rfilename": "README.md",
+      "blobId": "d35818acd593c4589deb57cff141bc11bbaf5239",
+      "size": 1205
+    },
+    {
+      "rfilename": "config.json",
+      "blobId": "a2ca1a2490d32efa941dacf8665d08ea296dbed6",
+      "size": 193
+    },
+    {
+      "rfilename": "model.safetensors",
+      "blobId": "268f9cff3f18ce007b5d55219fca4e56c37a01ce",
+      "size": 1215928160,
+      "lfs": {
+        "sha256": "d76f0bdfd74a29fe1b1c1b84a80ac92486993e426878e8c7a3944281fbb96833",
+        "size": 1215928160,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "model_index.json",
+      "blobId": "1b1fcea5c3b2c29c7762b35cf107c211466fd3c2",
+      "size": 107
+    },
+    {
+      "rfilename": "modeling_gend.py",
+      "blobId": "148d1ab71b3e1880a398ff5eb2afdb2bb21bc79b",
+      "size": 5738
+    },
+    {
+      "rfilename": "requirements.txt",
+      "blobId": "737cbe36c22d2930595b432514862e7c40bfafc2",
+      "size": 71
+    }
+  ],
+  "spaces": [
+    "enoladaniels/Urim-Pro",
+    "danielzest/GenD-Sentinel",
+    "jangminhyeok/ai-privacy-labs",
+    "Shlok0829/deepfake",
+    "SameerLiaquat/deepfake-face-check"
+  ],
+  "createdAt": "2025-11-12T14:40:30.000Z",
+  "safetensors": {
+    "parameters": {
+      "F32": 303968258
+    },
+    "total": 303968258
+  },
+  "usedStorage": 1215928160
+}

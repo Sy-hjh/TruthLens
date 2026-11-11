@@ -1,19 +1,21 @@
 {
   "video": {
-    "coefficients": [
-      0.48049571961304477,
-      0.5909810322728507,
-      0.00033062550929282934
-    ],
-    "threshold": 0.5,
-    "head": "models/releases/017aa77f4e2a61c9285f795b28e567e6ed6ec6d3b297fdad5a96daab4bc811b2/video-head.pt",
-    "head_sha256": "017aa77f4e2a61c9285f795b28e567e6ed6ec6d3b297fdad5a96daab4bc811b2",
-    "engine": "video-fusion",
+    "engine": "gend-clip",
+    "version": "qinan-gend-clip-r2-20261111",
     "approved": true,
-    "version": "qinan-video-fusion-r1-20261111",
-    "scope": "Research auxiliary, not identity/fraud determination. Final300source-group clips: FPR5%, miss27.5%, balanced83.75%; not all-generated-video accuracy.",
-    "evidence": "reports/video-final-evaluation.json",
-    "base_video_sha256": "293c668a5d3289d3162902d8cac6687cd11551cf2358768bad126de32b6d7f29"
+    "threshold": 0.5,
+    "source": {
+      "repo": "yermandy/GenD_CLIP_L_14",
+      "revision": "891ce014a0308386c4d7d25b3dcf436a22db5504",
+      "sha256": "d76f0bdfd74a29fe1b1c1b84a80ac92486993e426878e8c7a3944281fbb96833",
+      "license": "MIT model card; upstream data terms separate",
+      "purpose": "WACV2026 paired-source generalization candidate; test before deployment"
+    },
+    "evaluation": "reports/gend-final.json",
+    "planned": 180,
+    "completed": 179,
+    "rejected": 1,
+    "note": "60 locally unseen source YouTube IDs, 2 manipulation generators; upstream training overlap unknown; no identity claim."
   },
   "audio": {
     "approved": true,
@@ -61,6 +63,13 @@
       "sha256": "39e37fa5a958c2b46ebb6a5937874c36c39003906dcdd5d0aba6154bc6b2dc21",
       "license": "cc-by-nc-4.0",
       "purpose": "research speech synthesis diagnostic; verify Mandarin performance locally"
+    },
+    "gend": {
+      "repo": "yermandy/GenD_CLIP_L_14",
+      "revision": "891ce014a0308386c4d7d25b3dcf436a22db5504",
+      "sha256": "d76f0bdfd74a29fe1b1c1b84a80ac92486993e426878e8c7a3944281fbb96833",
+      "license": "MIT model card; upstream data terms separate",
+      "purpose": "WACV2026 paired-source generalization candidate; test before deployment"
     }
   },
   "demo_videos": [
@@ -124,5 +133,53 @@
       "license": "CC-BY-SA-4.0",
       "selection": "First3source pairs in the pre-existing50-clip test report, selected by order not model confidence; pair1knownfake is retained despite a miss."
     }
-  ]
+  ],
+  "previous_video": {
+    "coefficients": [
+      0.48049571961304477,
+      0.5909810322728507,
+      0.00033062550929282934
+    ],
+    "threshold": 0.5,
+    "head": "models/releases/017aa77f4e2a61c9285f795b28e567e6ed6ec6d3b297fdad5a96daab4bc811b2/video-head.pt",
+    "head_sha256": "017aa77f4e2a61c9285f795b28e567e6ed6ec6d3b297fdad5a96daab4bc811b2",
+    "engine": "video-fusion",
+    "approved": true,
+    "version": "qinan-video-fusion-r1-20261111",
+    "scope": "Research auxiliary, not identity/fraud determination. Final300source-group clips: FPR5%, miss27.5%, balanced83.75%; not all-generated-video accuracy.",
+    "evidence": "reports/video-final-evaluation.json",
+    "base_video_sha256": "293c668a5d3289d3162902d8cac6687cd11551cf2358768bad126de32b6d7f29"
+  },
+  "image": {
+    "engine": "smaug",
+    "version": "qinan-smaug-whole-r1-20261111",
+    "approved": true,
+    "threshold": 0.007,
+    "source": {
+      "repo": "abacusai/Smaug-AI-Image-Detector",
+      "revision": "c7c95951e04a87b884a4ad479401b1128c3903bd",
+      "sha256": "c5ae3fac7470126f25d2dca2386d8728f7c828fae53e8ac9eb006937821ea006",
+      "license": "Apache-2.0 model card; upstream data terms separate",
+      "purpose": "Whole-image generation candidate; not reliable local edit localization",
+      "files": {
+        "config.json": "ffc45049b25de336c1a1fbcf1e0d33e22b4e27029ac6c6828796f526ea314f94",
+        "README.md": "d6ecaff5970c61b5b253a8f1ef1cfbc4b8a6a89582708b67a9ad580ae241f42b",
+        "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "modules.json": "6c6d5d37d92be385f64363f97b94d12e59ed4ee41858e0dd432fc19dd283fe00",
+        "processor_config.json": "5bce6851e8be949925e1d2e9b9687738e5ef5dc4553927ccd38fdfb181dad732",
+        "sentence_bert_config.json": "b1bcd9f2dce3ae863b359e87d0710b5dbc3314a59ecb4e2f97c7778fc8e4b228",
+        "config_sentence_transformers.json": "a4e4dc2e81bc436135b6318c96b3d937a82e96da066fa34ab9993dbe155bf2d2",
+        "tokenizer.json": "4d777ef5bdc1aa36227abdfb77c3e49e7b9c892d16e1b6bda41c393504828be4",
+        "tokenizer_config.json": "fd4bc42eca490af2f3ab7e1e22cdef97a8c5a2354146d5700d5d55ecf70f1de5",
+        "chat_template.jinja": "4b852efc0b9960283e735363331e6f325b33bc74bdbaa076f595bc4e9b94d85e",
+        "1_Pooling/config.json": "8759bdf7c77efc7df7723f64856a593c8943b71ee38baf2a88771fbaf78438f9",
+        "2_Normalize/config.json": "cdb09dfca347a56aa2d691744e38d5ad3c7cbc2834e7181272b9a15328b82524",
+        "3_Dense/config.json": "9a8e63111293722eaf7addb6c409ed4eb02a6dc1ef5ab8ef2e0b10c64e9884f5",
+        "3_Dense/model.safetensors": "b09918c3838ef3b9dbd7057b0a8d382eced8fa06363ed62a5f60abe65cc65809"
+      }
+    },
+    "evaluation": "reports/smaug-whole-final.json",
+    "calibration": "reports/smaug-calibration.json",
+    "scope": "Whole-image generation only; 634 convenience holdout images, 632 validation threshold fit; unknown upstream overlap. Not local edits, identity or fraud probability."
+  }
 }
