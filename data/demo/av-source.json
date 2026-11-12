@@ -1,0 +1,24 @@
+[
+  {
+    "name": "av-real",
+    "author_file": "A",
+    "id": "1j2J0RCSTEHkzR7k-i9UT03vc4Xy2yFDG",
+    "sha256": "ecb90c4c50e5f46f546446af872dbac741f09956022e5e129d572b37237c0a0c",
+    "video_label": "real",
+    "audio_label": "real",
+    "source": "https://sites.google.com/view/fakeavcelebdash-lab/",
+    "scope": "Author public 2021 dataset examples, English. Not a modern universal accuracy test. Audio extracted from actual original MP4, not dubbed locally.",
+    "audio_sha256": "c8175211c3c36480ba504c0394f88c0efc3836e02b458f3ee7415ac0786d00c0"
+  },
+  {
+    "name": "av-fake",
+    "author_file": "D",
+    "id": "1TCKZAKhdgNJdze3njJHuOmOTaMf_XBld",
+    "sha256": "3976daf429c30a59ae62902b290230debb98b54b6941b4a7b20df4496cd71a7b",
+    "video_label": "fake",
+    "audio_label": "cloned",
+    "source": "https://sites.google.com/view/fakeavcelebdash-lab/",
+    "scope": "Author public 2021 dataset examples, English. Not a modern universal accuracy test. Audio extracted from actual original MP4, not dubbed locally.",
+    "audio_sha256": "6ed79e4bc3e2a638bb7612588ac24637eb7b334c42365695289db002efa84ac5"
+  }
+]

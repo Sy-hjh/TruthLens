@@ -31,7 +31,7 @@ def main():
   for name in ('delivery-verification.json','deployment-http.json','voice-browser-acceptance.json','chat-pipeline-check.json','demo-video-check.json','backend-checks-final.json','report-trace-check.json','chat-user-fixed-acceptance.json'):
    if name in public:continue
    archive.write(ROOT/'reports'/name,'qinan/reports/'+name)
-  for name in ('text-pattern-training.json','text-semantic-comparison.json','audio-nuisance-check.json','text-upgrade-acceptance.json','image-regions-comparison.json','ftcn-contiguous-comparison.json','new-model-check.json','omniaid-reference-equivalence.json','ordered-temporal-head-training.json','ordered-temporal-head-test.json','ordered-head-active-baseline.json','ordered-delivery-parity.json'):
+  for name in ('text-pattern-training.json','text-semantic-comparison.json','audio-nuisance-check.json','text-upgrade-acceptance.json','image-regions-comparison.json','ftcn-contiguous-comparison.json','new-model-check.json','omniaid-reference-equivalence.json','ordered-temporal-head-training.json','ordered-temporal-head-test.json','ordered-head-active-baseline.json','ordered-delivery-parity.json','av-author-sample-check.json','eight-demo-v2-changed-checks.json'):
    path=ROOT/'reports'/name
    if path.exists() and name not in public:archive.write(path,'qinan/reports/'+name)
  with zipfile.ZipFile(target) as archive:

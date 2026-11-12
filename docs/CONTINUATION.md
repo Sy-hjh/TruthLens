@@ -200,3 +200,9 @@
 FakeSTormer完整下载且已跑通，但同组新60段较差。OmniAID2026完整权重已测，新增Mirage240测试Smaug93.33%、Omni78.75%，保留Smaug。真正本地训练有序GRU头已经完成并上线：冻结GenD编码器，四帧共同输入（从32帧范围取0/10/21/31，最多4段），训练23轮选13轮；新60段FP2/20、FN2/40、BA92.5%，同组旧八帧BA83.75%。未知上游/人物重叠，不是全生成视频或口型同步。旧300/180段已退役作此头训练/验证，不再用旧成绩证明此头泛化。
 
 active-video为video-ordered-head，版本qinan-ordered-gru-r1-20261112。release/ordered-video-head.pt和protocol已纳入源码包恢复流程，源代码字节SHA受校验，train_temporal_sequence.py和fakestormer_candidate.py固定LF，改这两文件应创建新版本/新测试，不能绕过校验。原GenD配置备份models/video-before-ordered.json。训练入口及数据/权重/来源/失败记录统一见docs/本轮模型升级与复现.md。实际HTTP和浏览器图表已通过，当前服务8010在运行，未录制视频。保持如实限制，不能宣称完美或全模态90%。
+
+## 最新：截图风险与带声音画样例
+
+backend/chat_assessment.py根据逐字原话的要求组合显示疑似提醒，附真实公安案例；旧70%实验分类器收进研究记录，不覆盖已提取风险。新消息原文提取不可用时，有限匹配明示rules_only。聊天的普通借款/否定/教育反例有测试。资料为汕尾公安2023-05-26历史案，不能改称今日新闻。
+
+八个素材05–08已换FakeAVCeleb作者公开A/D原片与抽取音轨，A真人原声＋真画面，D克隆声＋假画面。2021英语示例，只作功能对照；新四象限A/B/C/D音画分别真实检测正确，不是独立通用准确率。主页新增av-real/av-fake带声入口，prepare_av_demos.py按作者公开链接及SHA恢复，release恢复已接入。旧中文音频和静音片备份data/demo-revisions/20261112-v1。过程详见docs/八个演示素材修正说明.md。截图01/02、音频05/06及所有AV输出已核验，浏览器chat-risk-case-v2-browser.png和av-dual-signal-v2-browser.png是实际新UI。不要把旧八素材单模块通过报告当作新版完整验收。

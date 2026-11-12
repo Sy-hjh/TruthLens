@@ -42,3 +42,4 @@ data/demo/*
 !data/demo/*.json
 .idea/
 tmp/
+/演示素材_八个/

@@ -225,5 +225,10 @@
     "scope": "10 observed scenario category coverage checks, not general accuracy or independently measured quote semantics. Source-clause IDs preserve actual text; context provided for review.",
     "approved": true,
     "evidence": "reports/chat-semantic-review.json"
+  },
+  "public_av_examples": {
+    "restore": "prepare_av_demos.py",
+    "source": "https://sites.google.com/view/fakeavcelebdash-lab/",
+    "labels": "A real audio/real video; D cloned audio/fake video; author public examples. 2021 English research demo, not new accuracy."
   }
 }

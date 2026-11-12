@@ -50,6 +50,7 @@ def validate(raw,text):
   # A generic instruction such as "配合调查" does not itself claim an identity.
   if category=='identity' and not re.search(r'我是|我们是|本人|这里是|公安|警察|民警|检察|法院|法官|客服|工作人员|办案|分局|银行|老师|校长|医生|专家|律师|家长|女儿|儿子|你爸|你妈|你[哥姐弟妹]|老板|领导|经理|主任|社保|人社|民政',quote):continue
   if category=='money' and re.match(r'^(请)?(不要|别|切勿|勿|不需要|不用)',quote):continue
+  if category=='credentials' and not re.search(r'验证码|密码|口令|六位数字|账号.{0,6}(?:发|给|告诉)|(?:发|给|告诉).{0,8}(?:账号|银行卡号|卡号)',quote):continue
   # Keeping passwords private is not an instruction to avoid independent verification.
   if category=='secrecy' and not re.search(r'家人|父母|儿女|孩子|爸|妈|老伴|亲友|亲人|警察|报警|核实|确认|联系|打电话|回拨|客服|银行|官方',quote) and not (re.search(r'案情|案件|调查',text) and re.search(r'保密|告诉任何人|告诉别人',''.join(quote.split()))):continue
   if (category,quote) not in {(x['category'],x['quote']) for x in result}:result.append(dict(category=category,title=CATEGORIES[category],quote=quote))
@@ -110,6 +111,11 @@ def analyze(text):
   logging.exception('Grounded quote extraction unavailable; retaining independent trained pattern result')
   result=dict(status='completed' if pattern['status']=='completed' else 'unavailable',signals=[],extraction_status='unavailable',note='原话分析暂不可用，请核对截图。')
  result['pattern']=pattern
+ from .chat_assessment import enrich
+ result['signals'],result['assessment']=enrich(text,result['signals'])
+ if result['extraction_status']=='unavailable' and result['signals']:
+  result['extraction_status']='rules_only'
+  result['note']='语言模型暂不可用；仅列出程序从原文匹配的明确操作要求，不是完整语义分析。'
  categories={s['category'] for s in result['signals']}
  if {'identity','secrecy'}<=categories:
   result['summary']='对方声称某种身份，还要求保密或不联系别人，请独立核实。'

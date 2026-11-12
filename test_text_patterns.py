@@ -21,7 +21,10 @@ class TextChecks(unittest.TestCase):
   from backend.chat_analysis import analyze
   with patch('backend.chat_analysis._analyze',side_effect=RuntimeError('test unavailable')):
    result=analyze('你好，我是公安局民警，你涉嫌洗钱案件，配合调查，不能告诉任何人。')
-  self.assertEqual(result['extraction_status'],'unavailable');self.assertEqual(result['pattern']['status'],'completed');self.assertEqual(result['signals'],[])
+  self.assertEqual(result['extraction_status'],'rules_only');self.assertEqual(result['pattern']['status'],'completed')
+  self.assertTrue(all(s.get('extraction')=='explicit_request_guard' for s in result['signals']))
+  self.assertEqual(result['signals'][0]['quote'],'不能告诉任何人。')
+  self.assertIn('语言模型暂不可用',result['note'])
  def test_no_audio_transcription_dependency(self):
   import inspect,backend.text_patterns as module
   self.assertNotIn('transcribe',inspect.getsource(module))

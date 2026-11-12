@@ -70,7 +70,7 @@ Image.MAX_IMAGE_PIXELS = 25_000_000
 
 @app.get('/api/demo-video/{name}')
 def demo_video(name: str):
-    if name not in {'known-real','known-fake','known-real-2','known-fake-2','known-real-3','known-fake-3'}:raise HTTPException(404,'公开视频不存在')
+    if name not in {'known-real','known-fake','known-real-2','known-fake-2','known-real-3','known-fake-3','av-real','av-fake'}:raise HTTPException(404,'公开视频不存在')
     path=ROOT/'data/demo'/f'{name}.mp4'
     if not path.exists():raise HTTPException(404,'公开视频尚未准备')
     return FileResponse(path,media_type='video/mp4',filename=path.name)
@@ -129,6 +129,7 @@ def health():
         "models": models,
         "scope": "研究辅助核验，不确认身份，不保证真实性",
         "demo_video": all((ROOT/'data/demo'/f'{n}.mp4').exists() for n in ('known-real','known-fake')),
+        "demo_av": all((ROOT/'data/demo'/f'{n}.mp4').exists() for n in ('av-real','av-fake')),
     }
 
 
@@ -372,7 +373,7 @@ def process(key, path, name, context, sha, folder, scene="general"):
             result["limitations"].append(
                 "图像提示依据该模型已登记的阈值；不是诈骗或真实性概率，局部改图仍可能漏检。"
             )
-        if scene == "chat":result["summary"] = "聊天截图已提取，请核对内容并独立核实"
+        if scene == "chat":result["summary"] = result.get('chat_analysis',{}).get('assessment',{}).get('title','聊天截图已提取，请核对内容并独立核实')
         finished = True
     except Exception:
         logging.exception("job")
