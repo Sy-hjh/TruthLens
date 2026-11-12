@@ -5,7 +5,7 @@ ROOT=bootstrap.ROOT
 def main():
  p=argparse.ArgumentParser();p.add_argument('--skip-downloads',action='store_true');args=p.parse_args();release=json.loads((ROOT/'release/release.json').read_text(encoding='utf-8'))
  if not args.skip_downloads:
-  if release.get('video',{}).get('engine')!='gend-clip':subprocess.run([sys.executable,'download_models.py','video'],cwd=ROOT,check=True)
+  if release.get('video',{}).get('engine') not in ('gend-clip','video-ordered-head'):subprocess.run([sys.executable,'download_models.py','video'],cwd=ROOT,check=True)
   if release.get('image',{}).get('engine')!='smaug':subprocess.run([sys.executable,'download_models.py','image'],cwd=ROOT,check=True)
   source=release['sources']['face-detector'];folder=ROOT/'models/face-detector';folder.mkdir(exist_ok=True)
   from collect_domain_cases import get
@@ -26,6 +26,10 @@ def main():
    if hashlib.sha256(blob).hexdigest()!=item['sha256']:raise RuntimeError('Demo hash mismatch')
    path.write_bytes(blob)
  video=release['video']
+ if video.get('engine')=='video-ordered-head':
+  protocol=json.loads((ROOT/video['protocol']).read_text(encoding='utf-8'))
+  for name,expected in [(video['head'],protocol['checkpoint_sha']),('train_temporal_sequence.py',protocol['code_sha']),('fakestormer_candidate.py',protocol['sampler_sha'])]:
+   if hashlib.sha256((ROOT/name).read_bytes()).hexdigest()!=expected:raise RuntimeError('Packaged ordered video integrity mismatch: '+name)
  if video.get('engine')=='video-fusion':
   head=ROOT/video['head'];head.parent.mkdir(parents=True,exist_ok=True);original=ROOT/'release/video-head.pt'
   if hashlib.sha256(original.read_bytes()).hexdigest()!=video['head_sha256']:raise RuntimeError('Packaged head hash mismatch')

@@ -1,5 +1,7 @@
 # 本轮验收证据（2026-11-11修订）
 
+11月12日补充：reports/new-model-check.json记录新增图片240张及视频两个60段同组对照；reports/ordered-temporal-head-test.json记录真实训练有序GRU最终新来源测试（FP2/20、FN2/40、BA92.5%，覆盖60/60）；reports/ordered-head-active-baseline.json为同组原八帧基线BA83.75%。目前已上线有序头，旧GenD成绩仍为历史对照。reports/deployment-http.json已更新为真实新版本HTTP上传，reports/ordered-video-browser.png是实际片段曲线和帧索引截图。后端41项、提醒边界9项及前端构建通过。训练和候选失败的来源、限制见docs/本轮模型升级与复现.md。
+
 - reports/gend-final.json：180段计划、179可用，平衡准确率92.89%，误报5/60、漏检7/119，1段无可用人脸；不代表所有AI视频。
 - reports/smaug-whole-final.json：634张整图生成留出测试97.32%，误报12/317、漏检5/317；阈值只用632张验证图拟合。不是局部P图准确率。
 - reports/audio-mandarin-check.json：60组同文本真人/通用TTS诊断97.5%，不代表克隆声业务准确率。

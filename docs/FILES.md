@@ -196,3 +196,5 @@ vendor/verispoof/runtime_code保留作者算法和本地离线适配；vendor/ve
 本轮新增文件说明见 [四种分析与本轮使用说明](四种分析与本轮使用说明.md)，论文方法、采纳范围和限制见 [论文阅读与改进说明](论文阅读与改进说明.md)。
 
 图片区域对照、32连续帧实验与采样坐标入口详见 [图片区域与视频时序实测说明](图片区域与视频时序实测说明.md)。`prepare_ftcn_candidate.py`供本地复现实验准备依赖和官方权重，`evaluate_ftcn_candidate.py`只作比较，不会自动上线。
+
+11月12日新增下载、实际候选推理、独立新样本、冻结编码器有序GRU训练/续训文件的逐项说明，见[本轮模型升级与复现](本轮模型升级与复现.md)的文件表。不要混用旧train_video_head.py与新train_temporal_sequence.py的输出目录。

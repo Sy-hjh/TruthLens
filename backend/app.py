@@ -256,8 +256,9 @@ def process(key, path, name, context, sha, folder, scene="general"):
             try:
                 from .video_fusion import configured as fusion_configured,predict as fusion_predict
                 from .gend import configured as gend_configured,predict as gend_predict
+                from .ordered_video import configured as ordered_configured,predict as ordered_predict
                 from .sifta import configured as sifta_configured,predict as sifta_predict
-                result["modules"]["video"] = gend_predict(path) if gend_configured() else fusion_predict(path) if fusion_configured() else sifta_predict(path) if sifta_configured() else detector.classify("video", images)
+                result["modules"]["video"] = ordered_predict(path) if ordered_configured() else gend_predict(path) if gend_configured() else fusion_predict(path) if fusion_configured() else sifta_predict(path) if sifta_configured() else detector.classify("video", images)
             except Exception as e:
                 logging.exception("video")
                 result["modules"]["video"] = {"status": "failed", "note": str(e)}

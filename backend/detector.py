@@ -23,6 +23,7 @@ def available(kind):
     if kind == 'video' and (ROOT/'models/active-video.json').exists():
         try:
             info=json.loads((ROOT/'models/active-video.json').read_text())
+            if info.get('engine')=='video-ordered-head':return info.get('approved') is True and all((ROOT/p).is_file() for p in ('models/gend-clip/model.safetensors',info['head'],info['protocol']))
             if info.get('engine')=='gend-clip':return info.get('approved') is True and (ROOT/'models/gend-clip/model.safetensors').is_file()
             if info.get('engine')=='video-fusion':return info.get('approved') is True and all((ROOT/p).is_file() for p in ('models/video/model.safetensors','models/sifta/model.safetensors',info['head']))
         except (ValueError,OSError,KeyError):return False

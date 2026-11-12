@@ -194,3 +194,9 @@
 
 ## 最新区域/时序实验
 160张同图比较：现用3图块验证FP0/FN9，测试FP0/FN2；九宫格或整图+九宫格验证FP3/FN15、测试FP0/FN4，未上线。真实FTCN32连续帧36条：FP0/FN15、BA68.75%，同组GenD FP2/FN0、BA91.67%，均为已观察数据后续诊断。FTCN来源2021，不是最新；2025FakeSTormer公开权重ZIP约1.98GB未完成下载，部分8MB在models/fakestormer。时序、口型同步可靠上线仍未完成，不能宣传。图片新增sampling真实坐标，后端41项检查通过。
+
+## 11月12日覆盖上述历史状态
+
+FakeSTormer完整下载且已跑通，但同组新60段较差。OmniAID2026完整权重已测，新增Mirage240测试Smaug93.33%、Omni78.75%，保留Smaug。真正本地训练有序GRU头已经完成并上线：冻结GenD编码器，四帧共同输入（从32帧范围取0/10/21/31，最多4段），训练23轮选13轮；新60段FP2/20、FN2/40、BA92.5%，同组旧八帧BA83.75%。未知上游/人物重叠，不是全生成视频或口型同步。旧300/180段已退役作此头训练/验证，不再用旧成绩证明此头泛化。
+
+active-video为video-ordered-head，版本qinan-ordered-gru-r1-20261112。release/ordered-video-head.pt和protocol已纳入源码包恢复流程，源代码字节SHA受校验，train_temporal_sequence.py和fakestormer_candidate.py固定LF，改这两文件应创建新版本/新测试，不能绕过校验。原GenD配置备份models/video-before-ordered.json。训练入口及数据/权重/来源/失败记录统一见docs/本轮模型升级与复现.md。实际HTTP和浏览器图表已通过，当前服务8010在运行，未录制视频。保持如实限制，不能宣称完美或全模态90%。
