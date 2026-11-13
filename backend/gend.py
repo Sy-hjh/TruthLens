@@ -19,8 +19,14 @@ class GenD(nn.Module):
 def load():
  folder=ROOT/'models/gend-clip';source=json.loads((folder/'source.json').read_text());path=folder/'model.safetensors'
  if hashlib.sha256(path.read_bytes()).hexdigest()!=source['sha256']:raise RuntimeError('GenD weight hash mismatch')
- model=GenD();model.load_state_dict(load_file(str(path)),strict=True);device='cuda' if torch.cuda.is_available() else 'cpu';processor=CLIPImageProcessor(**json.loads((ROOT/'vendor/gend/clip-preprocessor_config.json').read_text()))
- return model.to(device).eval(),processor,device
+ with torch.device('meta'):model=GenD()
+ model.load_state_dict(load_file(str(path)),strict=True,assign=True)
+ # CLIP position_ids is a nonpersistent buffer, absent from the checkpoint.
+ for module in model.modules():
+  if hasattr(module,'position_ids') and module.position_ids.device.type=='meta':module.position_ids=torch.arange(module.position_ids.shape[-1]).expand((1,-1))
+ if any(p.device.type=='meta' for p in model.parameters()):raise RuntimeError('Unloaded GenD parameter')
+ device='cuda' if torch.cuda.is_available() else 'cpu';processor=CLIPImageProcessor(**json.loads((ROOT/'vendor/gend/clip-preprocessor_config.json').read_text()))
+ return model.to(device=device,dtype=torch.float32).eval(),processor,device
 
 def score(model,processor,device,path,details=False):
  from .media import sample_video

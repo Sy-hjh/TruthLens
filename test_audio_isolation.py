@@ -26,7 +26,7 @@ class IsolationTests(unittest.TestCase):
   info=dict(approved=True,version='test',secondary={'threshold':.7})
   for primary,secondary,expected_calls,expected_positive in ((.9,.8,0,True),(.1,.69,1,False),(.1,.71,1,True)):
    parts=[dict(start=0,end=4,score=primary,threshold=.5)]
-   with patch('backend.modern_voice.available',return_value=True),patch('backend.modern_voice.json.loads',side_effect=[info,{'segments':parts}]),patch('backend.modern_voice.subprocess.run',return_value=SimpleNamespace(returncode=0,stdout='{}')),patch('backend.voice_forensics.predict',return_value=dict(status='completed',score=secondary,threshold=.7,source={})) as second:
+   with patch('backend.modern_voice.available',return_value=True),patch('backend.modern_voice.json.loads',return_value=info),patch('backend.modern_voice._primary',return_value=parts),patch('backend.voice_forensics.predict',return_value=dict(status='completed',score=secondary,threshold=.7,source={})) as second:
     result=predict(np.ones(64000,dtype=np.float32))
     self.assertEqual(second.call_count,expected_calls)
     self.assertEqual(any(s['score']>=s['threshold'] for s in result['segments']),expected_positive)

@@ -1,4 +1,6 @@
-import hashlib, json, logging, tempfile, threading, uuid, re
+import hashlib, json, logging, tempfile, threading, uuid, re, time
+import torch
+torch.set_num_threads(2)
 from datetime import datetime, timezone
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
@@ -43,6 +45,16 @@ async def lifespan(_app):
 
 app = FastAPI(title="亲安 · 多模态反诈核验", version="3.0.0", lifespan=lifespan)
 pool = ThreadPoolExecutor(max_workers=1)
+asr_pool = ThreadPoolExecutor(max_workers=1,thread_name_prefix="qinan-asr")
+
+def timed_transcription(samples):
+    start=time.monotonic()
+    try:result=detector.transcribe(samples)
+    except Exception:
+        logging.exception("Independent transcription failed")
+        result={"status":"unavailable","text":"","note":"转写模型运行失败，不代表没有音轨。"}
+    return result,time.monotonic()-start
+
 jobs = {}
 joblock = threading.Lock()
 
@@ -272,20 +284,39 @@ def process(key, path, name, context, sha, folder, scene="general"):
         ],
     }
     finished = False
+    started=time.monotonic();result['timings']={};samples=None;decode_error=None;asr_future=None
     try:
         suffix = path.suffix
+        if suffix in {'.mp4','.mov','.avi','.webm','.wav','.mp3','.m4a','.flac','.ogg'}:
+            step=time.monotonic()
+            with joblock:jobs[key]['message']='正在读取音轨（随后分开检查画面、声音和内容）'
+            try:
+                samples=detector.audio_samples(path,folder)
+                result['audio_info']={'status':'available','sample_rate':16000,'seconds':len(samples)/16000}
+                asr_future=asr_pool.submit(timed_transcription,samples)
+            except Exception as exc:
+                decode_error=exc;result['audio_info']={'status':'unavailable','code':getattr(exc,'code','decode_failed'),'note':str(exc)}
+            result['timings']['audio_decode_seconds']=time.monotonic()-step
+        video_started=time.monotonic()
         if suffix in {".mp4", ".mov", ".avi", ".webm"}:
             with joblock:
                 jobs[key]["message"] = "正在分析视频画面"
-            duration, frames = sample_video(path, 16)
-            images = [im for _, im in frames]
-            while len(images) < 16:
-                images.append(images[-1])
+            duration=0.;frames=[];fusion_configured=lambda:False
             try:
                 from .video_fusion import configured as fusion_configured,predict as fusion_predict
                 from .gend import configured as gend_configured,predict as gend_predict
                 from .ordered_video import configured as ordered_configured,predict as ordered_predict
                 from .sifta import configured as sifta_configured,predict as sifta_predict
+                if ordered_configured() or gend_configured() or fusion_configured() or sifta_configured():
+                    import cv2
+                    cap=cv2.VideoCapture(str(path))
+                    try:
+                        fps=cap.get(cv2.CAP_PROP_FPS);duration=cap.get(cv2.CAP_PROP_FRAME_COUNT)/fps if fps>0 else 0.
+                    finally:cap.release()
+                    images=[]
+                else:
+                    duration,frames=sample_video(path,16);images=[im for _,im in frames]
+                    while len(images)<16:images.append(images[-1])
                 result["modules"]["video"] = ordered_predict(path) if ordered_configured() else gend_predict(path) if gend_configured() else fusion_predict(path) if fusion_configured() else sifta_predict(path) if sifta_configured() else detector.classify("video", images)
             except Exception as e:
                 logging.exception("video")
@@ -297,6 +328,7 @@ def process(key, path, name, context, sha, folder, scene="general"):
             result["limitations"].append(
                 "画面分别采用16帧和4组8帧人脸片段核验，可能漏掉短暂伪造；测试仅覆盖指定来源和换脸方法，不代表所有生成视频。" if fusion_configured() else "画面采样进行人脸操纵核验，可能漏掉短暂伪造；不代表所有生成视频。"
             )
+        result['timings']['video_seconds']=time.monotonic()-video_started
         if suffix in {
             ".mp4",
             ".mov",
@@ -309,10 +341,10 @@ def process(key, path, name, context, sha, folder, scene="general"):
             ".ogg",
         }:
             with joblock:
-                jobs[key]["message"] = "正在提取并分析声音"
-            samples = None
+                jobs[key]["message"] = "音轨已读取，正在检测合成声音（转写同步进行）" if samples is not None else "正在核对音轨读取结果"
+            acoustic_started=time.monotonic()
             try:
-                samples = detector.audio_samples(path, folder)
+                if samples is None:raise decode_error or ValueError('未读取到音轨')
                 from .modern_voice import configured as acoustic_configured,predict as acoustic_predict
                 if acoustic_configured():
                     result["modules"]["audio"] = acoustic_predict(samples)
@@ -352,13 +384,18 @@ def process(key, path, name, context, sha, folder, scene="general"):
                 )
             except Exception as e:
                 logging.exception("audio")
-                result["modules"]["audio"] = {"status": "failed", "note": str(e)}
+                result["modules"]["audio"] = {"status": "failed", "note": str(e),"failure_stage":"model" if samples is not None else "decode","failure_code":getattr(e,"code","model_failed" if samples is not None else "decode_failed")}
+            result['timings']['acoustic_seconds']=time.monotonic()-acoustic_started
             if samples is not None:
                 with joblock:jobs[key]['message']='正在转写声音并检查内容风险'
                 from .speech_content import check as check_speech_content
-                result['transcript'],result['speech_analysis']=check_speech_content(samples)
+                transcript,asr_seconds=asr_future.result()
+                result['timings']['asr_seconds']=asr_seconds
+                content_started=time.monotonic()
+                result['transcript'],result['speech_analysis']=check_speech_content(samples,transcript=transcript)
+                result['timings']['content_seconds']=time.monotonic()-content_started
             else:
-                result['transcript']={'status':'unavailable','text':'','note':'没有取得可用声音。'}
+                result['transcript']={'status':'unavailable','text':'','note':str(decode_error or '未取得可读取的音轨。')}
                 result['speech_analysis']={'status':'unavailable','signals':[],'note':'没有可用声音，未分析内容。'}
         if scene == "chat":
             from .chat_ocr import read as read_chat
@@ -409,6 +446,7 @@ def process(key, path, name, context, sha, folder, scene="general"):
             )
         if result.get('speech_analysis',{}).get('assessment',{}).get('level') in {'alert','attention'}:result['summary']='发现需核实的说话内容，请先暂停操作'+('；另有合成线索' if any(tendencies) else '')
         if scene == "chat":result["summary"] = result.get('chat_analysis',{}).get('assessment',{}).get('title','聊天截图已提取，请核对内容并独立核实')
+        result['timings']['total_seconds']=time.monotonic()-started
         finished = True
     except Exception:
         logging.exception("job")

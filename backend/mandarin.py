@@ -1,6 +1,9 @@
 """CPU-only bilingual Paraformer adapter, used for a measured Mandarin ASR comparison."""
 
 import json
+from functools import lru_cache
+import threading
+_asr_lock=threading.Lock()
 import numpy as np
 from bootstrap import ROOT
 
@@ -11,7 +14,8 @@ def available():
     ).exists()
 
 
-def recognize(samples):
+@lru_cache(maxsize=1)
+def _recognizer():
     import sherpa_onnx
     from opencc import OpenCC
 
@@ -19,13 +23,24 @@ def recognize(samples):
     recognizer = sherpa_onnx.OfflineRecognizer.from_paraformer(
         paraformer=str(path / "model.int8.onnx"),
         tokens=str(path / "tokens.txt"),
-        num_threads=4,
+        num_threads=2,
         sample_rate=16000,
         feature_dim=80,
         decoding_method="greedy_search",
         debug=False,
         provider="cpu",
     )
+    return recognizer
+
+def recognize(samples):
+    from opencc import OpenCC
+    with _asr_lock:
+        return _recognize(samples)
+
+def _recognize(samples):
+    path=ROOT / "models/asr_zh"
+    from opencc import OpenCC
+    recognizer=_recognizer()
     texts = []
     for start in range(0, min(len(samples), 2880000), 480000):
         chunk = samples[start : start + 480000]

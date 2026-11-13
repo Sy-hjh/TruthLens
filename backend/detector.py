@@ -124,22 +124,57 @@ def classify(kind, data):
         }
 
 
-def audio_samples(path, temp):
-    # Use the same lossless waveform reader/resampler as the acoustic benchmark.
-    # Container formats that libsndfile cannot decode fall back to FFmpeg float PCM.
-    try:
-        from voice_features import audio
-        values=audio(path)[:2880000]
-    except (OSError,RuntimeError,ValueError):
-        import imageio_ffmpeg
-        proc=subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(),'-nostdin','-v','error','-i',str(path),'-t','180','-vn','-ac','1','-ar','16000','-f','f32le','pipe:1'],capture_output=True,timeout=90)
-        if proc.returncode:raise ValueError('无法提取音轨或音频格式不可解码')
-        values=np.frombuffer(proc.stdout,dtype=np.float32).copy()
+class AudioInputError(ValueError):
+    def __init__(self,code,message):super().__init__(message);self.code=code
 
-    if len(values) < 16000:
-        raise ValueError("音频不足1秒")
-    if np.sqrt(np.mean(values**2)) < 0.0001:
-        raise ValueError("音轨接近静音，无法做语音核验")
+def audio_samples(path, temp):
+    import imageio_ffmpeg,re
+    import logging
+    ffmpeg=imageio_ffmpeg.get_ffmpeg_exe()
+    container=Path(path).suffix.lower() in {'.mp4','.mov','.avi','.webm','.mkv'}
+    def decode(track=0,channel=None):
+        cmd=[ffmpeg,'-nostdin','-v','error','-i',str(path),'-t','180','-map',f'0:a:{track}','-vn']
+        if channel is not None:cmd+=['-af',f'pan=mono|c0=c{channel}']
+        cmd+=['-ac','1','-ar','16000','-f','f32le','pipe:1']
+        try:proc=subprocess.run(cmd,capture_output=True,timeout=45)
+        except subprocess.TimeoutExpired:raise AudioInputError('decode_timeout','音轨解码超时，不代表视频没有声音。')
+        if proc.returncode:
+            error=proc.stderr.decode('utf-8',errors='replace')
+            logging.warning('Audio decode failure: %s',error[-1000:])
+            if 'matches no streams' in error:raise AudioInputError('no_audio_stream','文件中未找到可读取音轨。')
+            raise AudioInputError('decode_failed','音轨解码失败，请换MP4/AAC或WAV后重试；不是已确认静音。')
+        return np.frombuffer(proc.stdout,dtype=np.float32).copy()
+    if container:values=decode()
+    else:
+        try:
+            import soundfile as sf
+            from scipy.signal import resample_poly
+            import math
+            with sf.SoundFile(path) as stream:
+                sr=stream.samplerate;x=stream.read(frames=180*sr,dtype='float32',always_2d=True)
+            values=x.mean(1)
+            if x.shape[1]>1:
+                energies=np.sqrt(np.mean(x*x,axis=0));energy=float(np.sqrt(np.mean(values*values)))
+                if energy<.05*float(energies.max()):values=x[:,int(energies.argmax())]
+            if sr!=16000:
+                g=math.gcd(sr,16000);values=resample_poly(values,16000//g,sr//g)
+            values=np.asarray(values[:2880000],dtype=np.float32)
+        except (OSError,RuntimeError,ValueError):values=decode()
+    if not np.isfinite(values).all():raise AudioInputError('invalid_audio','音轨包含无效采样，无法分析。')
+    if len(values)<16000:raise AudioInputError('too_short','已取得音轨，但不足1秒，无法可靠核验。')
+    if np.sqrt(np.mean(values**2))<.0001:
+        # A stereo track may cancel in mono. Recover one actual channel before
+        # calling it silent; do not amplify invented sound or pad missing audio.
+        try:
+            recovered=decode(channel=0)
+            if len(recovered)>=16000 and np.sqrt(np.mean(recovered**2))>=.0001:values=recovered
+            elif container:
+                for track in (1,2):
+                    try:other=decode(track=track)
+                    except AudioInputError:break
+                    if len(other)>=16000 and np.sqrt(np.mean(other**2))>=.0001:values=other;break
+        except AudioInputError:pass
+    if np.sqrt(np.mean(values**2))<.0001:raise AudioInputError('silent','已读取音轨，但采样接近静音；请检查文件音量。')
     return values
 
 
@@ -148,8 +183,7 @@ def transcribe(samples):
         try:
             from .mandarin import recognize
 
-            with lock:
-                return recognize(samples)
+            return recognize(samples)
         except Exception:
             import logging
 
@@ -157,7 +191,8 @@ def transcribe(samples):
     if not available("asr") and not available("asr_small"):
         return {"status": "unavailable", "text": "", "note": "语音转写模型未安装"}
     with lock:
-        from transformers import AutoProcessor, AutoModelForSpeechSeq2Seq
+        from transformers.models.auto.processing_auto import AutoProcessor
+        from transformers.models.auto.modeling_auto import AutoModelForSpeechSeq2Seq
 
         path = ROOT / ("models/asr_small" if available("asr_small") else "models/asr")
         processor = AutoProcessor.from_pretrained(path, local_files_only=True)

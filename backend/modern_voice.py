@@ -16,17 +16,17 @@ def available():
   source=json.loads((ROOT/'models/verispoof/source.json').read_text())
   return (ROOT/'runtime/smaug-packages/transformers').exists() and all((ROOT/'models/verispoof'/p).is_file() for p in source['sha256'])
  except (OSError,ValueError,KeyError):return False
+def _primary(path):
+ from .acoustic_worker_client import predict
+ return predict(path)['segments']
+
 def predict(samples):
  from .detector import lock
  info=json.loads((ROOT/'models/active-audio.json').read_text())
  if not info.get('approved') or not available():raise RuntimeError('声音检测模型未就绪')
  with lock,tempfile.TemporaryDirectory(dir=ROOT/'runtime/tmp') as directory:
   path=Path(directory)/'waveform.npy';np.save(path,np.asarray(samples,dtype=np.float32),allow_pickle=False)
-  env=dict(os.environ,HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',PYTHONUTF8='1')
-  result=subprocess.run([sys.executable,str(ROOT/'backend/verispoof_worker.py'),str(path)],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',timeout=300)
-  if result.returncode:
-   logging.error('Acoustic worker failed: %s',result.stderr[-5000:]);raise RuntimeError('声音检测未完成；请查看运行日志或换一段清晰录音重试。')
-  parts=json.loads(result.stdout.strip().splitlines()[-1])['segments']
+  parts=_primary(path)
  source=dict(repo='AustinXiao/VeriSpoof-Plus',version=info['version'])
  for part in parts:part['source']=source
  secondary=None

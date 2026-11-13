@@ -15,3 +15,9 @@
 11. 新参考组件SpeechContent.tsx已接入Report.tsx。请将此能力纳入你重做的前端，并与旧交接需求其他页面一并交付。当前仍不是实时共享屏幕功能。
 
 附：新接口返回更多字段时，JSON导出保留完整报告。文字纠正请求可能较慢，采用较长超时，忙碌期间禁止重复保存；失败保留用户输入。主流程仍是上传文件，不新增登录或云服务。
+
+
+## 2026-11-14 音轨故障和时间字段（向后兼容）
+视频必须呈现画面、声音、说话内容三项独立结果；音频呈现声音和内容两项。语音转写与检测并行，不能用串行等待文案。
+Report 可选 audio_info 包含 status、sample_rate、seconds，失败时 code、note。ModuleResult 可选 failure_stage（decode或model）、failure_code。声音模型失败不能写没有声音；音轨已读取则提示声音模型未完成，并继续展示独立文字检查。
+Report 可选 timings：audio_decode_seconds、video_seconds、acoustic_seconds、asr_seconds、content_seconds、total_seconds。总耗时不包含排队上传，各项并行不能简单相加。旧报告没有这些字段时不要显示虚构耗时。

@@ -3,10 +3,10 @@ def analyze_text(text):
  from .chat_analysis import analyze
  value=analyze(text[:4000]);value['input_basis']='speech_transcript';return value
 
-def check(samples):
+def check(samples,transcript=None):
  from .detector import transcribe
  try:
-  transcript=transcribe(samples)
+  if transcript is None:transcript=transcribe(samples)
   if transcript.get('status')!='completed' or not transcript.get('text','').strip():return transcript,dict(status='unavailable',signals=[],note='没有取得可分析的转写文字，不能判断内容风险。')
  except Exception:
   import logging
