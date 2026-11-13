@@ -43,3 +43,5 @@ data/demo/*
 .idea/
 tmp/
 /演示素材_八个/
+
+.agent-packages/

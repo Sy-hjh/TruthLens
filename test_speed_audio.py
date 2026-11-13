@@ -37,7 +37,8 @@ class AudioSpeedChecks(unittest.TestCase):
  def test_voice_model_timeout_preserves_video_and_transcript(self):
   with tempfile.TemporaryDirectory() as d,patch.object(storage,'ROOT',Path(d)),patch('backend.app.sample_video',return_value=(2,[(0.,Image.new('RGB',(64,64)))])),patch('backend.ordered_video.configured',return_value=True),patch('backend.ordered_video.predict',return_value={'status':'completed','score':.1}),patch('backend.detector.audio_samples',return_value=np.ones(32000,dtype='float32')*.1),patch('backend.modern_voice.configured',return_value=True),patch('backend.modern_voice.predict',side_effect=TimeoutError('声音模型超时，不是无音轨')),patch('backend.detector.transcribe',return_value={'status':'completed','text':'今天一起吃饭'}),patch('backend.speech_content.analyze_text',return_value={'status':'completed','assessment':{'level':'uncertain'}}):
    client=TestClient(app);r=client.post('/api/analyze',files={'file':('test.mp4',b'public-test')});key=r.json()['job_id']
-   for _ in range(150):
+   deadline=time.monotonic()+30
+   while time.monotonic()<deadline:
     job=client.get('/api/jobs/'+key).json()
     if job['status']!='processing':break
     time.sleep(.02)

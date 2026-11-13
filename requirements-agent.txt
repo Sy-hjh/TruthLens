@@ -1,0 +1,4 @@
+# Isolated dependencies: install with setup_agent.ps1, do not overwrite detector packages.
+langchain==1.5.0
+langchain-core==1.8.0
+langgraph==1.2.21

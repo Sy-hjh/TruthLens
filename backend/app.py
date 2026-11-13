@@ -44,6 +44,8 @@ async def lifespan(_app):
 
 
 app = FastAPI(title="亲安 · 多模态反诈核验", version="3.0.0", lifespan=lifespan)
+from .agent_api import router as agent_router
+app.include_router(agent_router)
 pool = ThreadPoolExecutor(max_workers=1)
 asr_pool = ThreadPoolExecutor(max_workers=1,thread_name_prefix="qinan-asr")
 
@@ -236,6 +238,8 @@ def get_case(key: str):
 def delete_case(key: str):
     with joblock:
         if key in jobs and jobs[key]['status']=='processing':raise HTTPException(409,'核验仍在处理，请完成后再删除报告')
+        from .agent_store import delete as delete_agent_data
+        delete_agent_data(key)
         storage.delete(key)
         jobs.pop(key,None)
     return {"deleted": True}

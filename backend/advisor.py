@@ -20,7 +20,7 @@ def extract_json(text):
  if start<0:raise ValueError('未产生结构化结果')
  return json.JSONDecoder().raw_decode(text[start:])[0]
 
-def explain(report,question):
+def legacy_explain(report,question):
  import torch
  from .detector import lock
  trace=[dict(tool='read_report',status='已读取本次报告的模型结果与适用限制')]
@@ -51,3 +51,12 @@ def explain(report,question):
  else:trace.append(dict(tool='output_guard',status='解释模型未安装，明确使用检索兜底'))
  actions=[ACTIONS[a] for a in dict.fromkeys(['pause',*selection['action_ids'],'callback'])]
  return dict(engine=engine,summary=SUMMARIES[selection['summary_key']],actions=actions,sources=sources,trace=trace,note=note+' 解释助手只做资料检索与建议选择，不执行拨号、转账或外部消息。')
+
+
+def explain(report,question):
+ from .agent_review import review
+ from .agent_api import _slots
+ from fastapi import HTTPException
+ if not _slots.acquire(blocking=False):raise HTTPException(429,"已有建议生成任务，请稍后重试")
+ try:return review(report,question,use_model=available())
+ finally:_slots.release()
