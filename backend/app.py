@@ -124,6 +124,7 @@ def health():
     models['chat_ocr'] = ocr_available()
     from .advisor import available as advisor_available
     models['advisor'] = advisor_available()
+    models['speech_text'] = any(detector.available(k) for k in ('asr_zh','asr_small','asr')) and (ROOT/'models/active-chat.json').exists()
     return {
         "version": app.version,
         "models": models,
@@ -145,6 +146,32 @@ def correct_chat_text(key:str,text:str=Form(...)):
     except Exception:
         logging.exception('Corrected chat interpretation')
         result['chat_analysis']={'status':'unavailable','signals':[],'note':'自动分析暂不可用，请人工核对。'}
+    if not storage.update(result):raise HTTPException(404,'记录已删除')
+    with joblock:
+        if key in jobs:jobs[key]['result']=result
+    return result
+
+
+@app.post('/api/cases/{key}/speech-text')
+def correct_speech_text(key:str,text:str=Form(...)):
+    if not text.strip() or len(text)>4000:raise HTTPException(422,'请填写1到4000字的转写文字')
+    result=storage.get(key)
+    if not result:raise HTTPException(404,'记录不存在')
+    if result.get('scene')=='chat' or 'transcript' not in result:raise HTTPException(409,'此入口仅用于音视频转写校正')
+    from .speech_content import analyze_text
+    analysis=analyze_text(text)
+    previous=result.get('transcript',{})
+    result['transcript']=dict(previous,text=text,original_text=previous.get('original_text',previous.get('text','')),corrected=True)
+    result['speech_analysis']=analysis
+    result['speech_analysis']['input_basis']='user_corrected_transcript'
+    if analysis.get('assessment',{}).get('level') in {'alert','attention'}:result['summary']='校正文字中发现需核实的要求，请查看分项结果'
+    else:
+        signals=[]
+        for module in result.get('modules',{}).values():
+            if module.get('status')!='completed':continue
+            if module.get('score') is not None:signals.append(module['score']>=module.get('threshold',.5))
+            signals.extend(p['score']>=p.get('threshold',.5) for p in module.get('segments',[]))
+        result['summary']='发现合成线索，请先核实' if any(signals) else '已重查说话内容，仍需独立核实'
     if not storage.update(result):raise HTTPException(404,'记录已删除')
     with joblock:
         if key in jobs:jobs[key]['result']=result
@@ -283,9 +310,9 @@ def process(key, path, name, context, sha, folder, scene="general"):
         }:
             with joblock:
                 jobs[key]["message"] = "正在提取并分析声音"
+            samples = None
             try:
                 samples = detector.audio_samples(path, folder)
-                result["transcript"] = {"status":"disabled","text":"","note":"语音仅做声学合成检测；文字分析请使用聊天截图入口。"}
                 from .modern_voice import configured as acoustic_configured,predict as acoustic_predict
                 if acoustic_configured():
                     result["modules"]["audio"] = acoustic_predict(samples)
@@ -326,6 +353,13 @@ def process(key, path, name, context, sha, folder, scene="general"):
             except Exception as e:
                 logging.exception("audio")
                 result["modules"]["audio"] = {"status": "failed", "note": str(e)}
+            if samples is not None:
+                with joblock:jobs[key]['message']='正在转写声音并检查内容风险'
+                from .speech_content import check as check_speech_content
+                result['transcript'],result['speech_analysis']=check_speech_content(samples)
+            else:
+                result['transcript']={'status':'unavailable','text':'','note':'没有取得可用声音。'}
+                result['speech_analysis']={'status':'unavailable','signals':[],'note':'没有可用声音，未分析内容。'}
         if scene == "chat":
             from .chat_ocr import read as read_chat
             from .chat_analysis import analyze as analyze_chat
@@ -373,6 +407,7 @@ def process(key, path, name, context, sha, folder, scene="general"):
             result["limitations"].append(
                 "图像提示依据该模型已登记的阈值；不是诈骗或真实性概率，局部改图仍可能漏检。"
             )
+        if result.get('speech_analysis',{}).get('assessment',{}).get('level') in {'alert','attention'}:result['summary']='发现需核实的说话内容，请先暂停操作'+('；另有合成线索' if any(tendencies) else '')
         if scene == "chat":result["summary"] = result.get('chat_analysis',{}).get('assessment',{}).get('title','聊天截图已提取，请核对内容并独立核实')
         finished = True
     except Exception:

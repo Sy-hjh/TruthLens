@@ -206,3 +206,12 @@ active-video为video-ordered-head，版本qinan-ordered-gru-r1-20261112。releas
 backend/chat_assessment.py根据逐字原话的要求组合显示疑似提醒，附真实公安案例；旧70%实验分类器收进研究记录，不覆盖已提取风险。新消息原文提取不可用时，有限匹配明示rules_only。聊天的普通借款/否定/教育反例有测试。资料为汕尾公安2023-05-26历史案，不能改称今日新闻。
 
 八个素材05–08已换FakeAVCeleb作者公开A/D原片与抽取音轨，A真人原声＋真画面，D克隆声＋假画面。2021英语示例，只作功能对照；新四象限A/B/C/D音画分别真实检测正确，不是独立通用准确率。主页新增av-real/av-fake带声入口，prepare_av_demos.py按作者公开链接及SHA恢复，release恢复已接入。旧中文音频和静音片备份data/demo-revisions/20261112-v1。过程详见docs/八个演示素材修正说明.md。截图01/02、音频05/06及所有AV输出已核验，浏览器chat-risk-case-v2-browser.png和av-dual-signal-v2-browser.png是实际新UI。不要把旧八素材单模块通过报告当作新版完整验收。
+
+
+## 2026-11-13：用户授权增加音视频双检查
+
+原合成检测保留，音视频新增独立ASR→内容风险；新字段transcript/speech_analysis，speech-text校正仅更新文字分析、不改变modules。原/transcript保持退休。ASR/内容失败独立隔离，静音不造文本；保存转写需在报告明确提示可历史删除。使用已安装Paraformer/Whisper和本地Qwen，没有新训练或调低合成阈值。
+
+实际HTTP三组通过：虚构中文借款TTS触发疑似熟人借款；普通内容合成声未触发内容警告；作者真人带声视频完成画面/声学/转写内容，校正前后modules完全一致。普通对照初次因“验证码”名词误报，保留失败日志，修正为需操作要求证据后重测通过。52项后端检查、网页构建通过；浏览器speech-dual-browser.png实际显示转写内容、原话及风险。不是增加了就保证总体准确率更高，绝不合成诈骗概率。
+
+新文件backend/speech_content.py、web/src/views/SpeechContent.tsx、test_speech_content.py、verify_speech_dual.py；详见docs/音视频双检查说明.md。Claude交接新增根目录语音双检查增补，原包及带“含语音双检查”版本均更新参考源码；需提醒用户转交增补，旧版不转写需求已被本次授权替代。未制作实时录屏，未录演示视频，未发布公网。

@@ -230,5 +230,13 @@
     "restore": "prepare_av_demos.py",
     "source": "https://sites.google.com/view/fakeavcelebdash-lab/",
     "labels": "A real audio/real video; D cloned audio/fake video; author public examples. 2021 English research demo, not new accuracy."
+  },
+  "speech_content": {
+    "enabled": true,
+    "version": "qinan-speech-content-r1-20261113",
+    "asr_primary": "asr_zh",
+    "fallback": "asr_small",
+    "evaluation": "reports/speech-dual-check.json",
+    "scope": "Independent transcription/content risk; synthesis modules unchanged; no unified fraud probability."
   }
 }

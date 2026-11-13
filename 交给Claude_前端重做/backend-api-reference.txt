@@ -1,0 +1,273 @@
+Updated2026-11-13 read-only API reference; includes speech-text.
+@app.get("/api/demo/{name}")
+def demo(name: str):
+    if name not in {
+        "family-simulation",
+        "expert-simulation",
+        "normal-synthetic-control",
+        "guidance-contact-family",
+        "guidance-edited-image",
+        "guidance-ai-image",
+        "guidance-inconclusive",
+    }:
+        raise HTTPException(404, "模拟材料不存在")
+    path = ROOT / "data/demo" / (name + ".mp3")
+    if not path.exists():
+        raise HTTPException(404, "模拟材料尚未生成")
+    return FileResponse(path, media_type="audio/mpeg", filename=name + ".mp3")
+
+
+Image.MAX_IMAGE_PIXELS = 25_000_000
+
+
+@app.get('/api/demo-video/{name}')
+def demo_video(name: str):
+    if name not in {'known-real','known-fake','known-real-2','known-fake-2','known-real-3','known-fake-3','av-real','av-fake'}:raise HTTPException(404,'公开视频不存在')
+    path=ROOT/'data/demo'/f'{name}.mp4'
+    if not path.exists():raise HTTPException(404,'公开视频尚未准备')
+    return FileResponse(path,media_type='video/mp4',filename=path.name)
+RULES = {
+    "紧急转账": ["转账", "汇款", "手术费", "保证金", "安全账户"],
+    "阻止独立核实": ["不要告诉", "别告诉", "保密", "不要打电话"],
+    "高收益承诺": ["稳赚", "保本", "翻倍", "百分之百"],
+    "冒用权威": ["公安", "警察", "专家", "医生"],
+}
+
+
+def phrase_evidence(text):
+    from opencc import OpenCC
+
+    text = OpenCC("t2s").convert(text)
+    evidence = []
+    for name, words in RULES.items():
+        for word in words:
+            for match in re.finditer(re.escape(word), text):
+                prefix = text[max(0, match.start() - 8) : match.start()]
+                if name == "紧急转账" and re.search(
+                    r"(不涉及|不需要|不要|暂停|禁止|切勿|无需).{0,4}$", prefix
+                ):
+                    continue
+                evidence.append(
+                    {
+                        "category": name,
+                        "excerpt": word,
+                        "context": text[
+                            max(0, match.start() - 12) : min(
+                                len(text), match.end() + 18
+                            )
+                        ],
+                        "note": "规范化文字中的规则命中，只是核实线索，不能单独认定诈骗",
+                    }
+                )
+                break
+    return evidence
+
+
+@app.get("/api/health")
+def health():
+    from .product import available as product_available
+
+    models = {
+        k: detector.available(k) for k in ("video", "audio", "image")
+    }
+    models["tamper"] = False
+    models["product"] = product_available()
+    from .chat_ocr import available as ocr_available
+    models['chat_ocr'] = ocr_available()
+    from .advisor import available as advisor_available
+    models['advisor'] = advisor_available()
+    models['speech_text'] = any(detector.available(k) for k in ('asr_zh','asr_small','asr')) and (ROOT/'models/active-chat.json').exists()
+    return {
+        "version": app.version,
+        "models": models,
+        "scope": "研究辅助核验，不确认身份，不保证真实性",
+        "demo_video": all((ROOT/'data/demo'/f'{n}.mp4').exists() for n in ('known-real','known-fake')),
+        "demo_av": all((ROOT/'data/demo'/f'{n}.mp4').exists() for n in ('av-real','av-fake')),
+    }
+
+
+@app.post('/api/cases/{key}/chat-text')
+def correct_chat_text(key:str,text:str=Form(...)):
+    if not text.strip() or len(text)>4000:raise HTTPException(422,'请填写1到4000字的截图文字')
+    result=storage.get(key)
+    if not result:raise HTTPException(404,'记录不存在')
+    if result.get('scene')!='chat':raise HTTPException(409,'这个入口只用于聊天截图，不能修改声音检测')
+    from .chat_analysis import analyze as analyze_chat
+    result['ocr']['text']=text
+    try:result['chat_analysis']=analyze_chat(text)
+    except Exception:
+        logging.exception('Corrected chat interpretation')
+        result['chat_analysis']={'status':'unavailable','signals':[],'note':'自动分析暂不可用，请人工核对。'}
+    if not storage.update(result):raise HTTPException(404,'记录已删除')
+    with joblock:
+        if key in jobs:jobs[key]['result']=result
+    return result
+
+
+@app.post('/api/cases/{key}/speech-text')
+def correct_speech_text(key:str,text:str=Form(...)):
+    if not text.strip() or len(text)>4000:raise HTTPException(422,'请填写1到4000字的转写文字')
+    result=storage.get(key)
+    if not result:raise HTTPException(404,'记录不存在')
+    if result.get('scene')=='chat' or 'transcript' not in result:raise HTTPException(409,'此入口仅用于音视频转写校正')
+    from .speech_content import analyze_text
+    analysis=analyze_text(text)
+    previous=result.get('transcript',{})
+    result['transcript']=dict(previous,text=text,original_text=previous.get('original_text',previous.get('text','')),corrected=True)
+    result['speech_analysis']=analysis
+    result['speech_analysis']['input_basis']='user_corrected_transcript'
+    if analysis.get('assessment',{}).get('level') in {'alert','attention'}:result['summary']='校正文字中发现需核实的要求，请查看分项结果'
+    else:
+        signals=[]
+        for module in result.get('modules',{}).values():
+            if module.get('status')!='completed':continue
+            if module.get('score') is not None:signals.append(module['score']>=module.get('threshold',.5))
+            signals.extend(p['score']>=p.get('threshold',.5) for p in module.get('segments',[]))
+        result['summary']='发现合成线索，请先核实' if any(signals) else '已重查说话内容，仍需独立核实'
+    if not storage.update(result):raise HTTPException(404,'记录已删除')
+    with joblock:
+        if key in jobs:jobs[key]['result']=result
+    return result
+
+
+@app.get("/api/cases")
+def cases():
+    return storage.listing()
+
+
+@app.get('/api/evidence')
+def evidence():
+    from .evidence import summary
+    return summary()
+
+
+@app.get('/api/news')
+def recent_news(refresh: bool=False):
+    from .news import get_news
+    return get_news(refresh)
+
+
+class AdviceRequest(BaseModel):
+    question: str = Field(default='我现在应该怎么独立核实？',min_length=1,max_length=200)
+
+
+@app.post('/api/cases/{key}/advice')
+def advice(key: str, body: AdviceRequest):
+    result=storage.get(key)
+    if not result:raise HTTPException(404,'报告不存在')
+    from .advisor import explain
+    return explain(result,body.question)
+
+
+@app.get('/model-lab.html')
+def model_lab_redirect():
+    return RedirectResponse('/#evidence') if (ROOT/'frontend-next/index.html').exists() else FileResponse(ROOT/'frontend/model-lab.html')
+
+
+@app.get("/api/cases/{key}")
+def get_case(key: str):
+    item = storage.get(key)
+    if not item:
+        raise HTTPException(404, "记录不存在")
+    return item
+
+
+@app.delete("/api/cases/{key}")
+def delete_case(key: str):
+    with joblock:
+        if key in jobs and jobs[key]['status']=='processing':raise HTTPException(409,'核验仍在处理，请完成后再删除报告')
+        storage.delete(key)
+        jobs.pop(key,None)
+    return {"deleted": True}
+
+
+@app.post("/api/cases/{key}/transcript")
+def correct_transcript(key: str, text: str = Form(...)):
+    raise HTTPException(410, "语音转写分析入口已关闭；文字分析请上传聊天截图。")
+
+
+@app.get("/api/jobs/{key}")
+def job(key: str):
+    with joblock:
+        if key not in jobs:
+            saved=storage.get(key)
+            if saved:return dict(status='completed',message='已从保存的报告恢复',result=saved)
+            raise HTTPException(404, "任务不存在；若服务中途重启，请重新提交材料")
+        return dict(jobs[key])
+
+
+def prune_jobs():
+    # Called with joblock held; reports remain in SQLite after memory eviction.
+    terminal=[key for key,value in jobs.items() if value['status']!='processing']
+    for key in terminal[:-100]:del jobs[key]
+
+
+
+@app.post("/api/analyze", status_code=202)
+def analyze(file: UploadFile = File(...), context: str = Form(""), scene: str = Form("general")):
+    if scene not in {"general","product","chat"}:raise HTTPException(422,"未知的检测场景")
+    if scene == "product":
+        from .product import available as product_available
+        if not product_available():raise HTTPException(503,"商品场景模型尚未通过发布检查，请使用通用核验")
+    suffix = Path(file.filename or "").suffix.lower()
+    if scene in {'product','chat'} and suffix not in {'.png','.jpg','.jpeg','.webp'}:
+        raise HTTPException(422,'该入口只支持图片')
+    if suffix not in {
+        ".mp4",
+        ".mov",
+        ".avi",
+        ".webm",
+        ".wav",
+        ".mp3",
+        ".m4a",
+        ".flac",
+        ".ogg",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".webp",
+    }:
+        raise HTTPException(415, "不支持的文件格式")
+    if len(context) > 4000:
+        raise HTTPException(422, "描述过长")
+    with joblock:
+        if sum(j["status"] == "processing" for j in jobs.values()) >= 3:
+            raise HTTPException(429, "已有任务处理中，请稍后")
+    folder = Path(tempfile.mkdtemp(dir=storage.ROOT, prefix="upload-"))
+    path = folder / ("input" + suffix)
+    digest = hashlib.sha256()
+    size = 0
+    try:
+        with path.open("wb") as out:
+            while chunk := file.file.read(1024 * 1024):
+                size += len(chunk)
+                if size > 100 * 1024 * 1024:
+                    raise HTTPException(413, "文件超过100MB")
+                digest.update(chunk)
+                out.write(chunk)
+        if not size:
+            raise HTTPException(422, "文件为空")
+    except Exception:
+        import shutil
+
+        shutil.rmtree(folder)
+        raise
+    finally:
+        file.file.close()
+    key = uuid.uuid4().hex
+    with joblock:
+        jobs[key] = {"status": "processing", "message": "已提交，等待检测"}
+    pool.submit(
+        process,
+        key,
+        path,
+        Path(file.filename).name,
+        context,
+        digest.hexdigest(),
+        folder,
+        scene,
+    )
+    return {"job_id": key}
+
+
+app.mount("/", StaticFiles(directory=ROOT / ('frontend-next' if (ROOT/'frontend-next/index.html').exists() else 'frontend'), html=True), name="web")

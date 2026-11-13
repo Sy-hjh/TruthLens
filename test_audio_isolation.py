@@ -31,7 +31,7 @@ class IsolationTests(unittest.TestCase):
     self.assertEqual(second.call_count,expected_calls)
     self.assertEqual(any(s['score']>=s['threshold'] for s in result['segments']),expected_positive)
     self.assertEqual(result['segments'][0]['score'],primary)
- def test_modern_acoustic_branch_never_uses_words(self):
+ def test_asr_failure_does_not_change_modern_acoustic_result(self):
   module=dict(status='completed',analysis_basis='acoustic_waveform_only',segments=[dict(start=0,end=4,score=.1,threshold=.5)])
   with tempfile.TemporaryDirectory() as tmp,patch.object(storage,'ROOT',Path(tmp)),patch('backend.detector.audio_samples',return_value=np.full(64000,.1,dtype=np.float32)),patch('backend.modern_voice.configured',return_value=True),patch('backend.modern_voice.predict',return_value=module) as acoustic,patch('backend.detector.transcribe',side_effect=AssertionError('No transcription')):
    client=TestClient(app);r=client.post('/api/analyze',files={'file':('妈妈马上转钱.wav',b'RIFF-test')},data={'context':'不要打电话，转到新账户'})
@@ -40,16 +40,16 @@ class IsolationTests(unittest.TestCase):
     job=client.get('/api/jobs/'+key).json()
     if job['status']!='processing':break
     time.sleep(.02)
-   self.assertEqual(job['status'],'completed');self.assertEqual(job['result']['phrases'],[]);self.assertEqual(job['result']['transcript']['status'],'disabled');self.assertEqual(job['result']['modules']['audio'],module)
+   self.assertEqual(job['status'],'completed');self.assertEqual(job['result']['phrases'],[]);self.assertEqual(job['result']['transcript']['status'],'unavailable');self.assertEqual(job['result']['modules']['audio'],module)
    self.assertEqual(len(acoustic.call_args.args),1);self.assertIsInstance(acoustic.call_args.args[0],np.ndarray)
- def test_audio_never_calls_transcription_or_text_analysis(self):
+ def test_transcription_failure_preserves_acoustic_score(self):
   with tempfile.TemporaryDirectory() as tmp,patch.object(storage,'ROOT',Path(tmp)),patch('backend.detector.audio_samples',return_value=np.full(64000,.1,dtype=np.float32)),patch('backend.modern_voice.configured',return_value=False),patch('backend.detector.transcribe',side_effect=AssertionError('Must not transcribe')) as transcribe,patch('backend.detector.classify',return_value={'status':'completed','score':.1,'threshold':.5}):
    client=TestClient(app);r=client.post('/api/analyze',files={'file':('real.wav',b'RIFF-test')},data={'context':'妈妈急需用钱，给我转点呗'});self.assertEqual(r.status_code,202);key=r.json()['job_id']
    for _ in range(100):
     job=client.get('/api/jobs/'+key).json()
     if job['status']!='processing':break
     time.sleep(.02)
-   self.assertEqual(job['status'],'completed');self.assertEqual(job['result']['phrases'],[]);self.assertEqual(job['result']['transcript']['status'],'disabled');self.assertEqual(job['result']['modules']['audio']['segments'][0]['score'],.1);transcribe.assert_not_called()
+   self.assertEqual(job['status'],'completed');self.assertEqual(job['result']['phrases'],[]);self.assertEqual(job['result']['transcript']['status'],'unavailable');self.assertEqual(job['result']['modules']['audio']['segments'][0]['score'],.1);transcribe.assert_called_once()
  def test_chat_mode_rejects_audio_before_processing(self):
   response=TestClient(app).post('/api/analyze',files={'file':('x.wav',b'x')},data={'scene':'chat'});self.assertEqual(response.status_code,422)
  def test_chat_evidence_must_match_actual_screenshot(self):

@@ -21,6 +21,8 @@ def main():
    for script in ('install_modern_image_runtime.py','install_smaug.py'):subprocess.run([sys.executable,script],cwd=ROOT,check=True)
   for script in ('install_chat_ocr.py','install_advisor.py'):subprocess.run([sys.executable,script],cwd=ROOT,check=True)
   if release.get('chat'):subprocess.run([sys.executable,'install_chat_language.py'],cwd=ROOT,check=True)
+  if release.get('speech_content',{}).get('enabled'):
+   for kind in ('asr_zh','asr_small'):subprocess.run([sys.executable,'download_models.py',kind],cwd=ROOT,check=True)
   if release.get('public_av_examples'):subprocess.run([sys.executable,'prepare_av_demos.py'],cwd=ROOT,check=True)
   for item in release.get('demo_videos',[]):
    path=ROOT/'data/demo'/(item['name']+'.mp4');path.parent.mkdir(parents=True,exist_ok=True);blob=get(f"https://huggingface.co/datasets/{item['source_repo']}/resolve/{item['revision']}/{item['source_path']}").content
