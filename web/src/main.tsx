@@ -1,5 +1,7 @@
 import "./performance";
 import MotionLayer from "./MotionLayer";
+import Companion from "./Companion";
+import MissionStage from "./MissionStage";
 import ParticleField from "./ParticleField";
 import { Component, Suspense, lazy, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
@@ -179,6 +181,14 @@ function App() {
   return (
     <>
       <MotionLayer motion={effectiveMotion} page={page} />
+      <Companion
+        motion={effectiveMotion}
+        page={page}
+        report={page === "report" ? report : null}
+        onNavigate={(p) => {
+          if (routes.includes(p)) go(p as Page);
+        }}
+      />
       <a
         className="skip-link"
         href="#main-content"
@@ -301,6 +311,9 @@ function App() {
                 </a>
               </div>
             </section>
+            <div className="home-mission">
+              <MissionStage page="home" motion={effectiveMotion} />
+            </div>
             <section className="portal-section" id="start">
               <div className="section-heading">
                 <div>
@@ -416,6 +429,9 @@ function App() {
             </button>
           </div>
           <div ref={heading} tabIndex={-1} className="page-focus" />
+          {page !== "home" && (
+            <MissionStage page={page} motion={effectiveMotion} />
+          )}
           {(checkVisited || page === "check") && (
             <div hidden={page !== "check"} className="page-enter">
               <Boundary>

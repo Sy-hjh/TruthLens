@@ -125,3 +125,7 @@ verify_deployment.py真实HTTP上传成功，视频分数0.8737767，正确返�
 
 ## 2026-11-14 Motion edition
 Canvas constellation with pointer repulsion/ripples, aurora, Three orbit satellites, title/CTA light, staggered reveal, card tilt/orbits, reading progress. No model/threshold/API change. Strict TS/build and 6 Node cases passed. Browser1440/390, reduced motion, mobile menu/workbench checked. Fixed negative ripple radius on immediate resize; fresh-page console clean. See TruthLens_动效升级说明.md.
+
+
+## 2026-11-14 Full-site observatory + companion
+Added page-specific interactive observatories, orbit angle/expand/pause controls, roaming/draggable vector companion, real local Qwen platform RAG API and existing report-agent mode. No fine-tuning performed or claimed; no detector changes. 87 backend tests pass;6 Node cases and TS build pass. Real local model answered3 topics;final HTTP payment question41.88s mode local_qwen_rag with explicit program-bound callback steps. Fixed mobile overflow:hidden internal focus-scroll displacement using clip. See TruthLens_全站交互与小鉴助手.md.

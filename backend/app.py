@@ -55,7 +55,7 @@ async def response_policy(request,call_next):
     response.headers['Referrer-Policy']='strict-origin-when-cross-origin'
     response.headers['X-Frame-Options']='DENY'
     response.headers['Content-Security-Policy']="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
-    if path.startswith(('/api/cases','/api/jobs')):response.headers['Cache-Control']='no-store'
+    if path.startswith(('/api/cases','/api/jobs','/api/companion')):response.headers['Cache-Control']='no-store'
     elif path.startswith('/assets/'):response.headers['Cache-Control']='public, max-age=31536000, immutable'
     elif path=='/' or path.endswith('.html'):response.headers['Cache-Control']='no-cache'
     return response
@@ -237,6 +237,20 @@ def recent_news(refresh: bool=False):
 
 class AdviceRequest(BaseModel):
     question: str = Field(default='我现在应该怎么独立核实？',min_length=1,max_length=200)
+
+
+class CompanionRequest(BaseModel):
+    question: str = Field(min_length=1,max_length=320)
+    page: str = Field(default='home',pattern='^(home|check|contacts|practice|history|report)$')
+
+@app.post('/api/companion/ask')
+def companion_ask(body: CompanionRequest):
+    from .agent_api import _slots
+    from .companion import answer
+    if not body.question.strip():raise HTTPException(422,'请输入问题')
+    if not _slots.acquire(blocking=False):raise HTTPException(429,'助手正在处理另一份提问，请稍后重试')
+    try:return answer(body.question.strip(),body.page)
+    finally:_slots.release()
 
 
 @app.post('/api/cases/{key}/advice')
