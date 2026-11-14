@@ -1,6 +1,123 @@
-import {useEffect,useState} from 'react';import {api} from '../api';import type {Evidence as EvidenceData} from '../api';
-const pct=(x:number|null)=>x===null?'—':(x*100).toFixed(1)+'%';
-const current=['image-review-policy.json','verispoof-test-channels.json','voice-cascade-check.json'];
-const isCurrent=(x:EvidenceData['experiments'][number])=>current.includes(x.report)||(x.report==='new-model-check.json'&&(x.title.startsWith('整图生成：新增')||x.title.startsWith('本地有序GRU头：')));
-function Results({rows}:{rows:EvidenceData['experiments']}){return <div className="table-wrap"><table><thead><tr><th>任务与适用范围</th><th>样本数</th><th>平衡准确率</th><th>真实误报率</th><th>合成漏检率</th></tr></thead><tbody>{rows.map(x=><tr key={x.title}><td><strong>{x.title}</strong><small>{x.note}</small></td><td>{x.metrics.n}<small>真{x.metrics.real_count}/合成{x.metrics.fake_count}</small></td><td>{pct(x.metrics.balanced_accuracy)}</td><td>{pct(x.metrics.real_false_positive_rate)}</td><td>{pct(x.metrics.fake_miss_rate)}</td></tr>)}</tbody></table></div>}
-export default function Evidence(){const[data,setData]=useState<EvidenceData|null>(null),[error,setError]=useState('');useEffect(()=>{api<EvidenceData>('/api/evidence').then(setData).catch(e=>setError(e.message))},[]);return <><p className="eyebrow">供研究与评审复核</p><h1>按任务看实测结果</h1><p className="page-intro">先看当前版本，再看历史实验。不同任务的成绩不能合成一个“全系统准确率”。</p>{error&&<p role="alert" className="error">{error}</p>}{data?<><article className="card"><h2>当前使用版本的测试</h2><Results rows={data.experiments.filter(isCurrent).sort((a,b)=>current.indexOf(a.report)-current.indexOf(b.report))}/><p>本轮时序测试60/60段取得可用输入。旧八帧对照另有1/180段未取得人脸，不算正确分类。</p><p>图片强提醒策略在已观察集复核，23张处于不确定区间；原始低阈值实验在历史表中保留。整图测试不代表局部P图效果；声音主模型为留出说话人测试；双重检查是看过该数据后的复核，不能当作新测试。同一录音的压缩版不算新增样本，真人留出仅32段。上游预训练重叠未知。</p></article><article className="card"><h2>这些数字怎么看？</h2><p>真实误报率：真实材料被误判为合成的比例。合成漏检率：合成材料没有被检出的比例。平衡准确率让两类同等计分。</p><p>公开数据的来源、人物和生成方法，不一定代表老人实际收到的材料。小样本高分不能证明所有GPT图片或生成视频都能识别。</p></article><details className="card"><summary>查看历史实验与未通过的方案</summary><p>以下包含已观察诊断、低分和漏检，保留它们用于研究追溯。</p><Results rows={data.experiments.filter(x=>!isCurrent(x))}/></details><details className="card"><summary>技术版本记录</summary><p>{Object.entries(data.releases).map(([k,v])=>`${({video:'视频',audio:'声音',image:'图片',domain:'商品专用'} as Record<string,string>)[k]||k}：${v}`).join('；')}</p><small>{data.warning}</small></details></>:!error&&<p role="status">正在读取实际测试结果…</p>}</>}
+import { useEffect, useState } from "react";
+import { api } from "../api";
+import type { Evidence as EvidenceData } from "../api";
+const pct = (x: number | null) =>
+  x === null ? "—" : (x * 100).toFixed(1) + "%";
+const current = [
+  "image-review-policy.json",
+  "verispoof-test-channels.json",
+  "voice-cascade-check.json",
+];
+const isCurrent = (x: EvidenceData["experiments"][number]) =>
+  current.includes(x.report) ||
+  (x.report === "new-model-check.json" &&
+    (x.title.startsWith("整图生成：新增") ||
+      x.title.startsWith("本地有序GRU头：")));
+function Results({ rows }: { rows: EvidenceData["experiments"] }) {
+  return (
+    <div className="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>任务与适用范围</th>
+            <th>样本数</th>
+            <th>平衡准确率</th>
+            <th>真实误报率</th>
+            <th>合成漏检率</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((x) => (
+            <tr key={x.title}>
+              <td>
+                <strong>{x.title}</strong>
+                <small>{x.note}</small>
+              </td>
+              <td>
+                {x.metrics.n}
+                <small>
+                  真{x.metrics.real_count}/合成{x.metrics.fake_count}
+                </small>
+              </td>
+              <td>{pct(x.metrics.balanced_accuracy)}</td>
+              <td>{pct(x.metrics.real_false_positive_rate)}</td>
+              <td>{pct(x.metrics.fake_miss_rate)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+export default function Evidence() {
+  const [data, setData] = useState<EvidenceData | null>(null),
+    [error, setError] = useState("");
+  useEffect(() => {
+    api<EvidenceData>("/api/evidence")
+      .then(setData)
+      .catch((e) => setError(e.message));
+  }, []);
+  return (
+    <>
+      <p className="eyebrow">供研究与评审复核</p>
+      <h1>按任务看实测结果</h1>
+      <p className="page-intro">
+        先看当前版本，再看历史实验。不同任务的成绩不能合成一个“全系统准确率”。
+      </p>
+      {error && (
+        <p role="alert" className="error">
+          {error}
+        </p>
+      )}
+      {data ? (
+        <>
+          <article className="card">
+            <h2>当前使用版本的测试</h2>
+            <Results
+              rows={data.experiments
+                .filter(isCurrent)
+                .sort(
+                  (a, b) =>
+                    current.indexOf(a.report) - current.indexOf(b.report),
+                )}
+            />
+            <p>
+              本轮时序测试60/60段取得可用输入。旧八帧对照另有1/180段未取得人脸，不算正确分类。
+            </p>
+            <p>
+              图片强提醒策略在已观察集复核，23张处于不确定区间；原始低阈值实验在历史表中保留。整图测试不代表局部P图效果；声音主模型为留出说话人测试；双重检查是看过该数据后的复核，不能当作新测试。同一录音的压缩版不算新增样本，真人留出仅32段。上游预训练重叠未知。
+            </p>
+          </article>
+          <article className="card">
+            <h2>这些数字怎么看？</h2>
+            <p>
+              真实误报率：真实材料被误判为合成的比例。合成漏检率：合成材料没有被检出的比例。平衡准确率让两类同等计分。
+            </p>
+            <p>
+              公开数据的来源、人物和生成方法，不一定代表老人实际收到的材料。小样本高分不能证明所有GPT图片或生成视频都能识别。
+            </p>
+          </article>
+          <details className="card">
+            <summary>查看历史实验与未通过的方案</summary>
+            <p>以下包含已观察诊断、低分和漏检，保留它们用于研究追溯。</p>
+            <Results rows={data.experiments.filter((x) => !isCurrent(x))} />
+          </details>
+          <details className="card">
+            <summary>技术版本记录</summary>
+            <p>
+              {Object.entries(data.releases)
+                .map(
+                  ([k, v]) =>
+                    `${({ video: "视频", audio: "声音", image: "图片", domain: "商品专用" } as Record<string, string>)[k] || k}：${v}`,
+                )
+                .join("；")}
+            </p>
+            <small>{data.warning}</small>
+          </details>
+        </>
+      ) : (
+        !error && <p role="status">正在读取实际测试结果…</p>
+      )}
+    </>
+  );
+}

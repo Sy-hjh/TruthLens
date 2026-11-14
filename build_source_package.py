@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT=bootstrap.ROOT
 
 def main():
- target=ROOT/'submission/亲安_参赛源码包.zip';items=[]
+ target=ROOT/'submission/TruthLens_参赛源码包.zip';items=[]
  for path in ROOT.iterdir():
   if path.is_file() and (path.suffix in ('.py','.ps1','.cmd','.md','.txt') or path.name in ('.gitignore','.gitattributes','.env.example','team.json')):items.append(path)
  for folder in ('backend','web','frontend','frontend-next','vendor','docs','release'):
@@ -14,6 +14,10 @@ def main():
    items.append(path)
  for path in (ROOT/'data/demo').iterdir():
   if path.suffix in ('.mp3','.json'):items.append(path)
+ # Model notices accompany reproducible download scripts; weights remain excluded.
+ for filename in ('NOTICE','LICENSE-Apache-2.0.txt'):
+  path=ROOT/'models/verispoof'/filename
+  if path.exists():items.append(path)
  # Small locally trained experimental classifier, not large upstream encoders.
  for name in ('config.json','weights.npz'):
   path=ROOT/'models/text-patterns'/name
@@ -31,7 +35,7 @@ def main():
   for name in ('delivery-verification.json','deployment-http.json','voice-browser-acceptance.json','chat-pipeline-check.json','demo-video-check.json','backend-checks-final.json','report-trace-check.json','chat-user-fixed-acceptance.json'):
    if name in public:continue
    archive.write(ROOT/'reports'/name,'qinan/reports/'+name)
-  for name in ('text-pattern-training.json','text-semantic-comparison.json','audio-nuisance-check.json','text-upgrade-acceptance.json','image-regions-comparison.json','ftcn-contiguous-comparison.json','new-model-check.json','omniaid-reference-equivalence.json','ordered-temporal-head-training.json','ordered-temporal-head-test.json','ordered-head-active-baseline.json','ordered-delivery-parity.json','av-author-sample-check.json','eight-demo-v2-changed-checks.json','speech-dual-check.json','speed-summary.json','video-speed-full.json','agent-upgrade-check.json','agent-http-acceptance.json','agent-http-cold.json','scoring-upgrade-summary.json'):
+  for name in ('text-pattern-training.json','text-semantic-comparison.json','audio-nuisance-check.json','text-upgrade-acceptance.json','image-regions-comparison.json','ftcn-contiguous-comparison.json','new-model-check.json','omniaid-reference-equivalence.json','ordered-temporal-head-training.json','ordered-temporal-head-test.json','ordered-head-active-baseline.json','ordered-delivery-parity.json','av-author-sample-check.json','eight-demo-v2-changed-checks.json','speech-dual-check.json','speed-summary.json','video-speed-full.json','agent-upgrade-check.json','agent-http-acceptance.json','agent-http-cold.json','scoring-upgrade-summary.json','truthlens-eight-media-check.json','truthlens-ui-acceptance.json','truthlens-assets-acceptance.json','truthlens-delivery-summary.json','truthlens-video-dispatch-parity.json'):
    path=ROOT/'reports'/name
    if path.exists() and name not in public:archive.write(path,'qinan/reports/'+name)
  with zipfile.ZipFile(target) as archive:

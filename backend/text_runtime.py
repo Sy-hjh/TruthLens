@@ -5,6 +5,10 @@ _cached=None
 _key=None
 _verified=set()
 
+def drop_cache():
+ global _cached,_key
+ _cached=None;_key=None;gc.collect()
+
 def free_memory():
  if os.name=='nt':
   class Memory(ctypes.Structure):
@@ -16,6 +20,10 @@ def acquire(path,device):
  global _cached,_key
  import torch
  from transformers import AutoTokenizer,AutoModelForCausalLM
+ # acquire is called under detector.lock: the acoustic worker is idle here.
+ if free_memory()<6*1024**3:
+  from .acoustic_worker_client import close
+  close()
  source=json.loads((path/'source.json').read_text(encoding='utf-8'));items=[]
  for name,expected in source['sha256'].items():
   file=path/name;stat=file.stat();key=(str(file),stat.st_size,stat.st_mtime_ns,expected);items.append(key)
@@ -37,5 +45,5 @@ def release(tokenizer,model,key):
  global _cached,_key
  import torch
  model.cpu();gc.collect();torch.cuda.empty_cache()
- if free_memory()>3*1024**3:_cached=(tokenizer,model);_key=key
+ if free_memory()>8*1024**3:_cached=(tokenizer,model);_key=key
  else:_cached=None;_key=None

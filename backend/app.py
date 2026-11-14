@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, Field
 from PIL import Image
@@ -43,7 +44,22 @@ async def lifespan(_app):
     news_stop.set()
 
 
-app = FastAPI(title="亲安 · 多模态反诈核验", version="3.0.0", lifespan=lifespan)
+app = FastAPI(title="TruthLens 真鉴 · 多模态核验与反诈问答", version="3.0.0", lifespan=lifespan)
+app.add_middleware(GZipMiddleware,minimum_size=1000,compresslevel=6)
+
+@app.middleware('http')
+async def response_policy(request,call_next):
+    response=await call_next(request)
+    path=request.url.path
+    response.headers['X-Content-Type-Options']='nosniff'
+    response.headers['Referrer-Policy']='strict-origin-when-cross-origin'
+    response.headers['X-Frame-Options']='DENY'
+    response.headers['Content-Security-Policy']="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+    if path.startswith(('/api/cases','/api/jobs')):response.headers['Cache-Control']='no-store'
+    elif path.startswith('/assets/'):response.headers['Cache-Control']='public, max-age=31536000, immutable'
+    elif path=='/' or path.endswith('.html'):response.headers['Cache-Control']='no-cache'
+    return response
+
 from .agent_api import router as agent_router
 app.include_router(agent_router)
 pool = ThreadPoolExecutor(max_workers=1)
@@ -59,6 +75,16 @@ def timed_transcription(samples):
 
 jobs = {}
 joblock = threading.Lock()
+
+def video_predictor():
+    """Import only the configured detector; never initialize unused model stacks."""
+    from importlib import import_module
+    config=ROOT/'models/active-video.json'
+    engine=json.loads(config.read_text(encoding='utf-8')).get('engine') if config.exists() else None
+    modules={'video-ordered-head':'.ordered_video','gend-clip':'.gend','video-fusion':'.video_fusion','sifta':'.sifta'}
+    if engine not in modules:return None,False
+    module=import_module(modules[engine],package=__package__)
+    return (module.predict,engine=='video-fusion') if module.configured() else (None,False)
 
 
 @app.get("/api/demo/{name}")
@@ -223,7 +249,7 @@ def advice(key: str, body: AdviceRequest):
 
 @app.get('/model-lab.html')
 def model_lab_redirect():
-    return RedirectResponse('/#evidence') if (ROOT/'frontend-next/index.html').exists() else FileResponse(ROOT/'frontend/model-lab.html')
+    return RedirectResponse('/#home') if (ROOT/'frontend-next/index.html').exists() else FileResponse(ROOT/'frontend/model-lab.html')
 
 
 @app.get("/api/cases/{key}")
@@ -273,6 +299,7 @@ def process(key, path, name, context, sha, folder, scene="general"):
         "filename": name,
         "scene": scene,
         "context": context,
+        "internal_only": context.startswith('__truthlens_qa__'),
         "sha256": sha,
         "modules": {},
         "phrases": [],
@@ -290,6 +317,8 @@ def process(key, path, name, context, sha, folder, scene="general"):
     finished = False
     started=time.monotonic();result['timings']={};samples=None;decode_error=None;asr_future=None
     try:
+        from .resource_budget import prepare as prepare_resources
+        result['resource_policy']=prepare_resources()
         suffix = path.suffix
         if suffix in {'.mp4','.mov','.avi','.webm','.wav','.mp3','.m4a','.flac','.ogg'}:
             step=time.monotonic()
@@ -305,13 +334,10 @@ def process(key, path, name, context, sha, folder, scene="general"):
         if suffix in {".mp4", ".mov", ".avi", ".webm"}:
             with joblock:
                 jobs[key]["message"] = "正在分析视频画面"
-            duration=0.;frames=[];fusion_configured=lambda:False
+            duration=0.;frames=[];fusion_active=False
             try:
-                from .video_fusion import configured as fusion_configured,predict as fusion_predict
-                from .gend import configured as gend_configured,predict as gend_predict
-                from .ordered_video import configured as ordered_configured,predict as ordered_predict
-                from .sifta import configured as sifta_configured,predict as sifta_predict
-                if ordered_configured() or gend_configured() or fusion_configured() or sifta_configured():
+                predict_video,fusion_active=video_predictor()
+                if predict_video:
                     import cv2
                     cap=cv2.VideoCapture(str(path))
                     try:
@@ -321,7 +347,7 @@ def process(key, path, name, context, sha, folder, scene="general"):
                 else:
                     duration,frames=sample_video(path,16);images=[im for _,im in frames]
                     while len(images)<16:images.append(images[-1])
-                result["modules"]["video"] = ordered_predict(path) if ordered_configured() else gend_predict(path) if gend_configured() else fusion_predict(path) if fusion_configured() else sifta_predict(path) if sifta_configured() else detector.classify("video", images)
+                result["modules"]["video"] = predict_video(path) if predict_video else detector.classify("video", images)
             except Exception as e:
                 logging.exception("video")
                 result["modules"]["video"] = {"status": "failed", "note": str(e)}
@@ -330,7 +356,7 @@ def process(key, path, name, context, sha, folder, scene="general"):
             if result['modules']['video'].get('moments'):
                 result['sample_times']=[m['start'] for m in result['modules']['video']['moments']]
             result["limitations"].append(
-                "画面分别采用16帧和4组8帧人脸片段核验，可能漏掉短暂伪造；测试仅覆盖指定来源和换脸方法，不代表所有生成视频。" if fusion_configured() else "画面采样进行人脸操纵核验，可能漏掉短暂伪造；不代表所有生成视频。"
+                "画面分别采用16帧和4组8帧人脸片段核验，可能漏掉短暂伪造；测试仅覆盖指定来源和换脸方法，不代表所有生成视频。" if fusion_active else "画面采样进行人脸操纵核验，可能漏掉短暂伪造；不代表所有生成视频。"
             )
         result['timings']['video_seconds']=time.monotonic()-video_started
         if suffix in {

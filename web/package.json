@@ -1,22 +1,29 @@
 {
-  "name": "qinan-web",
+  "name": "truthlens-web",
   "version": "3.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "test": "node --experimental-strip-types --test test-api.mjs test-signals.mjs",
+    "format": "prettier --write src index.html *.mjs *.ts",
+    "format:check": "prettier --check src index.html *.mjs *.ts"
   },
   "dependencies": {
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "three": "^0.183.2",
+    "web-vitals": "^6.2.3"
   },
   "devDependencies": {
-    "typescript": "7.0.2",
-    "vite": "8.3.7",
-    "@vitejs/plugin-react": "6.3.0",
     "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0"
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.183.1",
+    "@vitejs/plugin-react": "6.3.0",
+    "prettier": "^3.10.1",
+    "typescript": "7.0.2",
+    "vite": "8.3.7"
   }
 }

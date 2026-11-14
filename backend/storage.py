@@ -28,14 +28,15 @@ def save(case):
         )
 
 
-def listing():
+def listing(include_internal=False):
     with connection() as db:
-        return [
+        rows = [
             json.loads(row[0])
             for row in db.execute(
                 "SELECT body FROM cases ORDER BY rowid DESC LIMIT 100"
             )
         ]
+        return rows if include_internal else [r for r in rows if not r.get('internal_only')]
 
 
 def get(case_id):

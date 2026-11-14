@@ -1,21 +1,256 @@
-import SpeechContent from './SpeechContent';
-import DetectionEvidence from './DetectionEvidence';
-import ChatReport from './ChatReport';
-import {useEffect,useState} from 'react';import {downloadReport} from '../api';import type {Report as ReportData} from '../api';import {moduleSignal} from '../signals';
-const names:Record<string,string>={video:'视频画面检查',audio:'声学合成检测',image:'图片'};
-type Props={report:ReportData;onContacts:()=>void;onUpdate:(r:ReportData)=>void};
-export default function Report(props:Props){return props.report.scene==='chat'?<ChatReport {...props}/>:<MediaReport {...props}/>};
-function MediaReport({report,onContacts,onUpdate}:{report:ReportData;onContacts:()=>void;onUpdate:(r:ReportData)=>void}){
- const[playing,setPlaying]=useState(false);
- const modules=Object.entries(report.modules).filter(([key,m])=>key!=='tamper'&&m.status!=='disabled');const alerts=modules.filter(([,m])=>moduleSignal(m).level==='alert');const audioOnly=modules.length===1&&modules[0][0]==='audio';const banner=report.speech_analysis?.assessment?.level==='alert'?'发现可疑说话内容，请先核实':report.speech_analysis?.assessment?.level==='attention'?'说话中有需要核实的要求':alerts.length?'发现合成线索，请先核实':audioOnly&&moduleSignal(modules[0][1]).level!=='unavailable'?'声音已检查，未检出明确合成特征':'这次检查，还不能确认真假';
- useEffect(()=>{let saved:Map<HTMLDetailsElement,boolean>=new Map();const before=()=>{document.querySelectorAll<HTMLDetailsElement>('.report-record').forEach(el=>{saved.set(el,el.open);el.open=true})};const after=()=>{saved.forEach((open,el)=>el.open=open);saved.clear()};addEventListener('beforeprint',before);addEventListener('afterprint',after);return()=>{removeEventListener('beforeprint',before);removeEventListener('afterprint',after)}},[]);
+import { focusQuestions } from "../ui";
+import AgentReview from "./AgentReview";
+import SpeechContent from "./SpeechContent";
+import DetectionEvidence from "./DetectionEvidence";
+import ChatReport from "./ChatReport";
+import { useEffect, useState } from "react";
+import { downloadReport } from "../api";
+import type { Report as ReportData } from "../api";
+import { moduleSignal } from "../signals";
+const names: Record<string, string> = {
+  video: "视频画面检查",
+  audio: "声学合成检测",
+  image: "图片",
+};
+type Props = {
+  report: ReportData;
+  onContacts: () => void;
+  onUpdate: (r: ReportData) => void;
+};
+export default function Report(props: Props) {
+  return (
+    <>
+      {props.report.scene === "chat" ? (
+        <ChatReport {...props} />
+      ) : (
+        <MediaReport {...props} />
+      )}
+      <AgentReview report={props.report} />
+    </>
+  );
+}
+function MediaReport({
+  report,
+  onContacts,
+  onUpdate,
+}: {
+  report: ReportData;
+  onContacts: () => void;
+  onUpdate: (r: ReportData) => void;
+}) {
+  const [playing, setPlaying] = useState(false);
+  const modules = Object.entries(report.modules).filter(
+    ([key, m]) => key !== "tamper" && m.status !== "disabled",
+  );
+  const alerts = modules.filter(([, m]) => moduleSignal(m).level === "alert");
+  const audioOnly = modules.length === 1 && modules[0][0] === "audio";
+  const banner =
+    report.speech_analysis?.assessment?.level === "alert"
+      ? "发现可疑说话内容，请先核实"
+      : report.speech_analysis?.assessment?.level === "attention"
+        ? "说话中有需要核实的要求"
+        : alerts.length
+          ? "发现合成线索，请先核实"
+          : audioOnly && moduleSignal(modules[0][1]).level !== "unavailable"
+            ? "声音已检查，未检出明确合成特征"
+            : "这次检查，还不能确认真假";
+  useEffect(() => {
+    let saved: Map<HTMLDetailsElement, boolean> = new Map();
+    const before = () => {
+      document
+        .querySelectorAll<HTMLDetailsElement>(".report-record")
+        .forEach((el) => {
+          saved.set(el, el.open);
+          el.open = true;
+        });
+    };
+    const after = () => {
+      saved.forEach((open, el) => (el.open = open));
+      saved.clear();
+    };
+    addEventListener("beforeprint", before);
+    addEventListener("afterprint", after);
+    return () => {
+      removeEventListener("beforeprint", before);
+      removeEventListener("afterprint", after);
+    };
+  }, []);
 
- return <><div className="report-top"><div><p className="eyebrow">检查结果</p><h1>{banner}</h1><p className="page-intro">{report.filename} · {new Date(report.created_at).toLocaleString('zh-CN')}</p>{report.timings?.total_seconds!==undefined&&<small>本次处理 {report.timings.total_seconds.toFixed(1)} 秒，排队和上传另计。</small>}</div><div className="toolbar"><button onClick={()=>downloadReport(report)}>下载检测记录</button><button onClick={()=>window.print()}>打印</button></div></div>
- {modules.some(([k,m])=>k==='image'&&m.source?.version==='qinan-smaug-whole-r1-20261111')&&<p className="notice analysis-incomplete">这是旧版低阈值报告，可能过度提醒。请重新上传查看当前不确定区间和三视图数据；原始记录未改分。</p>}
- <article className={'result-banner '+(alerts.length?'alert':'uncertain')}><div><span className="result-icon" aria-hidden="true">{alerts.length?'!':'?'}</span><div><h2>{alerts.length?alerts.map(([k])=>names[k]||k).join('、')+'出现了合成信号':'合成检查：暂未发现明确合成信号'}</h2><p>检测不能确认对方是谁。涉及钱，请先联系家人。</p></div></div><button className="primary" onClick={onContacts}>联系我的家人 ↗</button></article>
- <div className="report-modules">{modules.map(([key,m])=>{const s=moduleSignal(m);return <article className={'card module signal-'+s.level} key={key}><div className="module-top"><h2>{m.method==='temporal-sequence'?'视频时序换脸检查':names[key]||'材料检查'}</h2><span className={'signal-label '+s.level}>{s.level==='alert'?'需要警惕':s.level==='uncertain'?'仍需核实':'无法判断'}</span></div><h3>{key==='audio'&&s.level==='uncertain'?'本次未检出合成特征':key==='image'&&s.level==='uncertain'&&m.score!==undefined&&m.sensitivity_threshold!==undefined&&m.score>=m.sensitivity_threshold?'弱线索，证据不足':s.title}</h3>{key==='audio'&&<p>直接分析声音，不依据说话内容判断。{m.analyzed_seconds!==undefined?`已分析 ${m.analyzed_seconds.toFixed(1)} 秒录音。`:''}</p>}<p className="plain-explanation">{s.level==='unavailable'?(key==='audio'?(m.failure_stage==='model'?'音轨已读取，但声音模型未完成；请查看下方独立内容检查。':m.note||'未取得可检查的音轨，请查看具体原因。'):key==='video'?'没有取得适合检查的人脸画面。':'这份材料暂时无法检查。'):s.level==='alert'?(key==='audio'?`${s.flagged}段声音出现合成信号，请换个渠道联系本人。`:key==='video'?'画面中发现了可能的合成或换脸线索。':'图片出现较强合成信号，请核对原图来源。'):'仍需核实来源。'}</p>
- {m.segments&&<details className="audio-detail"><summary>看看哪些声音片段需要注意</summary>{m.segments.map((part,i)=>{const high=part.score>=(part.threshold??.5);return <div className={'audio-interval '+(high?'alert':'uncertain')} key={i}><b>{part.start.toFixed(0)}–{(part.end??part.start+5).toFixed(0)}秒</b><span>{high?'有合成信号':'还不能确认'}</span></div>})}</details>}
- <DetectionEvidence kind={key} module={m}/>
- </article>})}</div><p className="score-caption">红色：发现合成信号。黄色：仍需核实。</p>
- {(report.transcript||report.speech_analysis)&&<SpeechContent report={report} onUpdate={onUpdate}/>}<article className="card final-steps"><h2>现在先做这两件事</h2><p><span className="step">1</span>{alerts.some(([k])=>k==='image')?'向提供者索要原始图片，并通过官方渠道核对内容。':'先别转账，也别提供短信验证码。'}</p><p><span className="step">2</span>用您早已保存的常用号码，联系本人或家人。</p><button className="primary" onClick={onContacts}>联系我的家人 ↗</button><button className="quiet" onClick={()=>setPlaying(!playing)}>听一遍提醒</button>{playing&&<audio controls autoPlay src="/api/demo/guidance-contact-family" aria-label="核实提醒"/>}<details className="report-record"><summary>检测记录</summary><p>记录编号：{report.id.slice(0,8)}</p><p>原始上传材料已处理并删除。详细检测数据可用上方按钮下载。</p></details></article></>
+  return (
+    <>
+      <div className="report-top">
+        <div>
+          <p className="eyebrow">检查结果</p>
+          <h1>{banner}</h1>
+          <p className="page-intro">
+            {report.filename} ·{" "}
+            {new Date(report.created_at).toLocaleString("zh-CN")}
+          </p>
+          {report.timings?.total_seconds !== undefined && (
+            <small>
+              本次处理 {report.timings.total_seconds.toFixed(1)}{" "}
+              秒，排队和上传另计。
+            </small>
+          )}
+        </div>
+        <div className="toolbar">
+          <button onClick={focusQuestions}>问问真鉴 ↓</button>
+          <button onClick={() => downloadReport(report)}>下载检测记录</button>
+          <button onClick={() => window.print()}>打印</button>
+        </div>
+      </div>
+      {modules.some(
+        ([k, m]) =>
+          k === "image" &&
+          m.source?.version === "qinan-smaug-whole-r1-20261111",
+      ) && (
+        <p className="notice analysis-incomplete">
+          这是旧版低阈值报告，可能过度提醒。请重新上传查看当前不确定区间和三视图数据；原始记录未改分。
+        </p>
+      )}
+      <article
+        className={"result-banner " + (alerts.length ? "alert" : "uncertain")}
+      >
+        <div>
+          <span className="result-icon" aria-hidden="true">
+            {alerts.length ? "!" : "?"}
+          </span>
+          <div>
+            <h2>
+              {alerts.length
+                ? alerts.map(([k]) => names[k] || k).join("、") +
+                  "出现了合成信号"
+                : modules.some(
+                      ([, m]) => moduleSignal(m).level === "unavailable",
+                    )
+                  ? "部分材料未完成检查，请查看分项原因"
+                  : "本次未检出明确合成信号"}
+            </h2>
+            <p>检测不能确认对方是谁。涉及钱，请先联系家人。</p>
+          </div>
+        </div>
+        <button className="primary" onClick={onContacts}>
+          联系我的家人 ↗
+        </button>
+      </article>
+      <div className="report-modules">
+        {modules.map(([key, m]) => {
+          const s = moduleSignal(m);
+          return (
+            <article className={"card module signal-" + s.level} key={key}>
+              <div className="module-top">
+                <h2>
+                  {m.method === "temporal-sequence"
+                    ? "视频时序换脸检查"
+                    : names[key] || "材料检查"}
+                </h2>
+                <span className={"signal-label " + s.level}>
+                  {s.level === "alert"
+                    ? "需要警惕"
+                    : s.level === "uncertain"
+                      ? "仍需核实"
+                      : "无法判断"}
+                </span>
+              </div>
+              <h3>
+                {key === "audio" && s.level === "uncertain"
+                  ? "本次未检出合成特征"
+                  : key === "image" &&
+                      s.level === "uncertain" &&
+                      m.score !== undefined &&
+                      m.sensitivity_threshold !== undefined &&
+                      m.score >= m.sensitivity_threshold
+                    ? "弱线索，证据不足"
+                    : s.title}
+              </h3>
+              {key === "audio" && (
+                <p>
+                  直接分析声音，不依据说话内容判断。
+                  {m.analyzed_seconds !== undefined
+                    ? `已分析 ${m.analyzed_seconds.toFixed(1)} 秒录音。`
+                    : ""}
+                </p>
+              )}
+              <p className="plain-explanation">
+                {s.level === "unavailable"
+                  ? key === "audio"
+                    ? m.failure_stage === "model"
+                      ? "音轨已读取，但声音模型未完成；请查看下方独立内容检查。"
+                      : m.note || "未取得可检查的音轨，请查看具体原因。"
+                    : key === "video"
+                      ? "没有取得适合检查的人脸画面。"
+                      : "这份材料暂时无法检查。"
+                  : s.level === "alert"
+                    ? key === "audio"
+                      ? `${s.flagged}段声音出现合成信号，请换个渠道联系本人。`
+                      : key === "video"
+                        ? "画面中发现了可能的合成或换脸线索。"
+                        : "图片出现较强合成信号，请核对原图来源。"
+                    : "仍需核实来源。"}
+              </p>
+              {m.segments && (
+                <details className="audio-detail">
+                  <summary>看看哪些声音片段需要注意</summary>
+                  {m.segments.map((part, i) => {
+                    const high = part.score >= (part.threshold ?? 0.5);
+                    return (
+                      <div
+                        className={
+                          "audio-interval " + (high ? "alert" : "uncertain")
+                        }
+                        key={i}
+                      >
+                        <b>
+                          {part.start.toFixed(0)}–
+                          {(part.end ?? part.start + 5).toFixed(0)}秒
+                        </b>
+                        <span>{high ? "有合成信号" : "还不能确认"}</span>
+                      </div>
+                    );
+                  })}
+                </details>
+              )}
+              <DetectionEvidence kind={key} module={m} />
+            </article>
+          );
+        })}
+      </div>
+      <p className="score-caption">红色：发现合成信号。黄色：仍需核实。</p>
+      {(report.transcript || report.speech_analysis) && (
+        <SpeechContent report={report} onUpdate={onUpdate} />
+      )}
+      <article className="card final-steps">
+        <h2>现在先做这两件事</h2>
+        <p>
+          <span className="step">1</span>
+          {alerts.some(([k]) => k === "image")
+            ? "向提供者索要原始图片，并通过官方渠道核对内容。"
+            : "先别转账，也别提供短信验证码。"}
+        </p>
+        <p>
+          <span className="step">2</span>
+          用您早已保存的常用号码，联系本人或家人。
+        </p>
+        <button className="primary" onClick={onContacts}>
+          联系我的家人 ↗
+        </button>
+        <button className="quiet" onClick={() => setPlaying(!playing)}>
+          听一遍提醒
+        </button>
+        {playing && (
+          <audio
+            controls
+            autoPlay
+            src="/api/demo/guidance-contact-family"
+            aria-label="核实提醒"
+          />
+        )}
+        <details className="report-record">
+          <summary>检测记录</summary>
+          <p>记录编号：{report.id.slice(0, 8)}</p>
+          <p>原始上传材料已处理并删除。详细检测数据可用上方按钮下载。</p>
+        </details>
+      </article>
+    </>
+  );
 }

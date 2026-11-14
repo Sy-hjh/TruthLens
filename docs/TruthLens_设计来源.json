@@ -1,0 +1,17 @@
+{
+  "inputs": [
+    {
+      "file": "TruthLens.zip",
+      "sha256": "7cfc5a1dcb39cf360fa5676de72c32921bae26de8933299223c3e47670b2cd6a"
+    },
+    {
+      "file": "qinan-v26-fixed.zip",
+      "sha256": "1fd896901dabb1bfb6caac2e01c531331aed3ec0122e36cce7a628240417d8b6"
+    }
+  ],
+  "assets": [
+    "TruthLens.zip/hero.jpg",
+    "qinan-v26-fixed.zip: DM Sans font and OFL notice"
+  ],
+  "implementation": "Interaction concepts rebuilt in existing React/TypeScript app; archived README instructions were not executed."
+}

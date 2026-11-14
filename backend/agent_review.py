@@ -4,12 +4,33 @@ Trace exposes tool actions and validation outcomes, not hidden chain of thought.
 No tool can access contacts, open arbitrary URLs, run code or change model verdicts.
 """
 import json,time,uuid,logging
+import re
 from .knowledge import ACTIONS,SUMMARIES
 from .rag import retrieve,manifest
 
 def evidence_summary(report):
  modules={k:{n:v.get(n) for n in ('status','score','title','failure_stage')} for k,v in report.get('modules',{}).items() if isinstance(v,dict)}
  return dict(summary=report.get('summary'),modules=modules,content_assessment={k:report.get(k,{}).get('assessment',{}) for k in ('speech_analysis','chat_analysis')},warning='模型分数不等于诈骗概率；不据此确认身份。')
+
+def report_facts(report,question):
+ facts=[]
+ for name,title in [('video','视频画面'),('audio','声音'),('image','照片')]:
+  m=report.get('modules',{}).get(name)
+  if not isinstance(m,dict) or m.get('status')=='disabled':continue
+  values=[(s.get('score'),s.get('threshold',.5)) for s in m.get('segments',[])]
+  if isinstance(m.get('score'),(int,float)):values.append((m['score'],m.get('threshold',.5)))
+  valid=[(a,b) for a,b in values if isinstance(a,(int,float)) and isinstance(b,(int,float))]
+  if m.get('status')!='completed' or not valid:facts.append(title+'检查尚未得到有效结果，不能把它当成真实或安全的依据。')
+  elif any(a>=b for a,b in valid):facts.append(title+'检测出现了合成线索；这不能证明联系你的人是谁，也不等于已经证实诈骗。')
+  else:facts.append(title+'本次未检出明确合成线索；仍可能漏检，不能据此确认身份。')
+ for key,title in [('chat_analysis','聊天内容'),('speech_analysis','说话内容')]:
+  a=report.get(key,{}).get('assessment',{})
+  if a.get('title'):facts.append(title+'：'+a['title']+'。')
+ note='以下建议结合本次检测和检索到的公开资料。'
+ if re.search(r'本人|身份|女儿|儿子|家人|谁|真人',question):note='合成检测不能核实说话人或画中人的身份。即使没检出合成，也请使用事先保存的号码确认。'
+ elif re.search(r'概率|百分|多少|准确',question):note='这里的检测分数不是被骗概率，不能换算成你会不会被骗的百分比。'
+ elif re.search(r'转账|付款|汇款|钱|验证码',question):note='先暂停付款或提供验证码，用另一条可信渠道核实要求。不要根据本报告直接决定转账。'
+ return facts,note
 
 def review(report,question,emit=None,use_model=True):
  from .advisor import validate_selection,extract_json
@@ -73,6 +94,7 @@ def review(report,question,emit=None,use_model=True):
  sources=[seen[s] for s in selection['source_ids']]
  actions=[ACTIONS[a] for a in dict.fromkeys(['pause',*selection['action_ids'],'callback'])]
  result=dict(engine='LangChain create_agent + 本地Qwen + 混合RAG' if mode=='langchain_agent' else '本地资料检索兜底',summary=SUMMARIES[selection['summary_key']],actions=actions,sources=sources,trace=trace,note='建议来自公开资料。请用自己保存的号码联系本人。',mode=mode,run_id=run_id,selection=selection,corpus=manifest(),duration_seconds=round(time.monotonic()-started,3),agent_error=agent_error,safety=dict(identity_verdict=False,payment_execution=False,contacts_access=False,raw_media_access=False))
+ result['report_facts'],result['question_note']=report_facts(report,question)
  event('complete','核实建议已生成')
  from .agent_store import save_audit
  save_audit(report.get('id'),result)

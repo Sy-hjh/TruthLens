@@ -223,3 +223,12 @@ backend/chat_assessment.py根据逐字原话的要求组合显示疑似提醒，
 
 ## 2026-11-14 按评分升级后端（前端禁止修改）
 采用LangChain1.5.0/core1.8.0/LangGraph1.2.21，依赖隔离.agent-packages；本地Qwen原生工具调用，报告/混合检索/来源核对工具；选择引用后程序绑定审核动作，保留失败兜底。新增SSE、反馈、审计与删除联动。原检测权重阈值和训练未变、前端目录零差异。70项回归通过，真实Agent三场景通过，公开有声视频完整HTTP+SSE+反馈删除闭环通过。失败工具格式与引用配错日志仍在runtime。入口docs/评分标准逐项对照_20261114.md；源码包与接口增补同步。尚缺前端流式展示、手机性能/适老可用性、独立泛化和商业试点；不能承诺全部满分。
+
+
+## 2026-11-14 TruthLens frontend integration delivered
+- Reimplemented ZIP design inputs within React/strict TypeScript. Warm hero, lime/purple system, lazy Three lens, accessible dialogs, responsive navigation and reduced motion.
+- Real upload/polling, batch keepalive, module charts, streamed LangChain report questions and citations, feedback, local trusted contacts, practice and history. Removed developer-facing demos; exact recorded fixture hashes used to reversibly hide QA history.
+- Security/cache/gzip verified by HTTP. Selected video stack lazy import preserved exact score. Memory budget closes only own idle voice/text caches, never running inference or user training.
+- Validation: 79 backend tests; 6 Node cases including 9 threshold assertions; strict TS, formatting, production build; 8 old curated media regressions pass; 2 prior user-labelled image regressions pass (private images excluded). Not general accuracy.
+- Browser: 320/390/768/1440 layout, quiz feedback, contacts validation/cancel, report export, actual Agent citations, unsupported-file error and navigation during upload checked. Earlier low RAM caused slow browser observation; preserved in limitations. Final cold audio/video paths took roughly60-103s, not a universal latency guarantee.
+- Deliverables: new TruthLens docs, actual screenshots, source ZIP and public validation summary. No demo video recorded. Real elderly trial and physical-device evidence pending, task sheet supplied. Conservative rubric estimate83-92, not full marks.

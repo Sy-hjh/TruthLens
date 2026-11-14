@@ -52,7 +52,12 @@ def predict(path,timeout=180):
   _worker.stdin.write(json.dumps({'id':ident,'path':str(path)})+'\n');_worker.stdin.flush();result=_queue.get(timeout=timeout)
   if result.get('id')!=ident:raise RuntimeError('声音模型进程异常退出；音轨已提取。')
   if 'error' in result:raise RuntimeError('声音模型推理失败：'+result['error'])
-  result.update(cold_start=cold,total_seconds=time.monotonic()-start);return result
+  result.update(cold_start=cold,total_seconds=time.monotonic()-start)
+  # predict is guarded by detector.lock. Retain CPU weights only with RAM headroom.
+  from .text_runtime import free_memory
+  if free_memory()<6*1024**3:
+   close();result['released_for_memory']=True
+  return result
  except queue.Empty:
   close();raise TimeoutError('声音模型推理超时；音轨存在，可查看独立转写结果。')
  except (OSError,RuntimeError):

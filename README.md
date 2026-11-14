@@ -1,48 +1,49 @@
-# 亲安 · 先核实，再放心
+# TruthLens 真鉴
 
-面向老人本人收到的录制视频、语音和图片，分别检查人脸画面、声音合成、整图生成；独立聊天截图入口提取文字并分析要求，再通过事先保存的号码独立核实。研究辅助版3.0，不确认身份，不作诈骗或付款决定。
+**TruthLens真鉴——面向亲友冒充的多模态核验与反诈问答 Web系统**
 
-**本机使用只看：[现在只看这份.md](现在只看这份.md)。**
+已连接本地多模态模型和LangChain核实工作流的网页作品，不是静态原型。保留图像、视频、声学、语音内容、聊天截图、可信联系人、反诈练习与新闻、核验记录、导出与反馈。
 
-## 快速启动
+## 直接启动
 
-在项目目录双击 `start-background.cmd`，访问 http://127.0.0.1:8010 。停止使用 `stop.cmd`。
+本机项目目录：`C:/Users/Lenovo/Documents/Codex/2026-11-07/wo/outputs/qinan`。
+双击 `start.cmd`，访问 http://127.0.0.1:8010/ 。旧页面按Ctrl+F5刷新。停止用 `stop.cmd`。
+路径名qinan保留是为了兼容训练和模型配置；客户界面统一使用TruthLens真鉴。
 
-开发入口：`python run.py`。这台电脑依赖与权重已准备好，不用先训练。
+## 优先阅读
 
-## 技术结构
+- `docs/TruthLens_融合设计与交付记录.md`：两个包的取舍、文件职责、接口、启动与复测。
+- `docs/TruthLens_评分逐项对照与严格自评.md`：逐条评分依据、证据及未证实内容。
+- `docs/TruthLens_老人试用任务单.md`：用户已答应实施的真实试用任务和空白记录表。
 
-React + TypeScript + Vite前端，按需加载视图；FastAPI本机任务编排；冻结GenD编码器＋本地训练有序GRU视频头（联合分析片段中的有序画面）；VeriSpoof-Plus与XLS-R/AASIST声学双重检查；RapidOCR与本地Qwen聊天截图分析；独立图像分类；来源可查的反诈预警与24道情景练习。各模态不拼成一个诈骗概率。
+## 前端开发
 
-## 真实测试
+```powershell
+cd web
+npm ci
+npm run typecheck
+npm test
+npm run format:check
+npm run build
+```
 
-11月12日新增：图片240张固定阈值同组测试，现用Smaug正确224张；有序视频头实际训练23轮（选第13轮），新60段误报2/20、漏检2/40，平衡准确率92.5%，同组原八帧模型83.75%。已接入网页并通过真实HTTP上传；不代表所有生成视频或口型同步。完整过程见[本轮模型升级与复现](docs/本轮模型升级与复现.md)。
+构建写入frontend-next，由现有FastAPI服务提供；前端API使用相对路径，手机访问不指向手机自己的localhost。Three.js单独按需加载。
 
+## 后端验证
 
-- 新来源180段视频计划：179段可用，平衡准确率92.9%，真实误报5/60，换脸漏检7/119；另1段未取得人脸。不是所有生成视频准确率。
-- 声音主模型624段留出（32真人/592克隆）：原音误报0、漏检1；AAC误报1、漏检1；电话带宽漏检8。双模型补充复核分别漏检0/0/4，属于已观察集复核。上游重叠未知，变体不是新增样本。
-- 历史低阈值整图生成634张留出测试：准确率97.3%，真实误报12/317、合成漏检5/317；阈值仅用另632张验证图选定，上游重叠未知，不代表局部P图。
-- 29项后端检查、7项阈值边界、8份材料真实推理链路、运行服务HTTP上传与版本检查通过。
-- 局部P图/AI改图仍有明显漏检；热力图与重复问答已撤下。实测页保留历史失败实验，案例1保留旧模型漏检的回归素材。
+```powershell
+python -m unittest tests test_audio_isolation test_speed_audio test_speech_content test_text_patterns test_chat_assessment test_advisor test_domain test_image_regions test_checkpoint_io test_agent_upgrade test_truthlens_delivery
+python verify_agent_upgrade.py --live
+```
 
-## 复现与换机
+测试79项的日志、真实媒体回归、浏览器截图位于本机runtime和reports；源码包只带选定的公开验证摘要，不包含私有图片、联系人、历史数据库或大型权重。
 
-本机直接启动。新电脑先运行 `setup.ps1` 建立环境，用该环境的Python运行 `install_release.py` 恢复固定权重与配置；不需要下载全部训练数据。首次恢复需要联网与数GB空间，日常检测不调用付费API。
+## 新电脑与训练
 
-前端开发：`cd web` 后 `npm ci`、`npm run build`；或根目录 `npm run build --prefix web`。生产结果在 `frontend-next`，后端同源提供页面与API。
+此源码包不附所有预训练权重、数据集和node_modules。当前电脑已安装，可直接启动；新电脑需按原安装、下载脚本准备依赖与模型，不能把源码ZIP当作完整模型环境。
+原安装/训练操作保留在 `docs/历史_亲安_README.md` 及原训练说明，训练脚本和冻结模型协议未被本轮前端替换。
+LangChain依赖由setup_agent.ps1安装到独立.agent-packages。
 
-测试：`python -m unittest tests test_domain test_advisor test_checkpoint_io test_audio_isolation -q`；真实权重验收 `python verify_delivery.py`，运行网站的真实HTTP验收 `python verify_deployment.py`。它们使用隔离数据库或仅删除自己创建的测试报告。
+## 真实边界
 
-文件、训练与截图清单统一见当前使用说明。本轮过程记录见 `docs/本轮修改记录.md`，早期记录见 `docs/CONTINUATION.md`，来源见 `docs/THIRD_PARTY.md`，固定版本见 `release/release.json`。代码中的本地路径、版本与数据用途明确记录，不把旧诊断集当新测试。
-
-## 团队
-
-亲安守望队 / 大连东软信息学院
-
-成员：胡瑾慧、周宇航、陈浩翔。指导老师：李予诺。分工待团队自行确认。
-
-本项目使用AI辅助开发，基础模型与第三方算法保留署名。没有直接包装第三方整站参赛；未代为公开仓库、部署公网或提交比赛。演示视频按使用者要求暂不录制。
-
-本地Git从本次交付候选建立，早期过程由原始日志保留，没有伪造更早提交历史。
-
-最新报告图表与误报修正见[分析方法与误报修正](docs/分析方法与误报修正.md)：图片0.007–0.5为不确定区，视频/音频提供真实采样输出；截图使用固定版Qwen3-1.7B选择原文编号。旧图片低阈值成绩为历史结果，不能混同当前强提醒边界。
+合成线索、可疑要求和身份核实是不同问题。检测分数不是诈骗概率。已有素材回归通过不能代表未知生成器的普遍准确率。真实老人试用、不同手机与浏览器实机、机构试点仍需参与者提供证据，不伪造满分或用户试用结论。未录演示视频、未发布公网。
