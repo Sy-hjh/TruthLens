@@ -1,4 +1,6 @@
 import "./performance";
+import MotionLayer from "./MotionLayer";
+import ParticleField from "./ParticleField";
 import { Component, Suspense, lazy, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { createRoot } from "react-dom/client";
@@ -176,6 +178,7 @@ function App() {
   }, [page, report]);
   return (
     <>
+      <MotionLayer motion={effectiveMotion} page={page} />
       <a
         className="skip-link"
         href="#main-content"
@@ -250,6 +253,7 @@ function App() {
                 alt="一位女士在家中查看手机消息"
               />
               <div className="hero-shade" />
+              <ParticleField motion={effectiveMotion} />
               <div className="hero-content">
                 <p className="eyebrow">
                   <span className="live-dot" /> TRUTHLENS / 让信任多一层依据
@@ -549,7 +553,7 @@ function App() {
               <div className="setting-row">
                 <div>
                   <h3>动态效果</h3>
-                  <p>立体透镜、过渡和悬停反馈</p>
+                  <p>粒子、立体透镜、滚动与悬停反馈</p>
                 </div>
                 <button
                   className="toggle"

@@ -80,6 +80,42 @@ export default function LensScene({ motion }: { motion: boolean }) {
       group.add(points);
       geometries.push(stars);
       materials.push(starMat);
+      const orbit = new T.Group();
+      group.add(orbit);
+      const orbitPath = new T.EllipseCurve(
+        0,
+        0,
+        1.7,
+        1.15,
+        0,
+        Math.PI * 2,
+        false,
+        0,
+      );
+      const orbitGeometry = new T.BufferGeometry().setFromPoints(
+        orbitPath.getPoints(100).map((p) => new T.Vector3(p.x, p.y, 0)),
+      );
+      const orbitMaterial = new T.LineDashedMaterial({
+        color: 0xdbff48,
+        transparent: true,
+        opacity: 0.28,
+        dashSize: 0.05,
+        gapSize: 0.08,
+      });
+      const orbitLine = new T.Line(orbitGeometry, orbitMaterial);
+      orbitLine.computeLineDistances();
+      orbit.rotation.x = 0.8;
+      orbit.rotation.z = -0.4;
+      orbit.add(orbitLine);
+      const satelliteGeometry = new T.SphereGeometry(0.055, 12, 8);
+      const satelliteMaterial = new T.MeshBasicMaterial({ color: 0xf0ffb0 });
+      const satellites = [0, 1, 2].map(() => {
+        const mesh = new T.Mesh(satelliteGeometry, satelliteMaterial);
+        orbit.add(mesh);
+        return mesh;
+      });
+      geometries.push(orbitGeometry, satelliteGeometry);
+      materials.push(orbitMaterial, satelliteMaterial);
       let x = 0,
         y = 0,
         userY = 0.35,
@@ -145,6 +181,15 @@ export default function LensScene({ motion }: { motion: boolean }) {
         if (!activeMotion) group.scale.setScalar(target);
         group.scale.lerp(new T.Vector3(target, target, target), 0.07);
         points.rotation.z += activeMotion ? 0.001 : 0;
+        satellites.forEach((satellite, i) => {
+          const phase =
+            (activeMotion ? t * 0.00035 : 0) + (i * Math.PI * 2) / 3;
+          satellite.position.set(
+            Math.cos(phase) * 1.7,
+            Math.sin(phase) * 1.15,
+            0,
+          );
+        });
         renderer.render(scene, camera);
       };
       frame = requestAnimationFrame(draw);

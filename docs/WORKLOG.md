@@ -121,3 +121,7 @@ verify_deployment.py真实HTTP上传成功，视频分数0.8737767，正确返�
 - Validation: 79 backend tests; 6 Node cases including 9 threshold assertions; strict TS, formatting, production build; 8 old curated media regressions pass; 2 prior user-labelled image regressions pass (private images excluded). Not general accuracy.
 - Browser: 320/390/768/1440 layout, quiz feedback, contacts validation/cancel, report export, actual Agent citations, unsupported-file error and navigation during upload checked. Earlier low RAM caused slow browser observation; preserved in limitations. Final cold audio/video paths took roughly60-103s, not a universal latency guarantee.
 - Deliverables: new TruthLens docs, actual screenshots, source ZIP and public validation summary. No demo video recorded. Real elderly trial and physical-device evidence pending, task sheet supplied. Conservative rubric estimate83-92, not full marks.
+
+
+## 2026-11-14 Motion edition
+Canvas constellation with pointer repulsion/ripples, aurora, Three orbit satellites, title/CTA light, staggered reveal, card tilt/orbits, reading progress. No model/threshold/API change. Strict TS/build and 6 Node cases passed. Browser1440/390, reduced motion, mobile menu/workbench checked. Fixed negative ripple radius on immediate resize; fresh-page console clean. See TruthLens_动效升级说明.md.
