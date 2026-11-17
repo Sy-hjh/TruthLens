@@ -22,17 +22,17 @@
 
 ## 启用完整检测
 
-**本 GitHub 仓库是源码交付**，不包含大型模型权重和 Windows 推理二进制环境。已提供当前模型配置、小型适配头、来源记录与资源 SHA256 清单。推荐 Windows x64 和 Python 3.10。完整推理需按 [环境与部署](docs/ENVIRONMENT.md) 准备资源，不能将页面启动或健康接口资源检查等同于模型实测通过。
+**本 GitHub 仓库是源码交付**，不包含大型模型权重和 Windows 推理二进制环境。已提供当前模型选择配置与资源 SHA256 清单。小型适配头及其他权重按资源说明另行准备。推荐 Windows x64 和 Python 3.10。完整推理需按 [环境与部署](docs/ENVIRONMENT.md) 准备资源，不能将页面启动或健康接口资源检查等同于模型实测通过。
 
 换电脑时，从已有可运行部署复制下表中缺失的模型与推理目录至同一相对路径，并依据资源清单核对哈希。没有资源的分支须保持不可用状态，不能伪造检测结果。
 
 | 模块 | 需要补齐的资源 |
 | --- | --- |
-| 整图检测 | `models/community/model.safetensors`。分类头已随包提供。 |
+| 整图检测 | `models/community/model.safetensors`。分类头按资源清单另行准备。 |
 | FUSED 局部检测 | `models/fused/fused_opensdi.pth` 和 `models/fused/convnext.safetensors`。 |
 | DAF 文字编辑 | `models/daf/srnet-tensors.pt`，以及匹配目标机器 Python 版本的 `runtime/forensics-pilot/daf-torch` 和 `daf-helpers`。 |
-| 语音合成检测 | `models/truthlens-ast-qwen/model.safetensors`。Qwen 语音适配权重已随包提供。 |
-| 视频检测 | 完整的 `models/gend-clip` 目录。有序视频分类头和协议已随包提供。 |
+| 语音合成检测 | `models/truthlens-ast-qwen/model.safetensors`。语音适配权重按资源清单另行准备。 |
+| 视频检测 | 完整的 `models/gend-clip` 目录。有序视频分类头和协议见 release 目录。 |
 | 语音转写 | 完整的 `models/asr_zh` 目录。可使用 `download_models.py asr_zh` 获取项目配置的公开资源。 |
 | 图片文字读取 | 运行 `install_chat_ocr.py`，或复制 `runtime/ocr-packages`。 |
 | 小鉴问答 | 在线模式请自行创建 `runtime/companion-model.json`，填写 `enabled`、`base_url`、`model` 和 `api_key`。完整版内含 `models/advisor` 本地模型。如需 LangChain 代理依赖，运行 `setup_agent.ps1`。轻量版可用 `install_advisor.py` 准备本地模型。 |
