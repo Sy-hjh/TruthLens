@@ -34,6 +34,10 @@ export interface ModuleResult {
   source?: Source;
   segments?: Segment[];
   map_png?: string;
+  marked_jpeg?: string;
+  candidate_count?: number;
+  original_size?: [number, number];
+  regions?: { box: [number, number, number, number]; peak: number }[];
   analyzed_seconds?: number;
   analysis_basis?: string;
   moments?: {
@@ -61,6 +65,15 @@ export interface Report {
   context?: string;
   sha256: string;
   modules: Record<string, ModuleResult>;
+  marked_jpeg?: string;
+  image_risk?: {
+    title: string;
+    points: number;
+    findings?: string[];
+    next_step?: string;
+    evidence: { label: string; weight: number; triggered: boolean; note: string }[];
+  };
+  fraud_risk?: { level: "high" | "review"; synthesis: string; language: string; language_reason?: string; next_step?: string };
   ocr?: { text: string; note?: string };
   chat_analysis?: {
     assessment?: {
@@ -154,10 +167,14 @@ export async function api<T>(
       signal: options.signal || controller.signal,
     });
     const data = await response.json();
+    if (response.status === 401 && !url.startsWith("/api/auth/"))
+      dispatchEvent(new Event("truthlens:auth-required"));
     if (!response.ok)
       throw Error(
         typeof data.detail === "string"
           ? data.detail
+          : Array.isArray(data.detail) && typeof data.detail[0]?.msg === "string"
+            ? data.detail[0].msg.replace(/^Value error, /, "")
           : "请求未成功，请稍后重试",
       );
     return data as T;
@@ -171,6 +188,19 @@ export async function api<T>(
     clearTimeout(timer);
   }
 }
+
+export function jsonRequest(method: string, body: unknown): RequestInit {
+  return { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+}
+
+export type Account = { id: number; username: string; role: "user" | "admin"; active: boolean; created_at: string };
+export type AccountSession = { account: Account | null; setup_required: boolean };
+export type CaseEntry = {
+  id: string; category: "教学作业" | "电商凭证" | "新闻素材" | "企业文件" | "日常生活";
+  title: string; kind: "真实案例" | "实地研究"; scenario: string; next: string;
+  status: "draft" | "published" | "archived";
+  source: { publisher: string; date: string; url: string; label?: string; related?: { label: string; url: string } };
+};
 export function downloadReport(report: Report) {
   const url = URL.createObjectURL(
     new Blob([JSON.stringify(report, null, 2)], { type: "application/json" }),

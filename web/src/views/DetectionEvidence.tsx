@@ -176,11 +176,11 @@ export default function DetectionEvidence({
       {m.score !== undefined && (
         <dl className="evidence-numbers">
           <div>
-            <dt>检测分数</dt>
+            <dt>{kind === "tamper" ? "整图篡改分" : "检测分数"}</dt>
             <dd>{m.score.toFixed(4)}</dd>
           </div>
           <div>
-            <dt>提醒线</dt>
+            <dt>{kind === "tamper" ? "整图提醒线" : "提醒线"}</dt>
             <dd>{threshold.toFixed(4)}</dd>
           </div>
           {m.sensitivity_threshold !== undefined && (
@@ -192,20 +192,20 @@ export default function DetectionEvidence({
         </dl>
       )}
       {kind === "image" && m.sampling && <RegionLayout sampling={m.sampling} />}
-      {kind === "image" && (
+      {kind === "image" && !m.views?.length && m.note && <p>{m.note}</p>}
+      {kind === "tamper" && m.note && <p>{m.note}</p>}
+      {kind === "image" && !!m.views?.length && (
         <>
           <p>
             从同一张图裁取3个图块，分别检查AI生成信号后汇总。图块可能重叠。
             {m.sensitivity_threshold !== undefined &&
               ` ${m.sensitivity_threshold}–${threshold}为不确定区间，不能认定合成。`}
           </p>
-          {m.views?.length ? (
+          {m.views?.length && (
             <Plot
               title="三个图块的检测结果"
               points={m.views.map((v) => ({ ...v, threshold }))}
             />
-          ) : (
-            <p>旧报告未保存视图分数，重新上传可查看；不补造历史数据。</p>
           )}
         </>
       )}

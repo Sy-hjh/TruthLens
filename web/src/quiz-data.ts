@@ -214,3 +214,5 @@ export const cases: Quiz[] = rows.map((r, i) => {
     why: r[5],
   };
 });
+
+export const caseCategories = ["全部", "教学作业", "电商凭证", "新闻素材", "企业文件", "日常生活"] as const;

@@ -1,29 +1,47 @@
 import "./performance";
 import MotionLayer from "./MotionLayer";
 import Companion from "./Companion";
+import {
+  CompanionProgress,
+  CompanionReportAdvice,
+  savedCompanionAdvice,
+  savedCompanionJob,
+  storeCompanionAdvice,
+  storeCompanionJob,
+} from "./CompanionVerification";
+import type { CompanionJob } from "./CompanionVerification";
 import MissionStage from "./MissionStage";
 import ParticleField from "./ParticleField";
+import VerificationLens from "./VerificationLens";
 import { Component, Suspense, lazy, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { api } from "./api";
-import type { Report } from "./api";
+import type { AccountSession, Report } from "./api";
 import { Dialog, Icon } from "./ui";
+import { AccountAccess } from "./AccountAccess";
+import type { AccessMode } from "./AccountAccess";
 import "./style.css";
 const Upload = lazy(() => import("./views/Upload")),
   Contacts = lazy(() => import("./views/Contacts")),
   Practice = lazy(() => import("./views/Practice")),
   History = lazy(() => import("./views/History")),
+  Admin = lazy(() => import("./views/Admin")),
   ReportView = lazy(() => import("./views/Report")),
   LensScene = lazy(() => import("./LensScene"));
-type Page = "home" | "check" | "contacts" | "practice" | "history" | "report";
-const routes = ["home", "check", "contacts", "practice", "history", "report"];
+type Page = "home" | "check" | "contacts" | "practice" | "history" | "report" | "admin";
+const routes = ["home", "check", "contacts", "practice", "history", "report", "admin"];
 const nav = [
-  ["check", "核验工作台", "lens"],
-  ["contacts", "家人联系", "heart"],
-  ["practice", "反诈课堂", "book"],
-  ["history", "核验记录", "history"],
+  ["check", "核验工作台", "lens", "查看材料里的线索", "检查图片、声音、视频与聊天截图"],
+  ["practice", "核验案例", "book", "了解不同场景怎么核实", "教学、电商、新闻、企业与日常生活"],
+  ["history", "核验记录", "history", "回看每一次核验", "查看报告、依据和复核建议"],
 ] as const;
+const homepageTitle = "真鉴 · AI 内容核验助手";
+function pageTitle(page: Page) {
+  if (page === "contacts") return "家人联系";
+  if (page === "admin") return "管理后台";
+  return nav.find(([id]) => id === page)?.[1] ?? "报告详情";
+}
 function route(): Page {
   return routes.includes(location.hash.slice(1))
     ? (location.hash.slice(1) as Page)
@@ -60,6 +78,7 @@ function App() {
   const [page, setPage] = useState<Page>(route),
     [report, setReport] = useState<Report | null>(null),
     [bundle, setBundle] = useState<Report[]>([]),
+    [reportPreviews, setReportPreviews] = useState<Record<string, File>>({}),
     [menu, setMenu] = useState(false),
     [modal, setModal] = useState<"help" | "settings" | "privacy" | null>(null),
     [motion, setMotion] = useState(
@@ -70,14 +89,35 @@ function App() {
     ),
     [online, setOnline] = useState<boolean | null>(null),
     [sceneReady, setSceneReady] = useState(false);
+  const [session, setSession] = useState<AccountSession | null>(null);
+  const [authMode, setAuthMode] = useState<AccessMode | null>(null);
+  const [authError, setAuthError] = useState("");
+  const account = session?.account ?? null;
   const heading = useRef<HTMLDivElement>(null);
   const currentPage = useRef(page);
   currentPage.current = page;
+  const [companionJob, setCompanionJob] = useState(savedCompanionJob);
+  const [companionAdviceId, setCompanionAdviceId] = useState(savedCompanionAdvice);
+  const activeCompanionJob = useRef(companionJob);
+  activeCompanionJob.current = companionJob;
   const [checkVisited, setCheckVisited] = useState(page === "check");
   const [completedNotice, setCompletedNotice] = useState<{
     report: Report;
     all: Report[];
   } | null>(null);
+  useEffect(() => {
+    let active = true;
+    void api<AccountSession>("/api/auth/session").then((value) => {
+      if (active) setSession(value);
+    }).catch(() => { if (active) setAuthError("暂时无法读取账号状态，请刷新后重试。"); });
+    const needsLogin = () => {
+      clearPrivateData();
+      setSession((value) => value ? { ...value, account: null } : value);
+      setAuthMode("login");
+    };
+    addEventListener("truthlens:auth-required", needsLogin);
+    return () => { active = false; removeEventListener("truthlens:auth-required", needsLogin); };
+  }, []);
   useEffect(() => {
     if (page === "check") setCheckVisited(true);
   }, [page]);
@@ -96,10 +136,10 @@ function App() {
     api("/api/health")
       .then(() => setOnline(true))
       .catch(() => setOnline(false));
-    const id = setTimeout(() => setSceneReady(true), 1400);
+    const timer = window.setTimeout(() => setSceneReady(true), 1400);
     return () => {
       removeEventListener("hashchange", f);
-      clearTimeout(id);
+      window.clearTimeout(timer);
     };
   }, []);
   useEffect(() => {
@@ -136,9 +176,8 @@ function App() {
     if (page !== "home") heading.current?.focus();
     document.title =
       page === "home"
-        ? "TruthLens 真鉴 · 面向亲友冒充的多模态核验与反诈问答"
-        : (nav.find((n) => n[0] === page)?.[1] || "核验报告") +
-          " · TruthLens 真鉴";
+        ? homepageTitle
+        : pageTitle(page) + " · 真鉴";
   }, [page]);
   function go(p: Page) {
     if (p === page) {
@@ -160,31 +199,106 @@ function App() {
     } catch {}
     go("report");
   }
-  function finishUpload(r: Report, all: Report[] = []) {
+  function finishUpload(r: Report, all: Report[] = [], previews: Record<string, File> = {}) {
+    setReportPreviews(previews);
     dispatchEvent(new Event("truthlens:report-ready"));
-    if (currentPage.current === "check") open(r, all);
+    if (currentPage.current === "check" && !activeCompanionJob.current) open(r, all);
     else setCompletedNotice({ report: r, all });
   }
+  function trackCompanionJob(job: CompanionJob | null) {
+    activeCompanionJob.current = job;
+    setCompanionJob(job);
+    storeCompanionJob(job);
+    if (job) go("check");
+  }
+  function finishCompanionJob(result: Report) {
+    trackCompanionJob(null);
+    setCompanionAdviceId(result.id);
+    storeCompanionAdvice(result.id);
+    finishUpload(result);
+  }
+  function clearPrivateData() {
+    activeCompanionJob.current = null;
+    setCompanionJob(null);
+    setCompanionAdviceId("");
+    setReport(null);
+    setBundle([]);
+    setReportPreviews({});
+    setCompletedNotice(null);
+    storeCompanionJob(null);
+    storeCompanionAdvice("");
+    try {
+      sessionStorage.removeItem("truthlens-last-report");
+      sessionStorage.removeItem("qinan-active-job");
+    } catch {}
+  }
+  async function logout() {
+    try {
+      await api("/api/auth/logout", { method: "POST" });
+      clearPrivateData();
+      setSession((value) => value ? { ...value, account: null } : value);
+      setAuthError("");
+      go("home");
+    } catch { setAuthError("退出登录失败，请重试。"); }
+  }
   useEffect(() => {
-    if (page === "report" && !report) {
+    if (page === "report" && !report && account) {
+      let active = true;
       let id = "";
       try {
         id = sessionStorage.getItem("truthlens-last-report") || "";
       } catch {}
       if (id)
         api<Report>("/api/cases/" + id)
-          .then(setReport)
-          .catch(() => go("history"));
+          .then((value) => { if (active) setReport(value); })
+          .catch(() => { if (active) go("history"); });
       else go("history");
+      return () => { active = false; };
     }
-  }, [page, report]);
+  }, [page, report, account]);
+
+  const auth = authMode && <AccountAccess key={authMode} initialMode={authMode} setupRequired={session?.setup_required ?? false}
+    close={() => setAuthMode(null)} onSuccess={(value) => {
+      setSession({ account: value, setup_required: value.role === "admin" ? false : session?.setup_required ?? false });
+      setAuthMode(null);
+      setAuthError("");
+      if (page === "admin" && value.role !== "admin") go("home");
+      if (value.role === "admin" && (page === "admin" || authMode === "setup")) go("admin");
+    }} />;
+  const signIn = (
+    <section className="card private-entry">
+      <Icon name="shield" />
+      <h1>{page === "admin" ? "真鉴管理后台" : page === "check" ? "登录后开始核验"
+        : page === "contacts" ? "登录后查看家人联系" : "登录后查看报告"}</h1>
+      {authError && <p className="error" role="alert">{authError}</p>}
+      {account ? <><p>当前账号没有管理员权限。</p><a className="text-button" href="#home">← 返回用户端</a></> : (
+        <div><button className="primary" onClick={() => setAuthMode("login")}>登录 <Icon name="arrow" /></button>
+          {page === "admin" && session?.setup_required
+            ? <button onClick={() => setAuthMode("setup")}>首次配置管理员</button>
+            : <button onClick={() => setAuthMode("register")}>注册账号</button>}</div>
+      )}
+    </section>
+  );
+  if (page === "admin") {
+    return <>{account?.role === "admin" ? (
+      <Suspense fallback={<p className="skeleton" role="status">正在打开管理后台…</p>}>
+        {authError && <p className="admin-message error" role="alert">{authError}</p>}
+        <Admin account={account} onLogout={() => void logout()} />
+      </Suspense>
+    ) : <main className="admin-gate"><a href="#home">← 返回真鉴首页</a>{signIn}</main>}{auth}</>;
+  }
   return (
     <>
       <MotionLayer motion={effectiveMotion} page={page} />
       <Companion
+        key={account?.id ?? "guest"}
+        authenticated={!!account}
+        onAuthRequired={() => setAuthMode("login")}
         motion={effectiveMotion}
         page={page}
         report={page === "report" ? report : null}
+        verificationPending={!!companionJob}
+        onVerificationStart={trackCompanionJob}
         onNavigate={(p) => {
           if (routes.includes(p)) go(p as Page);
         }}
@@ -230,6 +344,16 @@ function App() {
           ))}
         </nav>
         <div className="header-actions">
+          <div className="account-portal">
+            {account ? <>
+              {account.role === "admin" && <a href="#admin">管理后台</a>}
+              {account.role !== "admin" && session?.setup_required && <button type="button" onClick={() => setAuthMode("setup")}>配置管理员</button>}
+              <button type="button" onClick={() => void logout()} title={account.username} aria-label="退出登录">退出</button>
+            </> : <>
+              <button type="button" onClick={() => setAuthMode("login")}>登录</button>
+              <button type="button" onClick={() => setAuthMode("register")}>注册</button>
+            </>}
+          </div>
           <button
             className="icon-button settings-button"
             aria-label="打开使用偏好"
@@ -254,36 +378,27 @@ function App() {
         {page === "home" && (
           <>
             <section className="hero">
-              <img
-                className="hero-photo"
-                src="/hero.jpg"
-                width="1920"
-                height="712"
-                fetchPriority="high"
-                alt="一位女士在家中查看手机消息"
-              />
+              <VerificationLens />
               <div className="hero-shade" />
               <ParticleField motion={effectiveMotion} />
               <div className="hero-content">
                 <p className="eyebrow">
-                  <span className="live-dot" /> TRUTHLENS / 让信任多一层依据
+                  <span className="live-dot" /> AI 内容核验
                 </p>
                 <h1>
-                  看清伪装，
+                  看见线索，
                   <br />
-                  守住<span>信任。</span>
+                  核对<span>来源。</span>
                 </h1>
                 <p className="hero-description">
-                  声音很像，画面很真。
-                  <br />
-                  先核验，再用熟悉的号码确认。
+                  查看图片、语音和视频中的合成线索，核对聊天截图里的说法，了解下一步怎么核实。
                 </p>
                 <div className="hero-actions">
                   <button
                     className="primary hero-cta"
                     onClick={() => go("check")}
                   >
-                    核验收到的消息 <Icon name="arrow" />
+                    核验材料 <Icon name="arrow" />
                   </button>
                   <button
                     className="text-button light"
@@ -327,11 +442,11 @@ function App() {
                 <p>
                   检查材料，读懂线索。
                   <br />
-                  把下一步，交给值得信任的联系。
+                  带着线索，回到原始材料和可信来源。
                 </p>
               </div>
               <div className="portals">
-                {nav.map(([id, label, icon], i) => (
+                {nav.map(([id, label, icon, title, description]) => (
                   <a
                     onPointerMove={(e) => {
                       if (!effectiveMotion || e.pointerType === "touch") return;
@@ -352,7 +467,7 @@ function App() {
                   >
                     <div className="portal-top">
                       <span>
-                        0{i + 1} / {label}
+                        {label}
                       </span>
                       <Icon name="up" />
                     </div>
@@ -361,26 +476,8 @@ function App() {
                       <i />
                       <i />
                     </div>
-                    <h3>
-                      {
-                        [
-                          "这份消息，是真的吗？",
-                          "联系熟悉的那个人",
-                          "给自己，多一点识别力",
-                          "每一次确认，都有迹可循",
-                        ][i]
-                      }
-                    </h3>
-                    <p>
-                      {
-                        [
-                          "检查声音、照片、视频与聊天要求",
-                          "保存可信号码，需要时独立回拨",
-                          "情景练习与有来源的反诈预警",
-                          "回看报告，与家人一起复核",
-                        ][i]
-                      }
-                    </p>
+                    <h3>{title}</h3>
+                    <p>{description}</p>
                     <span className="portal-link">
                       {label} <Icon name="arrow" />
                     </span>
@@ -398,8 +495,8 @@ function App() {
               <div className="trust-steps">
                 {[
                   ["01", "检查材料", "分别寻找画面、声音中的合成线索。"],
-                  ["02", "看懂要求", "提取原话，结合官方资料核实可疑套路。"],
-                  ["03", "独立确认", "用原来保存的号码联系本人，再做决定。"],
+                  ["02", "查看依据", "对照原话、检测分项和相关资料。"],
+                  ["03", "复核来源", "按场景核对原件、原始记录或官方渠道。"],
                 ].map(([n, h, p]) => (
                   <div key={n}>
                     <span>{n}</span>
@@ -408,9 +505,6 @@ function App() {
                   </div>
                 ))}
               </div>
-              <button className="primary" onClick={() => go("check")}>
-                开始一次核验 <Icon name="arrow" />
-              </button>
             </section>
           </>
         )}
@@ -419,21 +513,28 @@ function App() {
             <button className="text-button" onClick={() => go("home")}>
               ← 返回首页
             </button>
-            <span>
-              {page === "report"
-                ? "核验报告"
-                : nav.find((n) => n[0] === page)?.[1]}
-            </span>
+            <span>{pageTitle(page)}</span>
             <button className="text-button" onClick={() => setModal("help")}>
               使用帮助 <Icon name="help" />
             </button>
           </div>
           <div ref={heading} tabIndex={-1} className="page-focus" />
-          {page !== "home" && (
+          {page !== "home" && page !== "report" && (
             <MissionStage page={page} motion={effectiveMotion} />
           )}
-          {(checkVisited || page === "check") && (
+          {!account && (page === "check" || page === "history" || page === "report" || page === "contacts") && signIn}
+          {account && companionJob && (
             <div hidden={page !== "check"} className="page-enter">
+              <CompanionProgress
+                key={companionJob.id}
+                job={companionJob}
+                onComplete={finishCompanionJob}
+                onDismiss={() => trackCompanionJob(null)}
+              />
+            </div>
+          )}
+          {account && (checkVisited || page === "check") && (
+            <div hidden={page !== "check" || !!companionJob} className="page-enter">
               <Boundary>
                 <Suspense
                   fallback={
@@ -442,10 +543,7 @@ function App() {
                     </p>
                   }
                 >
-                  <Upload
-                    onComplete={finishUpload}
-                    onContacts={() => go("contacts")}
-                  />
+                  <Upload onComplete={finishUpload} />
                 </Suspense>
               </Boundary>
             </div>
@@ -463,30 +561,22 @@ function App() {
             >
               {page === "check" || page === "home" ? null : page ===
                 "contacts" ? (
-                <Contacts />
+                account ? <Contacts key={account.id} accountId={account.id} isAdmin={account.role === "admin"} /> : null
               ) : page === "practice" ? (
                 <Practice />
-              ) : page === "history" ? (
+              ) : !account ? null : page === "history" ? (
                 <History onOpen={open} />
               ) : report ? (
                 <>
-                  {bundle.length > 1 && (
-                    <div className="bundle-tabs" aria-label="本次核验的材料">
-                      {bundle.map((r, i) => (
-                        <button
-                          key={r.id}
-                          aria-pressed={r.id === report.id}
-                          onClick={() => setReport(r)}
-                        >
-                          {i + 1}. {r.filename}
-                        </button>
-                      ))}
-                    </div>
+                  {report.id === companionAdviceId && (
+                    <CompanionReportAdvice key={"advice-" + report.id} reportId={report.id} />
                   )}
                   <ReportView
                     key={report.id}
                     report={report}
-                    onContacts={() => go("contacts")}
+                    previewFile={reportPreviews[report.id]}
+                    bundle={bundle}
+                    onSelect={setReport}
                     onUpdate={(r) => {
                       setReport(r);
                       setBundle((bs) => bs.map((b) => (b.id === r.id ? r : b)));
@@ -500,6 +590,8 @@ function App() {
           </Boundary>
         </div>
       </main>
+      {authError && !authMode && page === "home" && <p className="auth-global-error error" role="alert">{authError}</p>}
+      {auth}
       {completedNotice && (
         <div className="completion-toast" role="status">
           <span>{completedNotice.all.length || 1}份材料已核验完成</span>
@@ -509,7 +601,7 @@ function App() {
               setCompletedNotice(null);
             }}
           >
-            查看报告 →
+            查看报告详情 →
           </button>
           <button
             className="icon-button"
@@ -525,7 +617,7 @@ function App() {
           <a className="brand" href="#home">
             <Icon name="lens" /> TruthLens 真鉴
           </a>
-          <p>面向亲友冒充的多模态核验与反诈问答 Web系统</p>
+          <p>AI 内容核验与复核建议</p>
         </div>
         <div>
           <button
@@ -551,7 +643,7 @@ function App() {
                 : "服务暂未连接"}
           </span>
         </div>
-        <small>检测提供线索，身份需要独立核实。</small>
+        <small>检测结果提供线索，结合原始材料和来源继续核实。</small>
       </footer>
       {modal && (
         <Dialog
@@ -608,7 +700,7 @@ function App() {
               </p>
               <h3>报告与转写文字</h3>
               <p>
-                保存在这台电脑的核验记录里。你可以删除报告，同时清除对应反馈与核实步骤记录。
+                保存在部署电脑。你可在账号内查看或删除报告，部署管理员可为管理需要查阅。删除报告会清除对应反馈和核实记录。
               </p>
               <h3>家人号码</h3>
               <p>只保存在当前浏览器，不提供给检测模型。请先和家人核对号码。</p>
@@ -619,7 +711,7 @@ function App() {
                 {[
                   [
                     "upload",
-                    "上传收到的材料",
+                    "选择要核验的材料",
                     "选择录音、视频、照片；聊天截图请选专门入口。",
                   ],
                   [
@@ -630,7 +722,7 @@ function App() {
                   [
                     "phone",
                     "换个可信渠道确认",
-                    "涉及钱、验证码或身份时，用已保存的号码联系本人。",
+                    "按场景核对原始文件、原始记录或相关机构的官方渠道。",
                   ],
                 ].map(([i, h, p], n) => (
                   <div key={i}>

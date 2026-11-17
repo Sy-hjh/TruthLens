@@ -105,10 +105,14 @@ export function Dialog({
   title,
   onClose,
   children,
+  headerAction,
+  className = "",
 }: {
   title: string;
   onClose: () => void;
   children: ReactNode;
+  headerAction?: ReactNode;
+  className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -126,7 +130,7 @@ export function Dialog({
   return (
     <dialog
       ref={ref}
-      className="modal"
+      className={`modal ${className}`}
       onCancel={(e) => {
         e.preventDefault();
         onClose();
@@ -138,6 +142,7 @@ export function Dialog({
     >
       <div className="modal-head">
         <span className="eyebrow">TRUTHLENS / 真鉴</span>
+        {headerAction}
         <button className="icon-button" onClick={onClose} aria-label="关闭弹窗">
           <Icon name="close" />
         </button>

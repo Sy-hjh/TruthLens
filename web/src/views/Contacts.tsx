@@ -5,10 +5,10 @@ interface Contact {
   name: string;
   phone: string;
 }
-const key = "qinan-contacts";
-function read(): Contact[] {
+const legacyKey = "qinan-contacts";
+function read(key: string, includeLegacy: boolean): Contact[] {
   try {
-    const d: unknown = JSON.parse(localStorage.getItem(key) || "[]");
+    const d: unknown = JSON.parse(localStorage.getItem(key) || (includeLegacy ? localStorage.getItem(legacyKey) : null) || "[]");
     return Array.isArray(d)
       ? d.filter(
           (x): x is Contact =>
@@ -21,9 +21,10 @@ function read(): Contact[] {
     return [];
   }
 }
-export default function Contacts() {
+export default function Contacts({ accountId, isAdmin }: { accountId: number; isAdmin: boolean }) {
+  const key = legacyKey + "-" + accountId;
   const [pending, setPending] = useState<number | null>(null);
-  const [rows, setRows] = useState<Contact[]>(read),
+  const [rows, setRows] = useState<Contact[]>(() => read(key, isAdmin)),
     [name, setName] = useState(""),
     [phone, setPhone] = useState(""),
     [message, setMessage] = useState("");

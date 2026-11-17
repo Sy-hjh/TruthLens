@@ -8,7 +8,8 @@ export default function LensScene({ motion }: { motion: boolean }) {
     motionState.current = motion;
   }, [motion]);
   const [open, setOpen] = useState(false),
-    [ready, setReady] = useState(false);
+    [ready, setReady] = useState(false),
+    [revealed, setRevealed] = useState(false);
   useEffect(() => {
     let disposed = false,
       cleanup = () => {};
@@ -49,6 +50,8 @@ export default function LensScene({ motion }: { motion: boolean }) {
         geometries.push(g);
         materials.push(m);
       });
+      const core = new T.Group();
+      group.add(core);
       const g = new T.IcosahedronGeometry(0.55, 2),
         m = new T.MeshPhysicalMaterial({
           color: 0xb7c68e,
@@ -58,9 +61,37 @@ export default function LensScene({ motion }: { motion: boolean }) {
           opacity: 0.7,
           wireframe: true,
         });
-      group.add(new T.Mesh(g, m));
+      const intactCore = new T.Mesh(g, m);
+      core.add(intactCore);
       geometries.push(g);
       materials.push(m);
+      const seamGeometry = new T.TorusGeometry(0.55, 0.018, 8, 64);
+      const halfMaterial = m.clone();
+      halfMaterial.opacity = 0;
+      const seamMaterial = new T.MeshBasicMaterial({
+        color: 0xffb466,
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+      });
+      const halves = [0, 1].map((index) => {
+        const halfGeometry = new T.SphereGeometry(
+          0.55,
+          12,
+          12,
+          index * Math.PI,
+          Math.PI,
+        );
+        const half = new T.Group();
+        half.add(new T.Mesh(halfGeometry, halfMaterial));
+        half.add(new T.Mesh(seamGeometry, seamMaterial));
+        half.visible = false;
+        core.add(half);
+        geometries.push(halfGeometry);
+        return half;
+      });
+      geometries.push(seamGeometry);
+      materials.push(seamMaterial, halfMaterial);
       scene.add(new T.HemisphereLight(0xffffff, 0x312334, 3));
       const light = new T.PointLight(0xdbff48, 35);
       light.position.set(2, 3, 4);
@@ -125,6 +156,12 @@ export default function LensScene({ motion }: { motion: boolean }) {
         dirty = true,
         frame = 0,
         last = 0;
+      let hasRevealed = false;
+      const rotate = (horizontal: number, vertical: number) => {
+        userY += horizontal;
+        userX += vertical;
+        dirty = true;
+      };
       const resize = () => {
         const b = el.getBoundingClientRect();
         renderer.setSize(b.width, b.height);
@@ -143,9 +180,7 @@ export default function LensScene({ motion }: { motion: boolean }) {
       };
       const move = (e: PointerEvent) => {
         if (drag) {
-          dirty = true;
-          userY += (e.clientX - x) * 0.012;
-          userX += (e.clientY - y) * 0.012;
+          rotate((e.clientX - x) * 0.012, (e.clientY - y) * 0.012);
           x = e.clientX;
           y = e.clientY;
         }
@@ -153,10 +188,17 @@ export default function LensScene({ motion }: { motion: boolean }) {
       const up = () => {
         drag = false;
       };
+      const keydown = (e: KeyboardEvent) => {
+        if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+        e.preventDefault();
+        rotate(e.key === "ArrowLeft" ? -0.18 : 0.18, 0);
+      };
       el.addEventListener("pointerdown", down);
       el.addEventListener("pointermove", move);
       el.addEventListener("pointerup", up);
       el.addEventListener("pointercancel", up);
+      el.addEventListener("lostpointercapture", up);
+      el.addEventListener("keydown", keydown);
       const io = new IntersectionObserver(
         (es) => (visible = es[0].isIntersecting),
       );
@@ -178,6 +220,23 @@ export default function LensScene({ motion }: { motion: boolean }) {
         )
           return;
         dirty = false;
+        const side = Math.abs(Math.sin(userY));
+        const exposure = Math.min(1, Math.max(0, (side - 0.57) / 0.39));
+        const opening = exposure * exposure * (3 - 2 * exposure);
+        const showSeam = hasRevealed ? opening > 0.22 : opening > 0.4;
+        if (showSeam !== hasRevealed) {
+          hasRevealed = showSeam;
+          setRevealed(showSeam);
+        }
+        core.rotation.y = -Math.sin(userY) * opening * 0.22;
+        m.opacity = 0.7 * (1 - opening);
+        halfMaterial.opacity = 0.7 * opening;
+        intactCore.visible = opening < 0.999;
+        seamMaterial.opacity = opening;
+        halves.forEach((half, index) => {
+          half.visible = opening > 0;
+          half.position.z = (index === 0 ? 1 : -1) * opening * 0.22;
+        });
         if (!activeMotion) group.scale.setScalar(target);
         group.scale.lerp(new T.Vector3(target, target, target), 0.07);
         points.rotation.z += activeMotion ? 0.001 : 0;
@@ -202,6 +261,8 @@ export default function LensScene({ motion }: { motion: boolean }) {
         el.removeEventListener("pointermove", move);
         el.removeEventListener("pointerup", up);
         el.removeEventListener("pointercancel", up);
+        el.removeEventListener("lostpointercapture", up);
+        el.removeEventListener("keydown", keydown);
         geometries.forEach((g) => g.dispose());
         materials.forEach((m) => m.dispose());
         renderer.dispose();
@@ -222,8 +283,11 @@ export default function LensScene({ motion }: { motion: boolean }) {
       <div
         ref={host}
         className="lens-canvas"
-        role="img"
-        aria-label={ready ? "可拖动旋转的真鉴立体透镜" : "真鉴透镜示意"}
+        role={ready ? "group" : "img"}
+        tabIndex={ready ? 0 : undefined}
+        aria-label={
+          ready ? "拖动或按左右方向键旋转真鉴透镜" : "真鉴透镜示意"
+        }
       >
         {!ready && (
           <div className="lens-fallback">
@@ -234,8 +298,12 @@ export default function LensScene({ motion }: { motion: boolean }) {
         )}
       </div>
       <div className="lens-widget-bottom">
-        <span>
-          {open || !ready ? "多一次确认，多一份安心" : "拖动透镜，换个角度看"}
+        <span aria-live="polite">
+          {revealed
+            ? "转个角度，破绽就露出来了。有疑问，先排查，核实后再行动。"
+            : !ready
+              ? "多一次确认，多一份安心"
+              : "拖动透镜，换个角度看"}
         </span>
         <button
           className="icon-button"

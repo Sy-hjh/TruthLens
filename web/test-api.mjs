@@ -1,6 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { streamAdvice } from "./src/api.ts";
+import { localFileReference } from "./src/companionDesktop.ts";
+
+test("desktop file request keeps the actual name and supports clarification", () => {
+  assert.deepEqual(localFileReference("我说我朋友给我发语音跟我借钱，想让你帮我看看是不是他发的，文件在桌面叫ai，你去鉴别把"), { filename: "ai", location: "desktop" });
+  assert.deepEqual(localFileReference("文件放在桌面"), { filename: "", location: "desktop" });
+  assert.deepEqual(localFileReference("文件名是 ai.wav", "desktop"), { filename: "ai.wav", location: "desktop" });
+  assert.deepEqual(localFileReference("帮我检测 D 盘里叫 ai 的录音"), { filename: "ai", location: "D盘" });
+  assert.deepEqual(localFileReference("文件在 d 盘，叫“家里录音 01.wav”"), { filename: "家里录音 01.wav", location: "D盘" });
+  assert.equal(localFileReference("文件在桌面叫ai，不要核验"), null);
+  assert.equal(localFileReference("怎么判断是不是我朋友本人说的？"), null);
+});
 const result = {
   engine: "test",
   summary: "先核实",

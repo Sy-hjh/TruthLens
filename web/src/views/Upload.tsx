@@ -2,18 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "../api";
 import type { Report } from "../api";
 import { Icon, errorText } from "../ui";
-type Kind = "general" | "chat";
 type Job = { status: string; message: string; result?: Report };
 const supported =
   /\.(mp4|mov|avi|webm|wav|mp3|m4a|flac|ogg|jpg|jpeg|png|webp)$/i;
+const imageFile = /\.(jpg|jpeg|png|webp)$/i;
 export default function Upload({
   onComplete,
-  onContacts,
 }: {
-  onComplete: (r: Report, all?: Report[]) => void;
-  onContacts: () => void;
+  onComplete: (r: Report, all?: Report[], previews?: Record<string, File>) => void;
 }) {
-  const [scene, setScene] = useState<Kind>("general"),
+  const [context, setContext] = useState(""),
+    [reference, setReference] = useState<File>(),
     [files, setFiles] = useState<File[]>([]),
     [selected, setSelected] = useState(0),
     [preview, setPreview] = useState(""),
@@ -83,10 +82,7 @@ export default function Upload({
     const next: File[] = [];
     const rejected: string[] = [];
     for (const f of Array.from(list)) {
-      if (
-        !supported.test(f.name) ||
-        (scene === "chat" && !/\.(jpg|jpeg|png|webp)$/i.test(f.name))
-      )
+      if (!supported.test(f.name))
         rejected.push("不支持的格式：" + f.name);
       else if (f.size > 104857600) rejected.push("超过100MB：" + f.name);
       else if (f.size === 0) rejected.push("文件是空的：" + f.name);
@@ -141,6 +137,7 @@ export default function Upload({
     stopRef.current = false;
     setStop(false);
     const completed: Report[] = [];
+    const previews: Record<string, File> = {};
     try {
       for (let i = 0; i < files.length; i++) {
         if (stopRef.current) break;
@@ -150,7 +147,9 @@ export default function Upload({
         setMessage("正在提交材料…");
         const form = new FormData();
         form.append("file", files[i]);
-        form.append("scene", scene);
+        form.append("scene", "auto");
+        if (reference && imageFile.test(files[i].name)) form.append("reference", reference);
+        if (context.trim()) form.append("context", context.trim());
         const { job_id } = await api<{ job_id: string }>(
           "/api/analyze",
           { method: "POST", body: form },
@@ -160,12 +159,16 @@ export default function Upload({
           sessionStorage.setItem("qinan-active-job", job_id);
         } catch {}
         const result = await watch(job_id);
-        if (result) completed.push(result);
+        if (result) {
+          completed.push(result);
+          if (result.modules.tamper?.regions?.length && !result.marked_jpeg && !result.modules.tamper.marked_jpeg)
+            previews[result.id] = files[i];
+        }
       }
       if (mounted.current && completed.length) {
         setFiles([]);
         setSelected(0);
-        onComplete(completed[0], completed);
+        onComplete(completed[0], completed, previews);
       }
     } catch (e) {
       if (mounted.current)
@@ -179,87 +182,28 @@ export default function Upload({
   }
   const stage = /提交|准备|恢复/.test(message)
     ? 0
+    : kind === "image"
+      ? /文字/.test(message) ? 1 : 2
     : /读取|画面|图片|视频|声音|音轨/.test(message)
       ? 1
       : /转写|内容|文字/.test(message)
         ? 2
         : 1;
   return (
-    <>
-      <p className="eyebrow">01 / VERIFICATION WORKSPACE</p>
-      <h1>把疑问，交给一次核验。</h1>
+    <section className="upload-layout">
+      <h1>选择要核验的材料</h1>
       <p className="page-intro">
-        上传亲友发来的材料，分别查看合成线索与可疑要求。
+        一次可上传最多 4 份材料。完成后可对比分项结果、查看详情或导出 PDF。
       </p>
-      <div className="check-grid">
         <article className="card upload-card">
           <div className="card-heading">
             <span className="step">01</span>
             <div>
-              <h2>选择收到的材料</h2>
+              <h2>上传文件</h2>
               <p>视频会分别检查画面、声音和说话内容。</p>
             </div>
           </div>
-          <div
-            className="material-tabs"
-            role="tablist"
-            aria-label="选择核验方式"
-          >
-            {(
-              [
-                ["general", "audio", "语音 / 视频 / 照片"],
-                ["chat", "chat", "聊天截图"],
-              ] as const
-            ).map(([s, icon, label]) => (
-              <button
-                role="tab"
-                id={"mode-" + s}
-                aria-controls="material-panel"
-                tabIndex={scene === s ? 0 : -1}
-                onKeyDown={(e) => {
-                  if (
-                    busy ||
-                    !["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)
-                  )
-                    return;
-                  e.preventDefault();
-                  const next =
-                    e.key === "Home"
-                      ? "general"
-                      : e.key === "End"
-                        ? "chat"
-                        : scene === "general"
-                          ? "chat"
-                          : "general";
-                  setScene(next);
-                  setFiles([]);
-                  setSelected(0);
-                  setError("");
-                  requestAnimationFrame(() =>
-                    document.getElementById("mode-" + next)?.focus(),
-                  );
-                }}
-                aria-selected={scene === s}
-                className={scene === s ? "active" : ""}
-                key={s}
-                disabled={busy}
-                onClick={() => {
-                  setScene(s);
-                  setFiles([]);
-                  setSelected(0);
-                  setError("");
-                }}
-              >
-                <Icon name={icon} />
-                {label}
-              </button>
-            ))}
-          </div>
-          <div
-            role="tabpanel"
-            id="material-panel"
-            aria-labelledby={"mode-" + scene}
-          >
+          <div>
             <label
               className={
                 "drop " + (drag ? "dragging " : "") + (busy ? "disabled" : "")
@@ -279,30 +223,16 @@ export default function Upload({
                 ref={picker}
                 type="file"
                 multiple
-                aria-label={
-                  scene === "chat" ? "选择聊天截图" : "选择视频、语音或照片"
-                }
+                aria-label="选择语音、视频或图片"
                 disabled={busy}
-                accept={
-                  scene === "chat"
-                    ? ".jpg,.jpeg,.png,.webp"
-                    : ".mp4,.mov,.avi,.webm,.wav,.mp3,.m4a,.flac,.ogg,.jpg,.jpeg,.png,.webp"
-                }
+                accept=".mp4,.mov,.avi,.webm,.wav,.mp3,.m4a,.flac,.ogg,.jpg,.jpeg,.png,.webp"
                 onChange={(e) => choose(e.target.files)}
               />
               <Icon name="upload" />
               <strong>
-                {drag
-                  ? "松开，添加材料"
-                  : scene === "chat"
-                    ? "上传聊天截图"
-                    : "拖放文件，或点击上传"}
+                {drag ? "松开，添加材料" : "拖放文件，或点击上传"}
               </strong>
-              <span>
-                {scene === "chat"
-                  ? "提取原话，核实对方提出的要求"
-                  : "语音 · 视频 · 照片"}
-              </span>
+              <span>语音 · 视频 · 图片</span>
               <small>每次最多4份 · 单份≤100MB · 视频≤3分钟</small>
             </label>
             {!!files.length && (
@@ -316,9 +246,7 @@ export default function Upload({
                             ? "video"
                             : f.type.startsWith("audio")
                               ? "audio"
-                              : scene === "chat"
-                                ? "chat"
-                                : "image"
+                              : "image"
                         }
                       />
                       <div>
@@ -373,6 +301,30 @@ export default function Upload({
                 )}
               </>
             )}
+            <details className="image-text-review">
+              <summary>指定要核对的内容（选填）</summary>
+              <input aria-label="要核对的内容" placeholder="例如：核对赛项名称、退款金额或报告编号" maxLength={4000} disabled={busy} value={context} onChange={(e) => setContext(e.target.value)} />
+            </details>
+            {files.some((item) => imageFile.test(item.name)) && (
+              <details className="image-text-review">
+                <summary>用参考图比对关键内容（选填）</summary>
+                <p>有同一份材料的原图时，可以直接定位奖级、姓名或金额等字段的差异。</p>
+                <input type="file" aria-label="选择参考图" accept=".jpg,.jpeg,.png,.webp" disabled={busy}
+                  onChange={(event) => {
+                    const candidate = event.currentTarget.files?.[0];
+                    event.currentTarget.value = "";
+                    if (!candidate) return;
+                    if (!imageFile.test(candidate.name) || !candidate.size || candidate.size > 104857600) {
+                      setError("请选择 100MB 以内的 JPG、PNG 或 WebP 图片。");
+                      return;
+                    }
+                    setError("");
+                    setReference(candidate);
+                  }} />
+                {reference && <p>{reference.name} <button className="text-button" type="button" disabled={busy}
+                  onClick={() => setReference(undefined)}>移除参考图</button></p>}
+              </details>
+            )}
             <button
               className="primary wide"
               disabled={!files.length || busy}
@@ -389,7 +341,7 @@ export default function Upload({
             </button>
             <p className="privacy-line">
               <Icon name="shield" />{" "}
-              由部署电脑处理，上传副本处理后删除。报告与转写可在记录中删除。
+              上传副本处理后删除。报告、标记缩略图和转写可在记录中删除。
             </p>
             {busy && (
               <div className="progress">
@@ -399,18 +351,11 @@ export default function Upload({
                 </div>
                 <small>已等待 {elapsed} 秒 · 不同材料和首次加载耗时不同</small>
                 <ol className="processing-stages">
-                  {(scene === "chat"
-                    ? [
-                        "提交截图",
-                        "提取聊天文字",
-                        "核实可疑要求",
-                        "整理核验报告",
-                      ]
-                    : kind === "image"
+                  {(kind === "image"
                       ? [
-                          "提交照片",
+                          "提交图片",
+                          "识别图片文字",
                           "检查图片合成线索",
-                          "整理检测依据",
                           "整理核验报告",
                         ]
                       : kind === "audio"
@@ -462,46 +407,6 @@ export default function Upload({
             )}
           </div>
         </article>
-        <aside className="right-column">
-          <article className="notice">
-            <span className="pill">涉及钱的事，先停一下</span>
-            <h2>
-              再像的声音，
-              <br />
-              也值得再确认。
-            </h2>
-            <p>别用可疑消息里刚发来的号码。请联系事先确认并保存的家人。</p>
-            <button className="primary wide" onClick={onContacts}>
-              联系我的家人 <Icon name="up" />
-            </button>
-          </article>
-          <article className="card workflow">
-            <h2>你会看到什么？</h2>
-            {[
-              [
-                "1",
-                "材料有哪些线索",
-                "画面和声音分开判断，不混成一个真假概率。",
-              ],
-              [
-                "2",
-                "原话提出了什么要求",
-                "核对转写文字，查看风险要求与公开资料。",
-              ],
-              ["3", "下一步怎么核实", "依据本次结果提问，再联系可信的人。"],
-            ].map(([n, t, p]) => (
-              <div className="workflow-row" key={n}>
-                <span>0{n}</span>
-                <div>
-                  <h3>{t}</h3>
-                  <p>{p}</p>
-                </div>
-              </div>
-            ))}
-            <p className="muted">没有检出合成线索，不等于身份真实。</p>
-          </article>
-        </aside>
-      </div>
-    </>
+    </section>
   );
 }

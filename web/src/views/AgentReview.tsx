@@ -87,8 +87,8 @@ export default function AgentReview({ report }: { report: Report }) {
       <p className="muted">结合本次结果和官方资料，帮你找到下一步。</p>
       <div className="agent-prompts">
         {[
-          "声音很像，能证明是本人吗？",
-          "这份材料有哪些可疑要求？",
+          "哪些线索需要进一步核实？",
+          "这份报告的依据是什么？",
           "我现在应该怎么核实？",
         ].map((q) => (
           <button key={q} disabled={busy} onClick={() => void ask(q)}>
@@ -105,7 +105,7 @@ export default function AgentReview({ report }: { report: Report }) {
       >
         <input
           aria-label="向真鉴提问"
-          placeholder="例如：对方让我保密，我该怎么办？"
+          placeholder="例如：我应该去哪里核对原始材料？"
           value={question}
           maxLength={200}
           onChange={(e) => setQuestion(e.target.value)}

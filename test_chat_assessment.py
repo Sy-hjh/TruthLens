@@ -19,4 +19,30 @@ class AssessmentTests(unittest.TestCase):
   self.assertNotEqual(value['level'],'alert');self.assertEqual(value['cases'],[])
   _,value=enrich('妈妈，先借我两千，不要转到这个新账户，先电话核实。',[])
   self.assertNotEqual(value['level'],'alert')
+ def test_urgent_borrowing_reports_text_risk_without_image_score(self):
+  from backend.fraud_risk import has_fraud_language
+  text='我手机丢了，借我点钱，一会买完手机我就还你\n十万火急'
+  signals,assessment=enrich(text,[])
+  self.assertTrue(has_fraud_language({'signals': signals, 'assessment': assessment}))
+  self.assertIn(('pressure','十万火急'),[(item['category'],item['quote']) for item in signals])
+  signals,assessment=enrich('借我一点钱，不要急着转账，可以打原号码确认。',[])
+  self.assertFalse(has_fraud_language({'signals': signals, 'assessment': assessment}))
+
+ def test_borrowed_phone_and_immediate_transfer_in_saved_report(self):
+  from backend.report_summary import update_summary
+  text='我手机刚刚摔坏了，你能借我点钱吗现在，2000\n我现在拿别人手机发的消息，然后我买完手机就还你\n现在你给我转就可以'
+  report={'ocr':{'text':text},'chat_analysis':{'status':'completed','assessment':{'level':'attention','version':'qinan-chat-evidence-r3-20261112'},'signals':[]},'modules':{'image':{'status':'completed','score':.32},'tamper':{'status':'completed','method':'fused','regions':[]}}}
+  updated=update_summary(report)
+  self.assertEqual(updated['summary'],'建议核查')
+  self.assertEqual(updated['fraud_risk']['language'],'发现需核实的话术')
+  self.assertIn('他人的设备',updated['fraud_risk']['language_reason'])
+  quotes={(item['category'],item['quote']) for item in updated['chat_analysis']['signals']}
+  self.assertIn(('pressure','现在你给我转就可以'),quotes)
+  self.assertIn(('contact_channel','我现在拿别人手机发的消息，'),quotes)
+
+ def test_borrowed_phone_and_forwarding_a_message_do_not_trigger_fraud(self):
+  from backend.fraud_risk import has_fraud_language
+  for text in ('我现在拿别人手机发的消息，现在你给我转发通知。','我现在拿别人手机联系你，先借我点钱，晚上见面再说。'):
+   signals,assessment=enrich(text,[])
+   self.assertFalse(has_fraud_language({'signals':signals,'assessment':assessment}))
 if __name__=='__main__':unittest.main()

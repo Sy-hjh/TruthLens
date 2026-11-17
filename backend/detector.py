@@ -12,9 +12,13 @@ lock = threading.Lock()
 
 def available(kind):
     if kind == 'audio':
+        from .ast_voice import configured as ast_configured, available as ast_available
+        if ast_configured():return ast_available()
         from .modern_voice import configured as current_configured,available as current_available
         if current_configured():return current_available()
     if kind == 'image':
+        from .product import configured_general, available as product_available
+        if configured_general():return product_available(general=True)
         from .modern_image import configured,available as modern_available
         if configured():return modern_available()
     if kind == 'audio':
@@ -39,11 +43,15 @@ def available(kind):
 
 def classify(kind, data):
     if kind == 'audio':
+        from .ast_voice import configured as ast_configured, predict as ast_predict
+        if ast_configured():return ast_predict(data)
         from .modern_voice import configured as current_configured,predict as current_predict
         if current_configured():
             module=current_predict(data)
             return dict(module,score=max(s['score'] for s in module['segments']),threshold=.5)
     if kind == 'image':
+        from .product import configured_general, predict as product_predict
+        if configured_general():return product_predict(data[0],general=True)
         from .modern_image import configured,predict as modern_predict
         if configured():return modern_predict(data[0])
     if kind == 'audio':
@@ -159,7 +167,7 @@ def audio_samples(path, temp):
             if sr!=16000:
                 g=math.gcd(sr,16000);values=resample_poly(values,16000//g,sr//g)
             values=np.asarray(values[:2880000],dtype=np.float32)
-        except (OSError,RuntimeError,ValueError):values=decode()
+        except (ImportError,OSError,RuntimeError,ValueError):values=decode()
     if not np.isfinite(values).all():raise AudioInputError('invalid_audio','音轨包含无效采样，无法分析。')
     if len(values)<16000:raise AudioInputError('too_short','已取得音轨，但不足1秒，无法可靠核验。')
     if np.sqrt(np.mean(values**2))<.0001:

@@ -1,0 +1,125 @@
+[
+  {
+    "id": "built-in-1",
+    "category": "教学作业",
+    "kind": "实地研究",
+    "title": "阅卷教师能认出 AI 答卷吗？",
+    "scenario": "英国雷丁大学研究团队将 GPT-4 生成的答卷提交到本科心理学课程的真实考试流程中。阅卷教师事前不知情，本次研究中 94% 的 AI 答卷未被识别。",
+    "next": "先核对课程对 AI 使用的规定。复核具体作品时，可请学生解释论证和引用，结合草稿、修改记录与已提交的过程材料核对。",
+    "source": {
+      "publisher": "英国雷丁大学",
+      "date": "2024-06-27",
+      "url": "https://www.reading.ac.uk/news/2024/Research-News/AI-generated-exam-answers-go-undetected-in-real-world-blind-test"
+    }
+  },
+  {
+    "id": "built-in-2",
+    "category": "教学作业",
+    "kind": "真实案例",
+    "title": "论文用了 AI 生成插图，如何核对？",
+    "scenario": "2024 年，一篇关于精原干细胞的综述注明插图由 Midjourney 生成。读者对插图提出质疑后，期刊认定文章未达到编辑和科学严谨性标准，并于 2 月 16 日撤稿。",
+    "next": "先看图注和生成声明，再对照正文与引用，核对图中的标注和原始依据。遇到用作实验结果的图，还要核查原始图像或数据。",
+    "source": {
+      "publisher": "Frontiers 编辑部",
+      "date": "2024-02-16",
+      "label": "查看撤稿声明",
+      "url": "https://www.frontiersin.org/journals/cell-and-developmental-biology/articles/10.3389/fcell.2024.1386861/full",
+      "related": {
+        "label": "查看论文原文（PDF）",
+        "url": "https://www.frontiersin.org/journals/cell-and-developmental-biology/articles/10.3389/fcell.2023.1339390/pdf"
+      }
+    }
+  },
+  {
+    "id": "built-in-3",
+    "category": "电商凭证",
+    "kind": "真实案例",
+    "title": "用 AI 伪造烂果照片申请仅退款",
+    "scenario": "湖南衡山一名买家收到完好的水果后，用 AI 把照片改成果实发霉的样子，反复申请仅退款，再转卖实物。经检察机关提起公诉，法院以诈骗罪判刑。",
+    "next": "对照原订单、售后记录和最早提交的文件。原图检测可提供合成线索，退款处理结合工单和平台规则复核。",
+    "source": {
+      "publisher": "湖南长安网 · 检察日报",
+      "date": "2026-06-18",
+      "url": "https://www.hnzf.gov.cn/content/646040/52/16012454.html"
+    }
+  },
+  {
+    "id": "built-in-4",
+    "category": "新闻素材",
+    "kind": "真实案例",
+    "title": "网传广东冰雹照片夸大灾情",
+    "scenario": "广东出现冰雹天气后，网上流传所谓巨型冰雹、车辆被砸坏的图片。广东省互联网举报中心核实，通报所涉图片均由 AI 生成。",
+    "next": "分别核对天气事件和图片来源。查气象、应急部门通报，再反向搜图寻找早期版本，比对拍摄地点、时间和发布者。",
+    "source": {
+      "publisher": "中国网信网 · 通报案例 2",
+      "date": "2025-05-12",
+      "url": "https://www.cac.gov.cn/2025-05/12/c_1748758117494832.htm"
+    }
+  },
+  {
+    "id": "built-in-5",
+    "category": "新闻素材",
+    "kind": "真实案例",
+    "title": "缅甸地震视频被当作云南灾情传播",
+    "scenario": "一段视频被配上云南芒市发生地震的说明。芒市委网信办核实，画面实际来自缅甸地震，转发帖把拍摄地点改成了云南芒市。",
+    "next": "截取视频中的关键画面反向搜索，找早期发布版本。再对照地震部门通报，核对地点、时间和震级。",
+    "source": {
+      "publisher": "中国网信网 · 通报案例 7",
+      "date": "2025-05-12",
+      "url": "https://www.cac.gov.cn/2025-05/12/c_1748758117494832.htm"
+    }
+  },
+  {
+    "id": "built-in-6",
+    "category": "企业文件",
+    "kind": "真实案例",
+    "title": "假供应商邮件要求更换收款账户",
+    "scenario": "美国司法部披露，有人伪装成供应商，赶在一家公司支付发票前发出变更收款账户的邮件。公司员工信以为真，向第三方账户汇款。",
+    "next": "回到原合同和供应商档案，通过事先核对过的联系方式确认变更，再按本单位审批流程办理。",
+    "source": {
+      "publisher": "美国司法部 · 内布拉斯加州联邦检察官办公室",
+      "date": "2025-05-05",
+      "url": "https://www.justice.gov/usao-ne/pr/florida-couple-sentenced-conspiracy-commit-wire-fraud"
+    }
+  },
+  {
+    "id": "built-in-7",
+    "category": "企业文件",
+    "kind": "真实案例",
+    "title": "预录视频会议冒充公司财务负责人",
+    "scenario": "香港特区政府在立法会书面答复中披露，一名员工受邀参加所谓机密交易的多人视频会议，并按指示授权转账。警方调查认为对方播放了预录的深度伪造视频，案件涉及约 2 亿港元损失。",
+    "next": "通过公司通讯录独立联系负责人，在原审批系统核对交易申请、收款方和授权记录，再决定下一步。",
+    "source": {
+      "publisher": "香港特区政府 · 立法会书面答复",
+      "date": "2024-06-26",
+      "url": "https://www.info.gov.hk/gia/general/202406/26/P2024062600193.htm"
+    }
+  },
+  {
+    "id": "built-in-8",
+    "category": "日常生活",
+    "kind": "真实案例",
+    "title": "AI 换脸冒充好友，请求帮忙转账",
+    "scenario": "汕尾市公安局转载的案例中，有人冒充福州一名企业负责人的好友，通过微信视频提出代付保证金。负责人转账后拨打好友原有号码，才得知好友从未提出这笔请求。",
+    "next": "先暂停转账。用原先保存的号码独立联系本人，确认请求是否由他发出。有视频或转账截图时，可以作为后续核查线索。",
+    "source": {
+      "publisher": "汕尾市公安局 · 转引包头警方通报",
+      "date": "2023-05-26",
+      "url": "https://www.shanwei.gov.cn/gdsw110/zwgk/wgk/content/post_924988.html"
+    }
+  },
+  {
+    "id": "built-in-9",
+    "category": "日常生活",
+    "kind": "真实案例",
+    "title": "用 AI 合成语音冒充交友对象",
+    "scenario": "上海青浦的一起案件中，一名男子用 AI 合成女声和虚构身份与网友交往，多次以房租等理由索款。办案人员结合语音合成文件、聊天记录和转账记录核实案情，法院以诈骗罪判刑。",
+    "next": "遇到网友反复索款，先暂停转账，保存原始语音和聊天记录。通过独立渠道核对身份和事由，语音检测结果可作为线索。",
+    "source": {
+      "publisher": "检察日报",
+      "date": "2026-01-13",
+      "label": "查看原文（PDF）",
+      "url": "https://newspaper.jcrb.com/2026/20260113/20260113_006/news-zgjcb-11125-20260113-m-006-300.pdf"
+    }
+  }
+]

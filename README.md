@@ -1,49 +1,42 @@
 # TruthLens 真鉴
 
-**TruthLens真鉴——面向亲友冒充的多模态核验与反诈问答 Web系统**
+参赛团队：湖舟行；学校：大连东软信息学院；队长：胡瑾慧；队员：周宇航、陈浩翔。项目此前未发表或获奖。参赛架构、运行环境与提交说明见 [README_参赛提交说明.md](README_参赛提交说明.md)；录屏点击步骤及材料清单见 `submission/录屏与提交操作指南.md`。
 
-已连接本地多模态模型和LangChain核实工作流的网页作品，不是静态原型。保留图像、视频、声学、语音内容、聊天截图、可信联系人、反诈练习与新闻、核验记录、导出与反馈。
+真鉴是面向多行业的 AI 内容核验 Web 应用。用户可以上传图片、音频、视频或聊天截图，查看检测线索、下一步核实建议并导出 PDF。小鉴助手提供对话式核验与资料检索。管理员可以管理账号、模型检测阈值、案例、知识库和报告保留期限。
 
-## 直接启动
+## 启动
 
-本机项目目录：`C:/Users/Lenovo/Documents/Codex/2026-11-07/wo/outputs/qinan`。
-双击 `start.cmd`，访问 http://127.0.0.1:8010/ 。旧页面按Ctrl+F5刷新。停止用 `stop.cmd`。
-路径名qinan保留是为了兼容训练和模型配置；客户界面统一使用TruthLens真鉴。
+1. 在 Windows 上解压后进入 `qinan`。首次使用时，在 PowerShell 运行 `powershell -ExecutionPolicy Bypass -File .\setup.ps1` 安装 Python 依赖。使用 GPU 时，按目标电脑的驱动安装相互兼容的 PyTorch、TorchVision 和 TorchAudio。
+2. 双击 `start.cmd` 打开本机网页，使用 `stop.cmd` 停止。也可以在终端运行 `.venv\Scripts\python.exe run.py`，然后访问 [真鉴首页](http://127.0.0.1:8010/)。
+3. 在首页注册普通账号。在 [管理后台](http://127.0.0.1:8010/#admin) 点击「首次配置管理员」，使用首启后在 `runtime/admin-setup.txt` 生成的一次性初始化码。账号、配置和报告各自在新部署的 `runtime` 目录创建。
 
-## 优先阅读
+包内已有 `frontend-next`，浏览页面无需安装 Node.js。修改前端源码后，在 `web` 中运行 `npm ci`、`npm run build`。运行 `npm test` 检查前端接口和检测提示边界。
 
-- `docs/TruthLens_融合设计与交付记录.md`：两个包的取舍、文件职责、接口、启动与复测。
-- `docs/TruthLens_评分逐项对照与严格自评.md`：逐条评分依据、证据及未证实内容。
-- `docs/TruthLens_老人试用任务单.md`：用户已答应实施的真实试用任务和空白记录表。
+## 启用完整检测
 
-## 前端开发
+**完整版 ZIP** 已包含下列本地权重和当前 Web 检测实际使用的推理目录。建议使用 Windows x64 和 Python 3.10，随包附带的 DAF 及 OCR 二进制依赖适用此环境。先按启动步骤安装主 Python 依赖，再通过服务健康状态确认模型可用。小鉴的在线模式由部署者配置接口与密钥。
 
-```powershell
-cd web
-npm ci
-npm run typecheck
-npm test
-npm run format:check
-npm run build
-```
+**轻量源码 ZIP** 包含当前模型配置、小型分类头、推理源码和公开示例。换电脑时，从已有可运行的部署复制下表中缺失的模型文件和推理目录到同一相对路径。仅启动页面、管理后台和浏览案例可先跳过此步骤。
 
-构建写入frontend-next，由现有FastAPI服务提供；前端API使用相对路径，手机访问不指向手机自己的localhost。Three.js单独按需加载。
+| 模块 | 需要补齐的资源 |
+| --- | --- |
+| 整图检测 | `models/community/model.safetensors`。分类头已随包提供。 |
+| FUSED 局部检测 | `models/fused/fused_opensdi.pth` 和 `models/fused/convnext.safetensors`。 |
+| DAF 文字编辑 | `models/daf/srnet-tensors.pt`，以及匹配目标机器 Python 版本的 `runtime/forensics-pilot/daf-torch` 和 `daf-helpers`。 |
+| 语音合成检测 | `models/truthlens-ast-qwen/model.safetensors`。Qwen 语音适配权重已随包提供。 |
+| 视频检测 | 完整的 `models/gend-clip` 目录。有序视频分类头和协议已随包提供。 |
+| 语音转写 | 完整的 `models/asr_zh` 目录。可使用 `download_models.py asr_zh` 获取项目配置的公开资源。 |
+| 图片文字读取 | 运行 `install_chat_ocr.py`，或复制 `runtime/ocr-packages`。 |
+| 小鉴问答 | 在线模式请自行创建 `runtime/companion-model.json`，填写 `enabled`、`base_url`、`model` 和 `api_key`。完整版内含 `models/advisor` 本地模型。如需 LangChain 代理依赖，运行 `setup_agent.ps1`。轻量版可用 `install_advisor.py` 准备本地模型。 |
 
-## 后端验证
+补齐资源后，可访问 [服务健康状态](http://127.0.0.1:8010/api/health) 查看模型是否可用。模型来源与许可见 [第三方组件清单](docs/THIRD_PARTY.md)。`install_release.py` 用于复现 `release/release.json` 中的历史发布配置。
 
-```powershell
-python -m unittest tests test_audio_isolation test_speed_audio test_speech_content test_text_patterns test_chat_assessment test_advisor test_domain test_image_regions test_checkpoint_io test_agent_upgrade test_truthlens_delivery
-python verify_agent_upgrade.py --live
-```
+## 源码结构
 
-测试79项的日志、真实媒体回归、浏览器截图位于本机runtime和reports；源码包只带选定的公开验证摘要，不包含私有图片、联系人、历史数据库或大型权重。
+- `backend/` 包含检测流水线、注册登录、管理员接口、报告和小鉴知识检索。
+- `web/` 是 React 前端源码，`frontend-next/` 是运行时提供的页面文件。
+- `models/`、`release/` 包含模型配置和随包附带的分类头。
+- `docs/`、`reports/` 包含工程文档和公开评测摘要。
+- `build_source_package.py` 可重新构建并校验源码压缩包，使用 `--full` 打包本地模型与推理依赖。
 
-## 新电脑与训练
-
-此源码包不附所有预训练权重、数据集和node_modules。当前电脑已安装，可直接启动；新电脑需按原安装、下载脚本准备依赖与模型，不能把源码ZIP当作完整模型环境。
-原安装/训练操作保留在 `docs/历史_亲安_README.md` 及原训练说明，训练脚本和冻结模型协议未被本轮前端替换。
-LangChain依赖由setup_agent.ps1安装到独立.agent-packages。
-
-## 真实边界
-
-合成线索、可疑要求和身份核实是不同问题。检测分数不是诈骗概率。已有素材回归通过不能代表未知生成器的普遍准确率。真实老人试用、不同手机与浏览器实机、机构试点仍需参与者提供证据，不伪造满分或用户试用结论。未录演示视频、未发布公网。
+两个版本均排除账号和报告数据库、在线 API 密钥、用户上传素材与下载缓存。完整版中的 `runtime` 仅包含选定的推理依赖。检测结果提供待核实的线索，具体材料仍需结合原始记录和来源判断。

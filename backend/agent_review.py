@@ -3,7 +3,7 @@
 Trace exposes tool actions and validation outcomes, not hidden chain of thought.
 No tool can access contacts, open arbitrary URLs, run code or change model verdicts.
 """
-import json,time,uuid,logging
+import json,time,uuid,logging,math
 import re
 from .knowledge import ACTIONS,SUMMARIES
 from .rag import retrieve,manifest
@@ -14,18 +14,34 @@ def evidence_summary(report):
 
 def report_facts(report,question):
  facts=[]
- for name,title in [('video','视频画面'),('audio','声音'),('image','照片')]:
+ for name,title in [('video','视频画面'),('audio','声音'),('image','整图生成'),('tamper','局部篡改')]:
   m=report.get('modules',{}).get(name)
   if not isinstance(m,dict) or m.get('status')=='disabled':continue
+  if name=='tamper' and m.get('method')=='fused':
+   if m.get('status')!='completed':facts.append('图片异常检查未完成。')
+   elif m.get('regions'):facts.append(f"标出 {len(m['regions'])} 处异常，建议复核红框区域。")
+   elif m.get('relevance') in {'irrelevant','unmatched','unavailable'}:facts.append('重绘响应未关联到任务关键信息，未计入风险。')
+   else:facts.append('图片异常检查未标出明显区域。')
+   continue
   values=[(s.get('score'),s.get('threshold',.5)) for s in m.get('segments',[])]
   if isinstance(m.get('score'),(int,float)):values.append((m['score'],m.get('threshold',.5)))
-  valid=[(a,b) for a,b in values if isinstance(a,(int,float)) and isinstance(b,(int,float))]
+  valid=[(a,b) for a,b in values if isinstance(a,(int,float)) and isinstance(b,(int,float)) and math.isfinite(a) and math.isfinite(b)]
   if m.get('status')!='completed' or not valid:facts.append(title+'检查尚未得到有效结果，不能把它当成真实或安全的依据。')
+  elif name=='tamper':
+   if m.get('regions'):
+    facts.append(f"标出 {len(m['regions'])} 处局部异常，请对照原图复核。异常也可能由普通编辑或压缩引起。")
+   else:
+    facts.append('发现局部篡改风险，请对照原图复核。模型分数无法区分普通编辑和 AI 编辑。' if any(a>=b for a,b in valid) else '局部检查未达到提醒线，仍可能漏检。')
   elif any(a>=b for a,b in valid):facts.append(title+'检测出现了合成线索；这不能证明联系你的人是谁，也不等于已经证实诈骗。')
+  elif name=='image' and isinstance(m.get('sensitivity_threshold'),(int,float)) and any(a>=m['sensitivity_threshold'] for a,_ in valid):facts.append('照片检测处于不确定区间，建议结合原图和来源继续核实。')
   else:facts.append(title+'本次未检出明确合成线索；仍可能漏检，不能据此确认身份。')
  for key,title in [('chat_analysis','聊天内容'),('speech_analysis','说话内容')]:
   a=report.get(key,{}).get('assessment',{})
   if a.get('title'):facts.append(title+'：'+a['title']+'。')
+ daf=report.get('modules',{}).get('daf',{})
+ if daf.get('status')=='completed' and daf.get('regions'):
+  fields='、'.join(dict.fromkeys(region['field'] for region in daf['regions']))
+  facts.append(f'在{fields}标出需核查的文字编辑线索。')
  note='以下建议结合本次检测和检索到的公开资料。'
  if re.search(r'本人|身份|女儿|儿子|家人|谁|真人',question):note='合成检测不能核实说话人或画中人的身份。即使没检出合成，也请使用事先保存的号码确认。'
  elif re.search(r'概率|百分|多少|准确',question):note='这里的检测分数不是被骗概率，不能换算成你会不会被骗的百分比。'

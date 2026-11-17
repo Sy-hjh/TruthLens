@@ -4,7 +4,7 @@ from bootstrap import ROOT
 def face_views(images,margin=1.4):
     path=ROOT/'models/face-detector/model.onnx'
     if not path.exists():raise RuntimeError('人脸定位模型未安装')
-    detector=cv2.FaceDetectorYN.create(str(path),'',(320,320),.8,.3,5000)
+    detector=cv2.FaceDetectorYN.create('onnx',path.read_bytes(),b'',(320,320),.8,.3,5000)
     output=[];detected=0
     for image in images:
         rgb=np.asarray(image.convert('RGB'));h,w=rgb.shape[:2];scale=min(1.,640/max(w,h));small=cv2.resize(rgb,(round(w*scale),round(h*scale)));detector.setInputSize((small.shape[1],small.shape[0]));_,faces=detector.detect(cv2.cvtColor(small,cv2.COLOR_RGB2BGR))

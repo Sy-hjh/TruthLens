@@ -1,7 +1,8 @@
 import { Dialog } from "../ui";
 import { useEffect, useState } from "react";
 import { api } from "../api";
-import { cases } from "../quiz-data";
+import type { CaseEntry } from "../api";
+import { caseCategories, cases } from "../quiz-data";
 interface News {
   id: string;
   title: string;
@@ -51,11 +52,27 @@ function readProgress() {
 export default function Practice() {
   const saved = readProgress();
   const [confirmReset, setConfirmReset] = useState(false);
+  const [verificationCases, setVerificationCases] = useState<CaseEntry[]>([]);
+  const [caseError, setCaseError] = useState("");
+  useEffect(() => {
+    let active = true;
+    const refresh = () => {
+      void api<CaseEntry[]>("/api/verification-cases").then((entries) => {
+        if (active) { setVerificationCases(entries); setCaseError(""); }
+      }).catch(() => {
+        if (active) setCaseError("暂时无法读取核验案例，请刷新后重试。");
+      });
+    };
+    refresh();
+    window.addEventListener("focus", refresh);
+    return () => { active = false; window.removeEventListener("focus", refresh); };
+  }, []);
   const [index, setIndex] = useState(
       saved && saved.index >= 0 && saved.index < cases.length ? saved.index : 0,
     ),
     [choice, setChoice] = useState<number | null>(saved?.choice ?? null),
-    [mode, setMode] = useState<"quiz" | "news">("quiz"),
+    [mode, setMode] = useState<"cases" | "quiz" | "news">("cases"),
+    [category, setCategory] = useState<(typeof caseCategories)[number]>("全部"),
     [right, setRight] = useState(saved?.right ?? 0),
     [mistakes, setMistakes] = useState<string[]>(saved?.mistakes ?? []),
     [finished, setFinished] = useState(saved?.finished ?? false),
@@ -78,13 +95,13 @@ export default function Practice() {
     }
   }
   useEffect(() => {
-    void load();
-  }, []);
+    if (mode === "news") void load();
+  }, [mode]);
   useEffect(() => {
-    if (!feed?.updating) return;
+    if (mode !== "news" || !feed?.updating) return;
     const timer = setTimeout(() => void load(), 2500);
     return () => clearTimeout(timer);
-  }, [feed]);
+  }, [feed, mode]);
   const item = cases[index];
   function answer(i: number) {
     if (choice !== null) return;
@@ -127,11 +144,61 @@ export default function Practice() {
     addEventListener("keydown", key);
     return () => removeEventListener("keydown", key);
   }, [mode, index, choice, finished, confirmReset]);
+  if (mode === "cases") {
+    return (
+      <>
+        <h1>核验案例</h1>
+        <div className="practice-tabs" role="group" aria-label="按场景筛选案例">
+          {caseCategories.map((name) => (
+            <button key={name} className={category === name ? "active" : ""}
+              aria-pressed={category === name} onClick={() => setCategory(name)}>
+              {name}
+            </button>
+          ))}
+        </div>
+        {caseError && <p className="error" role="alert">{caseError}</p>}
+        <div className="news-grid">
+          {verificationCases.filter((item) => category === "全部" || category === item.category).map((item) => (
+            <article className="card news-card" key={item.id}>
+              <div className="news-meta">{item.category} · {item.kind}</div>
+              <h2>{item.title}</h2>
+              <p>{item.scenario}</p>
+              <div className="news-tip">
+                <b>下一步怎么核实</b>
+                <p>{item.next}</p>
+              </div>
+              <a href={item.source.url} target="_blank" rel="noreferrer"
+                aria-label={`${item.source.label ?? "查看来源原文"} · ${item.title} · ${item.source.publisher}`}>
+                {item.source.publisher} · {item.source.date} · {item.source.label ?? "查看原文"} ↗
+              </a>
+              {item.source.related && (
+                <>
+                  {" · "}
+                  <a href={item.source.related.url} target="_blank" rel="noreferrer">
+                    {item.source.related.label} ↗
+                  </a>
+                </>
+              )}
+            </article>
+          ))}
+        </div>
+        {category === "日常生活" && (
+          <section className="card practice-faq">
+            <h2>日常生活工具</h2>
+            <div className="toolbar">
+              <button onClick={() => setMode("quiz")}>情景练习</button>
+              <button onClick={() => setMode("news")}>反诈预警</button>
+              <a href="#contacts">家人联系 ↗</a>
+            </div>
+          </section>
+        )}
+      </>
+    );
+  }
   return (
     <>
-      <p className="eyebrow">把核实方法，慢慢练熟</p>
-      <h1>练习识别骗局</h1>
-      <p className="page-intro">先看情景怎么应对，也看看最近有哪些新套路。</p>
+      <button className="text-button" onClick={() => setMode("cases")}>← 返回核验案例</button>
+      <h1>日常生活核验</h1>
       <div className="practice-tabs">
         <button
           className={mode === "quiz" ? "active" : ""}

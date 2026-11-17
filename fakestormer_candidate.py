@@ -44,8 +44,9 @@ def read_clips(path,limit=4):
  """Decode ordered spans; detect only the four frames actually entering the model."""
  cv2.setNumThreads(1);cap=cv2.VideoCapture(str(path));fps=cap.get(cv2.CAP_PROP_FPS);count=int(cap.get(cv2.CAP_PROP_FRAME_COUNT));selected=[0,10,21,31];out=[]
  if fps<=0 or count<32 or count/fps>180:cap.release();raise ValueError('视频需包含32帧且不超过3分钟；不能重复帧冒充时序。')
- detector=cv2.FaceDetectorYN.create(str(ROOT/'models/face-detector/model.onnx'),'',(320,320),.8,.3,5000)
  try:
+  model=(ROOT/'models/face-detector/model.onnx').read_bytes()
+  detector=cv2.FaceDetectorYN.create('onnx',model,b'',(320,320),.8,.3,5000)
   for start in sorted(set(round(v) for v in np.linspace(0,count-32,min(limit,max(1,count//32))))):
    cap.set(cv2.CAP_PROP_POS_FRAMES,start);frames=[];boxes=[];center=None
    for j in range(32):

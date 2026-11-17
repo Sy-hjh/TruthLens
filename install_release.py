@@ -31,7 +31,7 @@ def main():
  video=release['video']
  if video.get('engine')=='video-ordered-head':
   protocol=json.loads((ROOT/video['protocol']).read_text(encoding='utf-8'))
-  for name,expected in [(video['head'],protocol['checkpoint_sha']),('train_temporal_sequence.py',protocol['code_sha']),('fakestormer_candidate.py',protocol['sampler_sha'])]:
+  for name,expected in [(video['head'],protocol['checkpoint_sha']),('train_temporal_sequence.py',protocol['code_sha']),('fakestormer_candidate.py',video.get('runtime_sampler_sha',protocol['sampler_sha']))]:
    if hashlib.sha256((ROOT/name).read_bytes()).hexdigest()!=expected:raise RuntimeError('Packaged ordered video integrity mismatch: '+name)
  if video.get('engine')=='video-fusion':
   head=ROOT/video['head'];head.parent.mkdir(parents=True,exist_ok=True);original=ROOT/'release/video-head.pt'

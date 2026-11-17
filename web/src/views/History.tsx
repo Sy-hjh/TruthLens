@@ -45,7 +45,7 @@ export default function History({ onOpen }: { onOpen: (r: Report) => void }) {
       <p className="eyebrow">材料已删除 · 结果可回看</p>
       <h1>我的核验记录</h1>
       <p className="page-intro">
-        保留检测结果和您填写的信息，方便与家人一起复核。原始上传文件不保留。
+        核验结果和图片标记可在这里回看。上传文件处理后删除。
       </p>
       <label className="search field">
         查找材料
@@ -103,7 +103,7 @@ export default function History({ onOpen }: { onOpen: (r: Report) => void }) {
       {pending && (
         <Dialog title="删除这条核验记录？" onClose={() => setPending(null)}>
           <p>{pending.filename}</p>
-          <p>报告、转写与对应反馈会一并清除，删除后无法恢复。</p>
+          <p>报告、标记缩略图、转写与对应反馈会一并清除。</p>
           <div className="toolbar">
             <button onClick={() => setPending(null)}>保留记录</button>
             <button className="primary" onClick={() => void remove(pending.id)}>

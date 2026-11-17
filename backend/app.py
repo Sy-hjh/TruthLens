@@ -1,19 +1,26 @@
-import hashlib, json, logging, tempfile, threading, uuid, re, time
+import hashlib, ipaddress, json, logging, os, stat, tempfile, threading, uuid, re, time
 import torch
 torch.set_num_threads(2)
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.gzip import GZipMiddleware
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
+from starlette.concurrency import run_in_threadpool
 from pydantic import BaseModel, Field
-from PIL import Image
+from PIL import Image, ImageOps
 from bootstrap import ROOT
 from . import detector, storage
+from .companion import ANSWER_LIMIT
+from .fraud_risk import has_fraud_language, is_fraud_task
+from .report_summary import update_summary
 from .media import sample_video
+from . import admin_store
+from .admin_api import current_account, require_account, router as admin_router
 
 
 def cleanup_interrupted():
@@ -35,32 +42,71 @@ def cleanup_interrupted():
 
 @asynccontextmanager
 async def lifespan(_app):
+    storage.initialize()
+    admin_store.initialize()
+    admin_store.ensure_setup_token()
     count = cleanup_interrupted()
     logging.info("Cleaned %s interrupted upload directories", count)
     from .news import start_updates
     news_stop=threading.Event()
     start_updates(news_stop)
+    threading.Thread(target=run_retention, args=(news_stop,), daemon=True, name="report-retention").start()
     yield
     news_stop.set()
 
 
-app = FastAPI(title="TruthLens 真鉴 · 多模态核验与反诈问答", version="3.0.0", lifespan=lifespan)
+app = FastAPI(title="真鉴 · AI 内容核验助手", version="3.0.0", lifespan=lifespan)
 app.add_middleware(GZipMiddleware,minimum_size=1000,compresslevel=6)
+
+
+def report_access(account, key, *, running=False):
+    if account["role"] == "admin":
+        return True
+    if running:
+        with joblock:
+            if key in jobs:
+                return jobs[key].get("owner_id") == account["id"]
+    return storage.owned_by(key, account["id"])
+
+
+def authorize(request):
+    path = request.url.path
+    if path.startswith("/api/") and request.method not in {"GET", "HEAD", "OPTIONS"}:
+        origin = request.headers.get("origin")
+        expected = f"{request.url.scheme}://{request.url.netloc}"
+        if (origin and origin != expected) or request.headers.get("sec-fetch-site") == "cross-site":
+            raise HTTPException(403, "请在真鉴页面中完成此操作。")
+    if path == "/api/agent/metrics":
+        require_account(request, admin=True)
+    if (path in {"/api/analyze", "/api/cases"} or
+            path.startswith(("/api/cases/", "/api/jobs/", "/api/companion/")) and path != "/api/companion/model"):
+        account = require_account(request)
+        if path.startswith(("/api/cases/", "/api/jobs/")):
+            key = path.split("/")[3]
+            if not report_access(account, key, running=path.startswith("/api/jobs/")):
+                raise HTTPException(404, "没有这份核验记录。")
+
 
 @app.middleware('http')
 async def response_policy(request,call_next):
-    response=await call_next(request)
+    try:
+        await run_in_threadpool(authorize, request)
+    except HTTPException as error:
+        response = JSONResponse({"detail":error.detail}, status_code=error.status_code)
+    else:
+        response = await call_next(request)
     path=request.url.path
     response.headers['X-Content-Type-Options']='nosniff'
     response.headers['Referrer-Policy']='strict-origin-when-cross-origin'
     response.headers['X-Frame-Options']='DENY'
     response.headers['Content-Security-Policy']="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
-    if path.startswith(('/api/cases','/api/jobs','/api/companion')):response.headers['Cache-Control']='no-store'
+    if path.startswith(('/api/cases','/api/jobs','/api/companion','/api/auth','/api/admin','/api/verification-cases')):response.headers['Cache-Control']='no-store'
     elif path.startswith('/assets/'):response.headers['Cache-Control']='public, max-age=31536000, immutable'
     elif path=='/' or path.endswith('.html'):response.headers['Cache-Control']='no-cache'
     return response
 
 from .agent_api import router as agent_router
+app.include_router(admin_router)
 app.include_router(agent_router)
 pool = ThreadPoolExecutor(max_workers=1)
 asr_pool = ThreadPoolExecutor(max_workers=1,thread_name_prefix="qinan-asr")
@@ -153,18 +199,21 @@ def phrase_evidence(text):
 
 @app.get("/api/health")
 def health():
+    from .daf_image import available as daf_available
     from .product import available as product_available
+    from .fused_image import available as tamper_available
 
     models = {
         k: detector.available(k) for k in ("video", "audio", "image")
     }
-    models["tamper"] = False
+    models["tamper"] = tamper_available()
+    models["daf"] = daf_available()
     models["product"] = product_available()
     from .chat_ocr import available as ocr_available
     models['chat_ocr'] = ocr_available()
     from .advisor import available as advisor_available
     models['advisor'] = advisor_available()
-    models['speech_text'] = any(detector.available(k) for k in ('asr_zh','asr_small','asr')) and (ROOT/'models/active-chat.json').exists()
+    models['speech_text'] = any(detector.available(k) for k in ('asr_zh','asr_small','asr')) and ((ROOT/'models/active-chat.json').exists() or models['advisor'])
     return {
         "version": app.version,
         "models": models,
@@ -179,13 +228,14 @@ def correct_chat_text(key:str,text:str=Form(...)):
     if not text.strip() or len(text)>4000:raise HTTPException(422,'请填写1到4000字的截图文字')
     result=storage.get(key)
     if not result:raise HTTPException(404,'记录不存在')
-    if result.get('scene')!='chat':raise HTTPException(409,'这个入口只用于聊天截图，不能修改声音检测')
+    if 'ocr' not in result:raise HTTPException(409,'此入口仅用于校正图片识别的文字')
     from .chat_analysis import analyze as analyze_chat
     result['ocr']['text']=text
     try:result['chat_analysis']=analyze_chat(text)
     except Exception:
         logging.exception('Corrected chat interpretation')
         result['chat_analysis']={'status':'unavailable','signals':[],'note':'自动分析暂不可用，请人工核对。'}
+    update_summary(result)
     if not storage.update(result):raise HTTPException(404,'记录已删除')
     with joblock:
         if key in jobs:jobs[key]['result']=result
@@ -204,14 +254,7 @@ def correct_speech_text(key:str,text:str=Form(...)):
     result['transcript']=dict(previous,text=text,original_text=previous.get('original_text',previous.get('text','')),corrected=True)
     result['speech_analysis']=analysis
     result['speech_analysis']['input_basis']='user_corrected_transcript'
-    if analysis.get('assessment',{}).get('level') in {'alert','attention'}:result['summary']='校正文字中发现需核实的要求，请查看分项结果'
-    else:
-        signals=[]
-        for module in result.get('modules',{}).values():
-            if module.get('status')!='completed':continue
-            if module.get('score') is not None:signals.append(module['score']>=module.get('threshold',.5))
-            signals.extend(p['score']>=p.get('threshold',.5) for p in module.get('segments',[]))
-        result['summary']='发现合成线索，请先核实' if any(signals) else '已重查说话内容，仍需独立核实'
+    update_summary(result)
     if not storage.update(result):raise HTTPException(404,'记录已删除')
     with joblock:
         if key in jobs:jobs[key]['result']=result
@@ -219,8 +262,13 @@ def correct_speech_text(key:str,text:str=Form(...)):
 
 
 @app.get("/api/cases")
-def cases():
-    return storage.listing()
+def cases(request: Request):
+    account = require_account(request)
+    rows = storage.listing(owner_id=None if account["role"] == "admin" else account["id"])
+    for row in rows:
+        row.pop("marked_jpeg", None)
+        row.get("modules", {}).get("tamper", {}).pop("marked_jpeg", None)
+    return rows
 
 
 @app.get('/api/evidence')
@@ -239,18 +287,70 @@ class AdviceRequest(BaseModel):
     question: str = Field(default='我现在应该怎么独立核实？',min_length=1,max_length=200)
 
 
+class CompanionTurn(BaseModel):
+    question: str = Field(min_length=1,max_length=320)
+    answer: str = Field(min_length=1,max_length=ANSWER_LIMIT)
+
+
 class CompanionRequest(BaseModel):
     question: str = Field(min_length=1,max_length=320)
     page: str = Field(default='home',pattern='^(home|check|contacts|practice|history|report)$')
+    history: list[CompanionTurn] = Field(default_factory=list,max_length=5)
+    report_id: str | None = Field(default=None, min_length=1, max_length=80)
+
+
+@app.get('/api/companion/model')
+def companion_model():
+    from .companion_online import OnlineModelError, configured_model
+    try:
+        online = configured_model()
+    except OnlineModelError as exc:
+        return {'mode': 'configuration_error', 'message': str(exc)}
+    return {'mode': 'online' if online else 'local'}
+
 
 @app.post('/api/companion/ask')
-def companion_ask(body: CompanionRequest):
+def companion_ask(body: CompanionRequest, request: Request):
     from .agent_api import _slots
-    from .companion import answer
-    if not body.question.strip():raise HTTPException(422,'请输入问题')
+    from .companion import answer, selected_attachment
+    question = body.question.strip()
+    if not question:raise HTTPException(422,'请输入问题')
+    if body.report_id and not report_access(require_account(request), body.report_id):
+        raise HTTPException(404,'报告不存在，请重新选择材料核验。')
+    if not body.report_id:
+        attachment = selected_attachment(question)
+        if attachment:
+            return attachment
     if not _slots.acquire(blocking=False):raise HTTPException(429,'助手正在处理另一份提问，请稍后重试')
-    try:return answer(body.question.strip(),body.page)
+    try:
+        report = storage.get(body.report_id) if body.report_id else None
+        if body.report_id and not report:raise HTTPException(404,'报告不存在，请重新选择材料核验。')
+        return answer(question,body.page,[turn.model_dump() for turn in body.history],report=report)
     finally:_slots.release()
+
+
+@app.post('/api/companion/transcribe')
+def companion_transcribe(file: UploadFile = File(...)):
+    if not any(detector.available(kind) for kind in ('asr_zh','asr','asr_small')):
+        raise HTTPException(503,'语音转写暂不可用，请打字输入。')
+    suffix = Path(file.filename or '').suffix.lower()
+    if suffix not in {'.webm','.ogg','.m4a'}:
+        raise HTTPException(415,'无法读取这种录音格式，请打字输入。')
+    content = file.file.read(10 * 1024 * 1024 + 1)
+    if not content or len(content) > 10 * 1024 * 1024:
+        raise HTTPException(422,'录音为空或过长，请重新录制。')
+    try:
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / ('question' + suffix)
+            path.write_bytes(content)
+            result = detector.transcribe(detector.audio_samples(path, folder))
+    except Exception:
+        logging.exception('Companion transcription failed')
+        raise HTTPException(422,'录音无法转写，请重录或打字输入。')
+    transcript = result.get('text','').strip()
+    if not transcript:
+        raise HTTPException(422,'没有识别到清晰的文字，请重录或打字输入。')
+    return {'text': transcript[:320]}
 
 
 @app.post('/api/cases/{key}/advice')
@@ -267,21 +367,38 @@ def model_lab_redirect():
 
 
 @app.get("/api/cases/{key}")
-def get_case(key: str):
+def get_case(key: str, request: Request):
     item = storage.get(key)
     if not item:
         raise HTTPException(404, "记录不存在")
+    admin_store.audit(current_account(request), "查看核验报告", key)
     return item
 
 
+@app.get("/api/cases/{key}/pdf")
+def export_case_pdf(key: str, request: Request):
+    item = storage.get(key)
+    if not item:
+        raise HTTPException(404, "记录不存在")
+    from .report_pdf import build_report_pdf
+
+    safe_id = re.sub(r"[^A-Za-z0-9_-]", "_", key)[:80]
+    admin_store.audit(current_account(request), "导出报告 PDF", key)
+    return Response(build_report_pdf(item), media_type="application/pdf", headers={
+        "Content-Disposition": f'attachment; filename="TruthLens-{safe_id}.pdf"',
+        "Cache-Control": "no-store",
+    })
+
+
 @app.delete("/api/cases/{key}")
-def delete_case(key: str):
+def delete_case(key: str, request: Request):
     with joblock:
         if key in jobs and jobs[key]['status']=='processing':raise HTTPException(409,'核验仍在处理，请完成后再删除报告')
         from .agent_store import delete as delete_agent_data
         delete_agent_data(key)
         storage.delete(key)
         jobs.pop(key,None)
+    admin_store.audit(current_account(request), "删除核验报告", key)
     return {"deleted": True}
 
 
@@ -297,7 +414,7 @@ def job(key: str):
             saved=storage.get(key)
             if saved:return dict(status='completed',message='已从保存的报告恢复',result=saved)
             raise HTTPException(404, "任务不存在；若服务中途重启，请重新提交材料")
-        return dict(jobs[key])
+        return {field: value for field, value in jobs[key].items() if field != "owner_id"}
 
 
 def prune_jobs():
@@ -306,7 +423,137 @@ def prune_jobs():
     for key in terminal[:-100]:del jobs[key]
 
 
-def process(key, path, name, context, sha, folder, scene="general"):
+def run_retention(stop):
+    from .agent_store import delete as delete_agent_data
+
+    while not stop.is_set():
+        try:
+            days = admin_store.active_settings()["values"]["retention_days"]
+            if days:
+                cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+                expired = storage.expired_reports(cutoff)
+                for key in expired:
+                    with joblock:
+                        delete_agent_data(key)
+                        storage.delete(key)
+                        jobs.pop(key, None)
+                if expired:
+                    admin_store.audit(None, "清理到期报告", f"{len(expired)} 份")
+        except Exception:
+            logging.exception("Report retention sweep")
+        stop.wait(1800)
+
+
+def check_image_text(result, image, *, auto=False):
+    from .chat_analysis import analyze as analyze_chat
+    from .chat_ocr import NoReadableText, read as read_chat
+    from .image_fields import document_kind
+
+    try:
+        ocr = read_chat(ImageOps.exif_transpose(image))
+    except NoReadableText:
+        if not auto:
+            result["chat_analysis"] = {"status": "unavailable", "signals": [], "note": "没有读到清晰文字。"}
+        return {}
+    except Exception:
+        logging.exception("image text recognition")
+        if not auto:
+            result["chat_analysis"] = {"status": "unavailable", "signals": [], "note": "未完成文字识别。"}
+        return {"status": "unavailable"}
+    try:
+        analysis = analyze_chat(ocr["text"])
+    except Exception:
+        logging.exception("image text interpretation")
+        analysis = {"status": "unavailable", "signals": [], "note": "文字已提取，可核对原话。"}
+    if not auto or document_kind(ocr["lines"]) == "image" or has_fraud_language(analysis):
+        result["ocr"] = ocr
+        result["chat_analysis"] = analysis
+    return ocr
+
+
+def check_image_models(result, path, image, *, ocr=None, reference_path=None, settings=None):
+    from .chat_ocr import NoReadableText, read
+    from .daf_image import predict as predict_daf
+    from .fused_image import METHOD, available as tamper_available, marked_preview, predict as predict_tamper
+    from .image_fields import task_fields, visible_generation_label
+    from .image_marks import MARK_POLICY, report_regions
+
+    modules = result["modules"]
+    config = settings["values"] if settings else {}
+    try:
+        if result["scene"] == "product":
+            from .product import predict as product_predict
+            modules["image"] = product_predict(image.convert("RGB"))
+        else:
+            modules["image"] = detector.classify("image", [image.convert("RGB")])
+    except Exception as exc:
+        modules["image"] = {"status": "unavailable", "note": str(exc)}
+    if config and modules["image"]["status"] == "completed":
+        modules["image"].update(threshold=config["whole_threshold"], weight=config["whole_weight"])
+    oriented = ImageOps.exif_transpose(image)
+    if ocr is None:
+        try:
+            ocr = read(oriented)
+        except NoReadableText:
+            ocr = {}
+        except Exception:
+            logging.exception("Read image field positions")
+            ocr = {"status": "unavailable"}
+    context = result.get("context", "")
+    lines = ocr.get("lines", [])
+    fields = task_fields(lines, oriented.size, context)
+    generation_label = visible_generation_label(lines, oriented.size)
+    if generation_label:
+        modules["image"]["generation_label"] = generation_label
+    modules["tamper"] = {"status": "unavailable", "method": METHOD, "note": "图片异常检查未完成。"}
+    if tamper_available():
+        try:
+            modules["tamper"] = predict_tamper(path, image, context=context, ocr=ocr,
+                                               mask_threshold=config.get("fused_threshold", 0.5),
+                                               photo_threshold=config.get("fused_photo_threshold", 0.75))
+        except Exception:
+            logging.exception("FUSED image inspection")
+    if fields:
+        try:
+            modules["daf"] = predict_daf(path, fields, threshold=config.get("daf_signal_threshold", 0.4))
+            focus = task_fields(lines, oriented.size, context, explicit_only=True)
+            if focus:
+                modules["daf"]["focus_fields"] = list(dict.fromkeys(field for _, field in focus))
+        except Exception:
+            logging.exception("DAF text edit inspection")
+            modules["daf"] = {"status": "unavailable", "method": "daf", "note": "文字编辑检查未完成。"}
+    if config:
+        modules["image"]["weight"] = config["whole_weight"]
+        modules["tamper"]["weight"] = config["fused_weight"]
+        if "daf" in modules:
+            modules["daf"].update(weight=config["daf_weight"], review_threshold=config["daf_box_threshold"])
+        result["detection_config_version"] = settings["version"]
+    if reference_path:
+        from .image_comparison import compare_fields
+
+        try:
+            with Image.open(reference_path) as source:
+                if source.width * source.height > 25_000_000:
+                    raise ValueError("参考图片过大")
+                reference = ImageOps.exif_transpose(source)
+                modules["reference"] = compare_fields(oriented, reference, read(reference)["lines"], context)
+        except (NoReadableText, OSError, ValueError):
+            modules["reference"] = {"status": "unavailable", "note": "参考图无法读取或没有可比对的关键文字。", "regions": []}
+        except Exception:
+            logging.exception("Reference image comparison")
+            modules["reference"] = {"status": "unavailable", "note": "参考图比对未完成。", "regions": []}
+
+    from .image_risk import assess_image
+    from .risk_labels import PRIORITY_REVIEW, REVIEW
+
+    regions = report_regions(modules)
+    if regions and assess_image(modules)["title"] in {REVIEW, PRIORITY_REVIEW}:
+        result["marked_jpeg"] = marked_preview(oriented, regions)
+        result["mark_policy"] = MARK_POLICY
+
+
+def process(key, path, name, context, sha, folder, scene="general", audio_only=False, reference_path=None,
+            owner_id=None, settings=None):
     result = {
         "id": key,
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -345,7 +592,7 @@ def process(key, path, name, context, sha, folder, scene="general"):
                 decode_error=exc;result['audio_info']={'status':'unavailable','code':getattr(exc,'code','decode_failed'),'note':str(exc)}
             result['timings']['audio_decode_seconds']=time.monotonic()-step
         video_started=time.monotonic()
-        if suffix in {".mp4", ".mov", ".avi", ".webm"}:
+        if not audio_only and suffix in {".mp4", ".mov", ".avi", ".webm"}:
             with joblock:
                 jobs[key]["message"] = "正在分析视频画面"
             duration=0.;frames=[];fusion_active=False
@@ -389,8 +636,11 @@ def process(key, path, name, context, sha, folder, scene="general"):
             acoustic_started=time.monotonic()
             try:
                 if samples is None:raise decode_error or ValueError('未读取到音轨')
+                from .ast_voice import configured as ast_configured, predict as ast_predict
                 from .modern_voice import configured as acoustic_configured,predict as acoustic_predict
-                if acoustic_configured():
+                if ast_configured():
+                    result['modules']['audio'] = ast_predict(samples)
+                elif acoustic_configured():
                     result["modules"]["audio"] = acoustic_predict(samples)
                 else:
                     segments = []
@@ -424,6 +674,7 @@ def process(key, path, name, context, sha, folder, scene="general"):
                         "note": f"直接分析16kHz声音波形，按{window//16000}秒切片；不调用语音转写，不依据说话内容判断AI声音。",
                     }
                 result["limitations"].append(
+                    "AST 声音检测分析开头最多 4 秒；目前的适配评测集中在千问仿声样本。" if ast_configured() else
                     ("当前声音版本以真实/参考克隆语音及压缩条件评测，不确认人物身份，不保证覆盖所有新型克隆方法。" if acoustic_configured() else "旧声音版本只做过通用TTS对照，不能代表真人克隆检测能力。")
                 )
             except Exception as e:
@@ -441,32 +692,18 @@ def process(key, path, name, context, sha, folder, scene="general"):
             else:
                 result['transcript']={'status':'unavailable','text':'','note':str(decode_error or '未取得可读取的音轨。')}
                 result['speech_analysis']={'status':'unavailable','signals':[],'note':'没有可用声音，未分析内容。'}
-        if scene == "chat":
-            from .chat_ocr import read as read_chat
-            from .chat_analysis import analyze as analyze_chat
-            with Image.open(path) as im:
-                if im.width*im.height>25_000_000:raise ValueError('截图过大，请裁剪聊天内容后重试')
-                result["ocr"] = read_chat(im)
-            try:result["chat_analysis"] = analyze_chat(result["ocr"]["text"])
-            except Exception:
-                logging.exception("screenshot interpretation")
-                result["chat_analysis"] = {"status":"unavailable","signals":[],"note":"文字已提取，自动分析暂不可用，请先核对文字。"}
-        if scene != "chat" and suffix in {".png", ".jpg", ".jpeg", ".webp"}:
+        if suffix in {".png", ".jpg", ".jpeg", ".webp"}:
+            fraud_task = is_fraud_task(context)
             with Image.open(path) as im:
                 if im.width * im.height > 25_000_000:
                     raise ValueError("图片过大")
-                try:
-                    if scene == "product":
-                        from .product import predict as product_predict
-                        result["modules"]["image"] = product_predict(im.convert("RGB"))
-                    else:
-                        result["modules"]["image"] = detector.classify("image", [im.convert("RGB")])
-                except Exception as e:
-                    result["modules"]["image"] = {
-                        "status": "unavailable",
-                        "note": str(e),
-                    }
-            result["modules"]["tamper"] = {"status":"disabled","note":"局部修图定位未通过本地有效性复核，暂不提供。"}
+                ocr = None
+                if scene in {"chat", "auto", "general"} or fraud_task:
+                    with joblock:jobs[key]['message']='正在识别并检查文字'
+                    ocr = check_image_text(result, im, auto=scene != "chat" and not fraud_task)
+                if scene != "chat" or reference_path or fraud_task or has_fraud_language(result.get("chat_analysis", {})):
+                    with joblock:jobs[key]['message']='正在检查图片异常'
+                    check_image_models(result, path, im, ocr=ocr, reference_path=reference_path, settings=settings)
         successes = [
             m for m in result["modules"].values() if m["status"] == "completed"
         ]
@@ -479,17 +716,7 @@ def process(key, path, name, context, sha, folder, scene="general"):
             result["limitations"].append(
                 "不同检测项的倾向有差异：整图生成与局部编辑是不同任务，画面和声音也可能只有一项被伪造；不计算统一真伪分数。"
             )
-        result["summary"] = (
-            ("发现合成线索，请先核实" if any(tendencies) else "这次检查，还不能确认真假")
-            if successes
-            else "检测未成功，当前无法判断；仍可使用可信回拨"
-        )
-        if suffix in {".png", ".jpg", ".jpeg", ".webp"} and successes:
-            result["limitations"].append(
-                "图像提示依据该模型已登记的阈值；不是诈骗或真实性概率，局部改图仍可能漏检。"
-            )
-        if result.get('speech_analysis',{}).get('assessment',{}).get('level') in {'alert','attention'}:result['summary']='发现需核实的说话内容，请先暂停操作'+('；另有合成线索' if any(tendencies) else '')
-        if scene == "chat":result["summary"] = result.get('chat_analysis',{}).get('assessment',{}).get('title','聊天截图已提取，请核对内容并独立核实')
+        update_summary(result)
         result['timings']['total_seconds']=time.monotonic()-started
         finished = True
     except Exception:
@@ -504,7 +731,7 @@ def process(key, path, name, context, sha, folder, scene="general"):
         try:
             shutil.rmtree(folder)
             if finished:
-                storage.save(result)
+                storage.save(result, owner_id=owner_id)
                 with joblock:
                     jobs[key].update(
                         status="completed",
@@ -521,71 +748,223 @@ def process(key, path, name, context, sha, folder, scene="general"):
                 )
 
 
-@app.post("/api/analyze", status_code=202)
-def analyze(file: UploadFile = File(...), context: str = Form(""), scene: str = Form("general")):
-    if scene not in {"general","product","chat"}:raise HTTPException(422,"未知的检测场景")
+MEDIA_SUFFIXES = {'.mp4','.mov','.avi','.webm','.wav','.mp3','.m4a','.flac','.ogg','.jpg','.jpeg','.png','.webp'}
+IMAGE_SUFFIXES = {'.jpg', '.jpeg', '.png', '.webp'}
+
+
+def save_upload(source, path, digest=None):
+    size = 0
+    with path.open("wb") as out:
+        while chunk := source.read(1024 * 1024):
+            size += len(chunk)
+            if size > 100 * 1024 * 1024:
+                raise HTTPException(413, "文件超过100MB")
+            if digest is not None:
+                digest.update(chunk)
+            out.write(chunk)
+    if not size:
+        raise HTTPException(422, "文件为空")
+
+
+def queue_verification(source, filename: str, context: str, scene: str, audio_only: bool, reference=None, account=None):
+    if scene not in {"general","auto","product","chat"}:raise HTTPException(422,"未知的检测场景")
     if scene == "product":
         from .product import available as product_available
         if not product_available():raise HTTPException(503,"商品场景模型尚未通过发布检查，请使用通用核验")
-    suffix = Path(file.filename or "").suffix.lower()
+    suffix = Path(filename).suffix.lower()
+    if audio_only and (scene != 'general' or suffix not in {'.webm','.ogg','.m4a'}):
+        raise HTTPException(422,'录音格式不受支持')
     if scene in {'product','chat'} and suffix not in {'.png','.jpg','.jpeg','.webp'}:
         raise HTTPException(422,'该入口只支持图片')
-    if suffix not in {
-        ".mp4",
-        ".mov",
-        ".avi",
-        ".webm",
-        ".wav",
-        ".mp3",
-        ".m4a",
-        ".flac",
-        ".ogg",
-        ".png",
-        ".jpg",
-        ".jpeg",
-        ".webp",
-    }:
+    if suffix not in MEDIA_SUFFIXES:
         raise HTTPException(415, "不支持的文件格式")
+    if reference and (suffix not in IMAGE_SUFFIXES or Path(reference.filename or '').suffix.lower() not in IMAGE_SUFFIXES):
+        raise HTTPException(415, "参考图比对仅支持图片")
     if len(context) > 4000:
         raise HTTPException(422, "描述过长")
+    key = uuid.uuid4().hex
+    owner_id = account["id"] if account else None
+    settings = admin_store.active_settings() if account and suffix in IMAGE_SUFFIXES else None
     with joblock:
         if sum(j["status"] == "processing" for j in jobs.values()) >= 3:
             raise HTTPException(429, "已有任务处理中，请稍后")
-    folder = Path(tempfile.mkdtemp(dir=storage.ROOT, prefix="upload-"))
-    path = folder / ("input" + suffix)
+        jobs[key] = {"status": "processing", "message": "正在准备材料", "owner_id": owner_id}
+    folder = None
     digest = hashlib.sha256()
-    size = 0
     try:
-        with path.open("wb") as out:
-            while chunk := file.file.read(1024 * 1024):
-                size += len(chunk)
-                if size > 100 * 1024 * 1024:
-                    raise HTTPException(413, "文件超过100MB")
-                digest.update(chunk)
-                out.write(chunk)
-        if not size:
-            raise HTTPException(422, "文件为空")
+        folder = Path(tempfile.mkdtemp(dir=storage.ROOT, prefix="upload-"))
+        path = folder / ("input" + suffix)
+        save_upload(source, path, digest)
+        reference_path = None
+        if reference:
+            reference_path = folder / "reference"
+            save_upload(reference.file, reference_path)
+        with joblock:
+            jobs[key]['message'] = '已提交，等待检测'
+        pool.submit(process, key, path, Path(filename).name, context, digest.hexdigest(), folder, scene, audio_only,
+                    reference_path, owner_id, settings)
     except Exception:
         import shutil
-
-        shutil.rmtree(folder)
+        with joblock:
+            jobs.pop(key, None)
+        if folder is not None:
+            shutil.rmtree(folder)
         raise
+    return {"job_id": key}
+
+
+@app.post("/api/analyze", status_code=202)
+def analyze(request: Request, file: UploadFile = File(...), context: str = Form(""), scene: str = Form("general"),
+            audio_only: bool = Form(False), reference: UploadFile | None = File(None)):
+    try:
+        return queue_verification(file.file, file.filename or '', context, scene, audio_only, reference,
+                                  account=require_account(request))
     finally:
         file.file.close()
-    key = uuid.uuid4().hex
-    with joblock:
-        jobs[key] = {"status": "processing", "message": "已提交，等待检测"}
-    pool.submit(
-        process,
-        key,
-        path,
-        Path(file.filename).name,
-        context,
-        digest.hexdigest(),
-        folder,
-        scene,
-    )
-    return {"job_id": key}
+        if reference:
+            reference.file.close()
+
+
+class LocalFileRequest(BaseModel):
+    path: str | None = Field(default=None, min_length=1, max_length=1024)
+    desktop_filename: str | None = Field(default=None, min_length=1, max_length=255)
+    drive: str | None = Field(default=None, pattern=r'^[A-Za-z]$')
+    filename: str | None = Field(default=None, min_length=1, max_length=255)
+    context: str = Field(default='', max_length=4000)
+
+
+def desktop_directory():
+    if os.name == 'nt':
+        import ctypes
+
+        folder = ctypes.create_unicode_buffer(260)
+        if ctypes.windll.shell32.SHGetFolderPathW(None, 0x10, None, 0, folder) == 0:
+            return Path(folder.value)
+    return Path.home() / 'Desktop'
+
+
+def matching_media_names(filename):
+    if not re.fullmatch(r'[^\\/:\x00-\x1f<>"|?*]+', filename) or filename in {'.', '..'} or Path(filename).is_reserved():
+        raise HTTPException(422, '请提供音频、图片或视频的文件名。')
+    key = filename.casefold()
+    return {key} if Path(filename).suffix.lower() in MEDIA_SUFFIXES else {key + suffix for suffix in MEDIA_SUFFIXES}
+
+
+def unique_file(matches, location, filename):
+    if not matches:
+        raise HTTPException(404, f'{location}没有找到名为「{filename}」的可读取媒体文件。请核对文件名或添加附件。')
+    if len(matches) > 1:
+        raise HTTPException(422, {
+            'code': 'ambiguous_file',
+            'message': f'{location}找到多个同名文件。请选择要核验的一份。',
+            'paths': [str(item) for item in sorted(matches)[:5]],
+        })
+    return matches[0]
+
+
+def find_desktop_file(filename, desktop):
+    names = matching_media_names(filename)
+    matches = [item for item in desktop.iterdir() if item.name.casefold() in names and not item.is_symlink() and item.is_file()]
+    return unique_file(matches, '桌面上', filename)
+
+
+def find_drive_file(filename, root, *, timeout=30):
+    names = matching_media_names(filename)
+    deadline = time.monotonic() + timeout
+
+    def incomplete():
+        if matches:
+            raise HTTPException(408, {
+                'code': 'incomplete_file_search',
+                'message': '找到一个匹配文件，搜索仍有未覆盖的文件夹。确认路径后，点击即可核验。',
+                'paths': [str(matches[0])],
+            })
+        raise HTTPException(408, '搜索超时。请发更具体的文件夹路径或添加附件。')
+
+    pending, matches = deque([root]), []
+    while pending and len(matches) < 5:
+        if time.monotonic() >= deadline:
+            if len(matches) > 1:
+                break
+            incomplete()
+        try:
+            with os.scandir(pending.popleft()) as entries:
+                for entry in entries:
+                    if time.monotonic() >= deadline:
+                        if len(matches) > 1:
+                            return unique_file(matches, '指定位置中', filename)
+                        incomplete()
+                    try:
+                        if entry.is_dir(follow_symlinks=False):
+                            attrs = getattr(entry.stat(follow_symlinks=False), 'st_file_attributes', 0)
+                            if not attrs & stat.FILE_ATTRIBUTE_REPARSE_POINT:
+                                pending.append(entry.path)
+                        elif entry.name.casefold() in names and entry.is_file(follow_symlinks=False):
+                            matches.append(Path(entry.path))
+                            if len(matches) >= 5:
+                                break
+                    except OSError:
+                        continue
+        except OSError:
+            continue
+    return unique_file(matches, '指定位置中', filename)
+
+
+@app.post('/api/companion/local-file', status_code=202)
+def companion_local_file(body: LocalFileRequest, request: Request):
+    try:
+        same_computer = request.client and ipaddress.ip_address(request.client.host).is_loopback
+    except ValueError:
+        same_computer = False
+    own_origin = f'{request.url.scheme}://{request.url.netloc}'
+    if not same_computer or request.url.hostname not in {'localhost', '127.0.0.1', '::1'} or request.headers.get('origin') != own_origin:
+        raise HTTPException(403, '本机路径可在运行真鉴的电脑上使用。也可以点「添加附件」选择文件。')
+
+    if (sum(map(bool, (body.path, body.desktop_filename, body.drive))) != 1
+            or (body.drive and not body.filename) or (body.desktop_filename and body.filename)):
+        raise HTTPException(422, '请提供完整路径，或告诉我文件名和它所在的桌面或盘符。')
+    try:
+        desktop = None
+        drive_root = None
+        if body.desktop_filename:
+            desktop = desktop_directory().resolve(strict=True)
+            candidate = find_desktop_file(body.desktop_filename.strip(), desktop)
+        elif body.drive and body.filename:
+            drive_root = Path(body.drive.upper() + ':\\').resolve(strict=True)
+            candidate = find_drive_file(body.filename.strip(), drive_root)
+        else:
+            raw = (body.path or '').strip().strip('"“”')
+            if not re.fullmatch(r'[a-zA-Z]:[\\/][^:\x00-\x1f<>"|?*]*', raw):
+                raise HTTPException(422, '请提供盘符开头的完整文件路径，包括文件名。')
+            candidate = Path(raw)
+            if body.filename:
+                drive_root = candidate.resolve(strict=True)
+                if not drive_root.is_dir() or not re.fullmatch(r'[a-zA-Z]:', drive_root.drive):
+                    raise HTTPException(422, '请提供本机磁盘上的文件夹路径。')
+                candidate = find_drive_file(body.filename.strip(), drive_root)
+        source_path = candidate.resolve(strict=True)
+        if desktop is not None and source_path.parent != desktop:
+            raise HTTPException(422, '请选择直接保存在桌面上的文件。')
+        if drive_root is not None and not source_path.is_relative_to(drive_root):
+            raise HTTPException(422, '请选择指定位置中的普通文件。')
+        if not re.fullmatch(r'[a-zA-Z]:', source_path.drive) or candidate.is_reserved() or source_path.is_reserved():
+            raise HTTPException(422, '请使用本机磁盘上的普通文件。')
+        if source_path.is_dir():
+            raise HTTPException(422, {'code': 'filename_required', 'message': '这个位置是文件夹。请再告诉我文件名。'})
+        if candidate.suffix.lower() not in MEDIA_SUFFIXES or source_path.suffix.lower() not in MEDIA_SUFFIXES:
+            raise HTTPException(415, '请选图片、视频或音频文件。')
+        if not source_path.is_file():
+            raise HTTPException(422, '请使用本机磁盘上的普通文件。')
+        with source_path.open('rb') as source:
+            if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
+                raise HTTPException(422, '请使用本机磁盘上的普通文件。')
+            result = queue_verification(source, candidate.name, body.context, 'general', False,
+                                        account=require_account(request))
+            return {**result, 'filename': candidate.name}
+    except FileNotFoundError:
+        raise HTTPException(404, '没找到这个文件。请核对文件夹和文件名，也可以点「添加附件」。') from None
+    except (OSError, RuntimeError):
+        raise HTTPException(422, '没能读取这个文件。请检查读取权限，或点「添加附件」选择文件。') from None
 
 
 app.mount("/", StaticFiles(directory=ROOT / ('frontend-next' if (ROOT/'frontend-next/index.html').exists() else 'frontend'), html=True), name="web")

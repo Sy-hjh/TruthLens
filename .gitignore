@@ -45,3 +45,4 @@ tmp/
 /演示素材_八个/
 
 .agent-packages/
+.python/

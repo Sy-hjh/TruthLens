@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import { Icon } from "./ui";
 const modes = [
@@ -24,9 +23,27 @@ const modes = [
     icon: "chat",
     name: "聊天",
     tag: "CONTEXT",
-    text: "提取截图原话，结合上下文与资料分析借款、保密、验证码等风险要求。",
+    text: "提取截图原话，标出值得复核的说法或要求，方便对照原会话。",
   },
 ];
+const checkHints: Record<string, { title: string; text: string }> = {
+  audio: {
+    title: "怀疑声音被仿造？",
+    text: "上传一段语音或通话录音，看看有没有 AI 仿声的线索。",
+  },
+  video: {
+    title: "视频里的人或声音有点不对劲？",
+    text: "上传原视频，分别查看画面和声音有没有合成线索。",
+  },
+  image: {
+    title: "怀疑照片被生成或改过？",
+    text: "上传原图，看看有没有生成或修改的线索。",
+  },
+  chat: {
+    title: "有人在聊天里提出可疑要求？",
+    text: "上传聊天截图，看看哪些话值得再核实。",
+  },
+};
 const pageModes: Record<string, typeof modes> = {
   contacts: [
     {
@@ -56,28 +73,28 @@ const pageModes: Record<string, typeof modes> = {
   ],
   practice: [
     {
-      icon: "heart",
-      name: "借款",
-      tag: "FAMILIAR",
-      text: "声称亲友急用钱、换账户又不让回拨时，先换可信渠道联系本人。",
+      icon: "book",
+      name: "教学",
+      tag: "EDUCATION",
+      text: "作业图片先找原图，论文先核对引用、草稿和创作过程。",
     },
     {
-      icon: "shield",
-      name: "涉案",
-      tag: "AUTHORITY",
-      text: "自称公检法，要求保密或转入安全账户时，应暂停操作，独立核实。",
-    },
-    {
-      icon: "chat",
-      name: "验证码",
-      tag: "SECRET",
-      text: "不要向陌生客服或聊天对象提供密码和验证码，也不要展示银行操作。",
+      icon: "image",
+      name: "电商",
+      tag: "COMMERCE",
+      text: "核对售后凭证时，先回到原订单和最早上传的材料。",
     },
     {
       icon: "video",
-      name: "共享屏幕",
-      tag: "REMOTE",
-      text: "以退款、取消扣费为由要求共享屏幕，可能导致验证信息和账户泄露。",
+      name: "新闻",
+      tag: "MEDIA",
+      text: "核对转发素材时，先找最早的版本、发布时间和原始出处。",
+    },
+    {
+      icon: "shield",
+      name: "企业",
+      tag: "BUSINESS",
+      text: "核对企业文件时，回到原合同、供应商档案和已有审批记录。",
     },
   ],
   history: [
@@ -127,9 +144,9 @@ const pages: Record<
     description: "这里保存你事先确认的号码，给信任留一条独立通路。",
   },
   practice: {
-    code: "ANTI-FRAUD ARENA",
-    title: "把识破套路，练成一种直觉。",
-    description: "向下进入情景练习，答错也能看懂原因。",
+    code: "VERIFICATION CASES",
+    title: "不同场景，核实方法各有侧重。",
+    description: "从作业、售后凭证、新闻素材和企业文件里，看看各自应该先核对什么。",
   },
   history: {
     code: "EVIDENCE ARCHIVE",
@@ -149,24 +166,20 @@ export default function MissionStage({
   page: string;
   motion: boolean;
 }) {
-  const [selected, setSelected] = useState(1),
-    [angle, setAngle] = useState(0),
-    [paused, setPaused] = useState(false),
-    [expanded, setExpanded] = useState(false);
+  const [selected, setSelected] = useState(1);
   useEffect(() => {
-    setSelected(page === "contacts" ? 0 : page === "practice" ? 3 : 1);
-    setExpanded(false);
+    setSelected(page === "contacts" || page === "practice" ? 0 : 1);
   }, [page]);
   const currentModes = pageModes[page] || modes;
   const p = pages[page] || pages.home,
     m = currentModes[selected];
+  const hint = page === "check" ? checkHints[m.icon] : undefined;
   return (
     <section
       className={
         "mission-stage mission-" +
         page +
-        (expanded ? " is-focus" : "") +
-        (!motion || paused ? " is-static" : "")
+        (!motion ? " is-static" : "")
       }
       aria-label="页面交互导览"
     >
@@ -205,7 +218,7 @@ export default function MissionStage({
                 home: "开始核验",
                 check: "选择材料",
                 contacts: "查看联系人",
-                practice: "进入练习",
+                practice: "查看案例",
                 history: "查看记录",
                 report: "查看本次结果",
               } as Record<string, string>
@@ -220,21 +233,15 @@ export default function MissionStage({
           让小鉴带我了解 <Icon name="arrow" />
         </button>
         <div className="mission-selection" aria-live="polite">
-          <span>
+          {!hint && <span>
             0{selected + 1} / {m.tag}
-          </span>
-          <h3>
-            {m.name}
-            {pageModes[page] ? "小提示" : "怎么检查？"}
-          </h3>
-          <p>{m.text}</p>
+          </span>}
+          <h3>{hint?.title ?? `${m.name}${pageModes[page] ? "小提示" : "怎么检查？"}`}</h3>
+          <p>{hint?.text ?? m.text}</p>
         </div>
       </div>
       <div className="mission-system">
-        <div
-          className="mission-universe"
-          style={{ "--orbit-angle": angle + "deg" } as CSSProperties}
-        >
+        <div className="mission-universe">
           <div className="mission-orbit orbit-one" aria-hidden="true" />
           <div className="mission-orbit orbit-two" aria-hidden="true" />
           <div className="mission-orbit orbit-three" aria-hidden="true" />
@@ -272,28 +279,6 @@ export default function MissionStage({
           <span className="mission-coordinate" aria-hidden="true">
             TRUTHLENS / SIGNAL ATLAS
           </span>
-        </div>
-        <div className="mission-controls">
-          <label>
-            旋转视角
-            <input
-              type="range"
-              aria-label="旋转导览视角"
-              min="-25"
-              max="25"
-              value={angle}
-              onChange={(e) => setAngle(Number(e.target.value))}
-            />
-          </label>
-          <button onClick={() => setPaused(!paused)} aria-pressed={paused}>
-            {paused ? "播放光效" : "暂停光效"}
-          </button>
-          <button
-            onClick={() => setExpanded(!expanded)}
-            aria-pressed={expanded}
-          >
-            {expanded ? "收起" : "展开"}
-          </button>
         </div>
       </div>
     </section>

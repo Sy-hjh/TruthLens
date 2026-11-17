@@ -18,7 +18,7 @@ def predict(path):
  config=json.loads((ROOT/'models/active-video.json').read_text(encoding='utf-8'))
  if config.get('approved') is not True:raise RuntimeError('Ordered video release not approved')
  protocol=json.loads((ROOT/config['protocol']).read_text(encoding='utf-8'))
- for name,expected in [('train_temporal_sequence.py',protocol['code_sha']),('fakestormer_candidate.py',protocol['sampler_sha']), (config['head'],protocol['checkpoint_sha'])]:
+ for name,expected in [('train_temporal_sequence.py',protocol['code_sha']),('fakestormer_candidate.py',config.get('runtime_sampler_sha',protocol['sampler_sha'])), (config['head'],protocol['checkpoint_sha'])]:
   if hashlib.sha256((ROOT/name).read_bytes()).hexdigest()!=expected:raise RuntimeError('Ordered inference integrity mismatch: '+name)
  source=json.loads((ROOT/'models/gend-clip/source.json').read_text())
  if source['sha256']!=protocol['encoder_sha']:raise RuntimeError('Ordered encoder mismatch')
