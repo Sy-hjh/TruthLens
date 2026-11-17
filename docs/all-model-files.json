@@ -1,0 +1,355 @@
+[
+  {
+    "path": "models/active-audio.json",
+    "bytes": 440,
+    "sha256": "0ad02e4a2c4ca539b7262548726c7ca901f6e44ca65e0492caecec0b0598db13",
+    "parts": []
+  },
+  {
+    "path": "models/active-domain.json",
+    "bytes": 679,
+    "sha256": "a07c866f6f0c6e9b0f23144e321de771f95b95199a85a781dbf78ef21bb470e1",
+    "parts": []
+  },
+  {
+    "path": "models/active-video.json",
+    "bytes": 648,
+    "sha256": "ffeffa239a9d800088a9ea952f0a67441200a2af3767652395d9dee95a00da45",
+    "parts": []
+  },
+  {
+    "path": "models/advisor/config.json",
+    "bytes": 726,
+    "sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+    "parts": []
+  },
+  {
+    "path": "models/advisor/generation_config.json",
+    "bytes": 239,
+    "sha256": "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2",
+    "parts": []
+  },
+  {
+    "path": "models/advisor/LICENSE",
+    "bytes": 11343,
+    "sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e",
+    "parts": []
+  },
+  {
+    "path": "models/advisor/model.safetensors",
+    "bytes": 1503300328,
+    "sha256": "f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+    "parts": []
+  },
+  {
+    "path": "models/advisor/README.md",
+    "bytes": 13965,
+    "sha256": "1ab64a26fcb3b461423b89a433a8c858f1bf8d4086f979cbb3ff878d47cf20e9",
+    "parts": []
+  },
+  {
+    "path": "models/advisor/source.json",
+    "bytes": 874,
+    "sha256": "750d647eab215613c4a0755ce2230dc46c48fcbf09f19af569635ed6b7a0ab26",
+    "parts": []
+  },
+  {
+    "path": "models/advisor/tokenizer.json",
+    "bytes": 11422654,
+    "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+    "parts": []
+  },
+  {
+    "path": "models/advisor/tokenizer_config.json",
+    "bytes": 9732,
+    "sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+    "parts": []
+  },
+  {
+    "path": "models/asr_zh/model.int8.onnx",
+    "bytes": 227330205,
+    "sha256": "90bc03034ae1bef9575f8cc798cd1519c8be8aa9e8b458a033e32017ff4d584c",
+    "parts": []
+  },
+  {
+    "path": "models/asr_zh/README.md",
+    "bytes": 190,
+    "sha256": "612ba0d296f78c232421d170cf22c8d37630e34ef7f33506226ac1ad7cb145b3",
+    "parts": []
+  },
+  {
+    "path": "models/asr_zh/source.json",
+    "bytes": 345,
+    "sha256": "9e98213280e37a0ac42d391b9fc2458bd4541ce7e945f3f3ff89f3b25593be2c",
+    "parts": []
+  },
+  {
+    "path": "models/asr_zh/tokens.txt",
+    "bytes": 75354,
+    "sha256": "6c0e3b35cece259829e6cb5b8d90d13db88f61ea3a2953d11898e4b2bfd7a2e2",
+    "parts": []
+  },
+  {
+    "path": "models/chat-ocr/source.json",
+    "bytes": 484,
+    "sha256": "e2ae40145c8eeebf95152ea8ec7126dc070e54c160428cca4c65ef92c821b864",
+    "parts": []
+  },
+  {
+    "path": "models/community/config.json",
+    "bytes": 116,
+    "sha256": "9826208c73a17bb20c85d6624aa16b4a118508d89ff2c86d71e4b553474ff702",
+    "parts": []
+  },
+  {
+    "path": "models/community/model.safetensors",
+    "bytes": 86678644,
+    "sha256": "a6cc439d5a6d2dfadd60c77d27a2838ad55b34e601ecd30f46ad97266d6ac4e0",
+    "parts": []
+  },
+  {
+    "path": "models/community/README.md",
+    "bytes": 605,
+    "sha256": "47fc83b44bdc02e73e0c0497598668c8cf4a9fb03842a6f64849eb8736644485",
+    "parts": []
+  },
+  {
+    "path": "models/community/source.json",
+    "bytes": 330,
+    "sha256": "f87aaeec0669d7418ae7f8277394288220c231ff83732c3a178ebde3aa32a0bb",
+    "parts": []
+  },
+  {
+    "path": "models/daf/srnet-tensors.pt",
+    "bytes": 297827234,
+    "sha256": "8355d0156a18f29bbc249b586469b7028338643b0f280baa15b6161c07aa44cd",
+    "parts": []
+  },
+  {
+    "path": "models/face-detector/model.onnx",
+    "bytes": 232589,
+    "sha256": "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4",
+    "parts": []
+  },
+  {
+    "path": "models/face-detector/source.json",
+    "bytes": 269,
+    "sha256": "c0e3d83d4f1f8dee41af1b762488b94d296fed6ac9046a9d277fc26b56347295",
+    "parts": []
+  },
+  {
+    "path": "models/fused/convnext.safetensors",
+    "bytes": 3386218152,
+    "sha256": "1ddf6dbc7f0753fc4dfec5db5fa474acfd1ac6f67f466d6a976780c30b3a1b23",
+    "parts": [
+      "models/fused/convnext.safetensors.part00",
+      "models/fused/convnext.safetensors.part01",
+      "models/fused/convnext.safetensors.part02",
+      "models/fused/convnext.safetensors.part03"
+    ]
+  },
+  {
+    "path": "models/fused/fused_opensdi.pth",
+    "bytes": 319859039,
+    "sha256": "7e527d49080a773641cf96915b4b3fa12d571c5b87f35c527f13ab82f148364c",
+    "parts": []
+  },
+  {
+    "path": "models/gend-clip/config.json",
+    "bytes": 193,
+    "sha256": "7f2761e13678191774a152121f1630d19baa33a74216dd264d54445d96b16229",
+    "parts": []
+  },
+  {
+    "path": "models/gend-clip/model.safetensors",
+    "bytes": 1215928160,
+    "sha256": "d76f0bdfd74a29fe1b1c1b84a80ac92486993e426878e8c7a3944281fbb96833",
+    "parts": []
+  },
+  {
+    "path": "models/gend-clip/model_index.json",
+    "bytes": 107,
+    "sha256": "c0baa48ac78a64c2806fab0164e810ef931e9a03be184649b04c8b8b5ebe639e",
+    "parts": []
+  },
+  {
+    "path": "models/gend-clip/modeling_gend.py",
+    "bytes": 5738,
+    "sha256": "d2bdc7d57ea208def628f16064c7d22317ec92878b982ac6ac5ab4bcda4991ac",
+    "parts": []
+  },
+  {
+    "path": "models/gend-clip/README.md",
+    "bytes": 1205,
+    "sha256": "19e3a142ac3fc32e531ba5eeff132c5de7e8134d268572e62fc69152804a69f9",
+    "parts": []
+  },
+  {
+    "path": "models/gend-clip/source.json",
+    "bytes": 332,
+    "sha256": "b8bef5b8f55726da0e0162c29cae96840a5e3c45f54f8b03c6e497d442f9dfe5",
+    "parts": []
+  },
+  {
+    "path": "models/provided-image-head/best-head.pt",
+    "bytes": 2968,
+    "sha256": "cf51440398127c5948c1f8ad5904c25b531a6ee72dc3fcc14095dd444882c856",
+    "parts": []
+  },
+  {
+    "path": "models/provided-image-head/community-epoch20-head.pt",
+    "bytes": 3186,
+    "sha256": "564cac32426ecf79e09ede74900b19980f53a430fdf2b50a4f07b67ed3394f13",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/1_Pooling/config.json",
+    "bytes": 90,
+    "sha256": "8759bdf7c77efc7df7723f64856a593c8943b71ee38baf2a88771fbaf78438f9",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/2_Normalize/config.json",
+    "bytes": 97,
+    "sha256": "cdb09dfca347a56aa2d691744e38d5ad3c7cbc2834e7181272b9a15328b82524",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/3_Dense/config.json",
+    "bytes": 225,
+    "sha256": "9a8e63111293722eaf7addb6c409ed4eb02a6dc1ef5ab8ef2e0b10c64e9884f5",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/3_Dense/model.safetensors",
+    "bytes": 1690,
+    "sha256": "b09918c3838ef3b9dbd7057b0a8d382eced8fa06363ed62a5f60abe65cc65809",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/chat_template.jinja",
+    "bytes": 1016,
+    "sha256": "4b852efc0b9960283e735363331e6f325b33bc74bdbaa076f595bc4e9b94d85e",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/config.json",
+    "bytes": 3077,
+    "sha256": "ffc45049b25de336c1a1fbcf1e0d33e22b4e27029ac6c6828796f526ea314f94",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/config_sentence_transformers.json",
+    "bytes": 1326,
+    "sha256": "a4e4dc2e81bc436135b6318c96b3d937a82e96da066fa34ab9993dbe155bf2d2",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/LICENSE",
+    "bytes": 11358,
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/model.safetensors",
+    "bytes": 877599816,
+    "sha256": "c5ae3fac7470126f25d2dca2386d8728f7c828fae53e8ac9eb006937821ea006",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/modules.json",
+    "bytes": 537,
+    "sha256": "6c6d5d37d92be385f64363f97b94d12e59ed4ee41858e0dd432fc19dd283fe00",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/processor_config.json",
+    "bytes": 1788,
+    "sha256": "5bce6851e8be949925e1d2e9b9687738e5ef5dc4553927ccd38fdfb181dad732",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/README.md",
+    "bytes": 21347,
+    "sha256": "d6ecaff5970c61b5b253a8f1ef1cfbc4b8a6a89582708b67a9ad580ae241f42b",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/sentence_bert_config.json",
+    "bytes": 747,
+    "sha256": "b1bcd9f2dce3ae863b359e87d0710b5dbc3314a59ecb4e2f97c7778fc8e4b228",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/source.json",
+    "bytes": 1704,
+    "sha256": "fdc807e95dcbdd718de31bb4d8c734b4a83abd5ff8da0a2eb20409032221d5d6",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/tokenizer.json",
+    "bytes": 32170510,
+    "sha256": "4d777ef5bdc1aa36227abdfb77c3e49e7b9c892d16e1b6bda41c393504828be4",
+    "parts": []
+  },
+  {
+    "path": "models/smaug/tokenizer_config.json",
+    "bytes": 1600,
+    "sha256": "fd4bc42eca490af2f3ab7e1e22cdef97a8c5a2354146d5700d5d55ecf70f1de5",
+    "parts": []
+  },
+  {
+    "path": "models/tamper/source.json",
+    "bytes": 192,
+    "sha256": "54614839ce9c766743a35614750f263a017651bc7094063bdce26100d3eac8c3",
+    "parts": []
+  },
+  {
+    "path": "models/tamper/trufor.pth.tar",
+    "bytes": 281496429,
+    "sha256": "ac1d90e329a72e0d66e8665e123a19e94bfae3209c3ef8a4f9ca3b91578c7844",
+    "parts": []
+  },
+  {
+    "path": "models/text-patterns/config.json",
+    "bytes": 841147,
+    "sha256": "638fb9df7f4f75824fe23de3e56ca699bdc09fdada99bbdbf91d1d862dd90ef3",
+    "parts": []
+  },
+  {
+    "path": "models/text-patterns/weights.npz",
+    "bytes": 858865,
+    "sha256": "f0b0b22a4448ceeae8e6885ed4ca57bac448c3c04a07a65c5ce8a1645a0c914d",
+    "parts": []
+  },
+  {
+    "path": "models/truthlens-ast-qwen/ast_adapted.npz",
+    "bytes": 19444,
+    "sha256": "9b031ae8c011cf5cb658470f758dcf1aa694cabbb26b89856fbc7ac57e2ad3f2",
+    "parts": []
+  },
+  {
+    "path": "models/truthlens-ast-qwen/config.json",
+    "bytes": 26763,
+    "sha256": "a93d525511d77e8ecc933d09674b85099815bbbb417c228a4edd655e252fb9ff",
+    "parts": []
+  },
+  {
+    "path": "models/truthlens-ast-qwen/model.safetensors",
+    "bytes": 346404948,
+    "sha256": "ae0c1e2ad4e1381d851fa9bf298ba13ebc9c5a914cdee2dbe427a6583869924d",
+    "parts": []
+  },
+  {
+    "path": "models/verispoof/LICENSE-Apache-2.0.txt",
+    "bytes": 11358,
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "parts": []
+  },
+  {
+    "path": "models/verispoof/NOTICE",
+    "bytes": 270,
+    "sha256": "e0a26870a825fee5d01814d4b98132b9e8d8c34c6a4474d0b7dba4b89951c27b",
+    "parts": []
+  }
+]

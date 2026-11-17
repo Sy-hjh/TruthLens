@@ -1,0 +1,3 @@
+This repository contains modified versions of MiniCPM5-2B (llm/, Copyright OpenBMB) and of the
+Qwen3-ASR-1.7B audio encoder (audio_encoder.safetensors, Copyright Alibaba Cloud), both licensed
+under Apache-2.0 (LICENSE-Apache-2.0.txt). Modified by the VeriSpoof authors.

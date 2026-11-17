@@ -1,0 +1,7 @@
+{
+  "repo": "yermandy/GenD_CLIP_L_14",
+  "revision": "891ce014a0308386c4d7d25b3dcf436a22db5504",
+  "sha256": "d76f0bdfd74a29fe1b1c1b84a80ac92486993e426878e8c7a3944281fbb96833",
+  "license": "MIT model card; upstream data terms separate",
+  "purpose": "WACV2026 paired-source generalization candidate; test before deployment"
+}

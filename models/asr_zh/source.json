@@ -1,0 +1,13 @@
+{
+  "repo": "csukuangfj/sherpa-onnx-paraformer-zh-2024-03-09",
+  "revision": "906992d326ebf0c5171cde675aa0902be9e5bc6c",
+  "license": null,
+  "files": [
+    "README.md",
+    "model.int8.onnx",
+    "tokens.txt"
+  ],
+  "verified_sha256": {
+    "model.int8.onnx": "90bc03034ae1bef9575f8cc798cd1519c8be8aa9e8b458a033e32017ff4d584c"
+  }
+}

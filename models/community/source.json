@@ -1,0 +1,13 @@
+{
+  "repo": "OwensLab/commfor-model-224",
+  "revision": "26afc31e6b40c312c3fd42c05a758be62446215b",
+  "license": "mit",
+  "files": [
+    "README.md",
+    "config.json",
+    "model.safetensors"
+  ],
+  "verified_sha256": {
+    "model.safetensors": "a6cc439d5a6d2dfadd60c77d27a2838ad55b34e601ecd30f46ad97266d6ac4e0"
+  }
+}
