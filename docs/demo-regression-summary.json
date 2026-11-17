@@ -1,0 +1,62 @@
+[
+  {
+    "file": "ai.wav",
+    "completed": true,
+    "modules": {
+      "audio": "completed"
+    },
+    "summary": "优先核查",
+    "seconds": 36.19
+  },
+  {
+    "file": "av-fake.mp4",
+    "completed": true,
+    "modules": {
+      "video": "completed",
+      "audio": "completed"
+    },
+    "summary": "建议核查",
+    "seconds": 21.3
+  },
+  {
+    "file": "av-real.mp4",
+    "completed": true,
+    "modules": {
+      "video": "completed",
+      "audio": "completed"
+    },
+    "summary": "暂无明显风险线索",
+    "seconds": 28.49
+  },
+  {
+    "file": "true.m4a",
+    "completed": true,
+    "modules": {
+      "audio": "completed"
+    },
+    "summary": "建议核查",
+    "seconds": 9.16
+  },
+  {
+    "file": "图片假.png",
+    "completed": true,
+    "modules": {
+      "image": "completed",
+      "tamper": "completed",
+      "daf": "completed"
+    },
+    "summary": "优先核查",
+    "seconds": 62.05
+  },
+  {
+    "file": "图片真.png",
+    "completed": true,
+    "modules": {
+      "image": "completed",
+      "tamper": "completed",
+      "daf": "completed"
+    },
+    "summary": "暂无明显风险线索",
+    "seconds": 46.67
+  }
+]

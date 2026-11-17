@@ -1,0 +1,12 @@
+{
+  "approved": true,
+  "engine": "video-ordered-head",
+  "version": "qinan-ordered-gru-r1-20261112",
+  "threshold": 0.7162467837333679,
+  "head": "release/ordered-video-head.pt",
+  "protocol": "release/ordered-video-protocol.json",
+  "evaluation": "reports/ordered-temporal-head-test.json",
+  "baseline": "reports/ordered-head-active-baseline.json",
+  "scope": "Frozen GenD encoder plus locally trained ordered four-frame bidirectional GRU. Not lip-sync, not all generated video. New20source60clip test, unknown actor/pretraining overlap.",
+  "runtime_sampler_sha": "3c72cab96bf75d08628481d7ebd2641feb764923df983d86b4b1dd80b50c773d"
+}

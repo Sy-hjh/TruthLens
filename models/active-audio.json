@@ -1,0 +1,11 @@
+{
+  "engine": "ast-qwen",
+  "version": "truthlens-ast-qwen",
+  "directory": "models/truthlens-ast-qwen",
+  "threshold": 0.20864702146292263,
+  "sha256": {
+    "ast_adapted.npz": "9b031ae8c011cf5cb658470f758dcf1aa694cabbb26b89856fbc7ac57e2ad3f2",
+    "config.json": "a93d525511d77e8ecc933d09674b85099815bbbb417c228a4edd655e252fb9ff",
+    "model.safetensors": "ae0c1e2ad4e1381d851fa9bf298ba13ebc9c5a914cdee2dbe427a6583869924d"
+  }
+}

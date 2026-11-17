@@ -1,0 +1,16 @@
+{
+  "approved": true,
+  "general_image": true,
+  "head": "models/provided-image-head/best-head.pt",
+  "weights": "models/community/model.safetensors",
+  "head_type": "linear",
+  "head_sha256": "cf51440398127c5948c1f8ad5904c25b531a6ee72dc3fcc14095dd444882c856",
+  "weights_sha256": "a6cc439d5a6d2dfadd60c77d27a2838ad55b34e601ecd30f46ad97266d6ac4e0",
+  "version": "truthlens-provided-image-head",
+  "general_head": {
+    "head": "models/provided-image-head/community-epoch20-head.pt",
+    "head_sha256": "564cac32426ecf79e09ede74900b19980f53a430fdf2b50a4f07b67ed3394f13",
+    "preprocessing": "center_crop",
+    "version": "truthlens-community-image-epoch20"
+  }
+}

@@ -1,12 +1,20 @@
 # TruthLens 真鉴
 
-参赛团队：湖舟行；学校：大连东软信息学院；队长：胡瑾慧；队员：周宇航、陈浩翔。项目此前未发表或获奖。参赛架构、运行环境与提交说明见 [README_参赛提交说明.md](README_参赛提交说明.md)；录屏点击步骤及材料清单见 `submission/录屏与提交操作指南.md`。
+参赛团队：湖舟行；学校：大连东软信息学院；队长：胡瑾慧；队员：周宇航、陈浩翔。项目此前未发表或获奖。
+
+## 技术架构
+
+浏览器 React + TypeScript + Vite → FastAPI 鉴权与任务接口 → 单队列本地模型推理 → SQLite 报告存储 → RAG 检索与受限 Agent → 报告展示、问答和导出。
+
+图片使用整图分类、FUSED 局部检查及 DAF 文字编辑检查；有声视频分别执行有序画面 GRU 检测、AST 声学检测和 ASR 转写内容分析。小鉴使用 Qwen 与受限工具生成有来源的核实建议。基础模型归原作者所有，团队实现应用、编排、适配及核验流程。
+
+详细说明：[环境与部署](docs/ENVIRONMENT.md)、[架构与代码规范](docs/ARCHITECTURE.md)、[代码仓库要求验收](docs/REPOSITORY_ACCEPTANCE.md)、[资源清单](docs/model-resource-manifest.json)、[第三方声明](docs/THIRD_PARTY.md)。
 
 真鉴是面向多行业的 AI 内容核验 Web 应用。用户可以上传图片、音频、视频或聊天截图，查看检测线索、下一步核实建议并导出 PDF。小鉴助手提供对话式核验与资料检索。管理员可以管理账号、模型检测阈值、案例、知识库和报告保留期限。
 
 ## 启动
 
-1. 在 Windows 上解压后进入 `qinan`。首次使用时，在 PowerShell 运行 `powershell -ExecutionPolicy Bypass -File .\setup.ps1` 安装 Python 依赖。使用 GPU 时，按目标电脑的驱动安装相互兼容的 PyTorch、TorchVision 和 TorchAudio。
+1. 安装 Python 3.10 x64，克隆本仓库并进入仓库根目录。首次使用时，在 PowerShell 运行 `powershell -ExecutionPolicy Bypass -File .\setup.ps1` 安装 Python 依赖。使用 GPU 时，按目标电脑的驱动安装相互兼容的 PyTorch、TorchVision 和 TorchAudio。
 2. 双击 `start.cmd` 打开本机网页，使用 `stop.cmd` 停止。也可以在终端运行 `.venv\Scripts\python.exe run.py`，然后访问 [真鉴首页](http://127.0.0.1:8010/)。
 3. 在首页注册普通账号。在 [管理后台](http://127.0.0.1:8010/#admin) 点击「首次配置管理员」，使用首启后在 `runtime/admin-setup.txt` 生成的一次性初始化码。账号、配置和报告各自在新部署的 `runtime` 目录创建。
 
@@ -14,9 +22,9 @@
 
 ## 启用完整检测
 
-**完整版 ZIP** 已包含下列本地权重和当前 Web 检测实际使用的推理目录。建议使用 Windows x64 和 Python 3.10，随包附带的 DAF 及 OCR 二进制依赖适用此环境。先按启动步骤安装主 Python 依赖，再通过服务健康状态确认模型可用。小鉴的在线模式由部署者配置接口与密钥。
+**本 GitHub 仓库是源码交付**，不包含大型模型权重和 Windows 推理二进制环境。已提供当前模型配置、小型适配头、来源记录与资源 SHA256 清单。推荐 Windows x64 和 Python 3.10。完整推理需按 [环境与部署](docs/ENVIRONMENT.md) 准备资源，不能将页面启动或健康接口资源检查等同于模型实测通过。
 
-**轻量源码 ZIP** 包含当前模型配置、小型分类头、推理源码和公开示例。换电脑时，从已有可运行的部署复制下表中缺失的模型文件和推理目录到同一相对路径。仅启动页面、管理后台和浏览案例可先跳过此步骤。
+换电脑时，从已有可运行部署复制下表中缺失的模型与推理目录至同一相对路径，并依据资源清单核对哈希。没有资源的分支须保持不可用状态，不能伪造检测结果。
 
 | 模块 | 需要补齐的资源 |
 | --- | --- |
